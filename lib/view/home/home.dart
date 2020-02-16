@@ -1,0 +1,83 @@
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:flutter/material.dart';
+import 'package:gamming_community/view/dashboard/dashboard.dart';
+import 'package:gamming_community/view/messages/messages.dart';
+import 'package:gamming_community/view/room/list_room.dart';
+import 'package:open_iconic_flutter/open_iconic_flutter.dart';
+
+class HomePage extends StatefulWidget {
+  HomePage({Key key}) : super(key: key);
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<HomePage> {
+  int _currentIndex = 0;
+  PageController _pageController;
+  List<Widget> _listWidget;
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    _listWidget= [DashBoard(), Messages(), RoomList()];
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      bottomNavigationBar: BottomNavyBar(
+        
+        selectedIndex: _currentIndex,
+        onItemSelected: (int index) {
+          setState(() {
+            _currentIndex = index;
+            _pageController.animateToPage(index,
+                duration: Duration(milliseconds: 400), curve: Curves.ease);
+          });
+        },
+        items: [
+          BottomNavyBarItem(
+            textAlign: TextAlign.center,
+              icon: Icon(Icons.dashboard),
+              title: Text("Dashboard"),
+              inactiveColor: Colors.white),
+          
+          BottomNavyBarItem(
+            textAlign: TextAlign.center,
+              icon: Icon(OpenIconicIcons.chat),
+              title: Text("Messages"),
+              inactiveColor: Colors.white),
+          BottomNavyBarItem(
+            textAlign: TextAlign.center,
+              icon: Icon(OpenIconicIcons.task),
+              title: Text("Room"),
+              inactiveColor: Colors.white),
+          
+        ],
+      ),
+      body: Scaffold(
+              body: Container(
+                height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(color: Color(0xff322E2E)),
+          child: PageView(
+
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            controller: _pageController,
+            children: _listWidget,
+          ),
+        ),
+      ),
+    );
+  }
+}
