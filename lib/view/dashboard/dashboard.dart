@@ -1,12 +1,10 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/dashboard/carousel.dart';
 import 'package:gamming_community/view/dashboard/categories/categories.dart';
-import 'package:gamming_community/view/profile/profile.dart';
 import 'package:open_iconic_flutter/open_iconic_flutter.dart';
 
 class DashBoard extends StatefulWidget {
@@ -36,10 +34,11 @@ class _DashBoardState extends State<DashBoard>
                 height: 40,
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
-                    color: Colors.grey,
+                    color: AppColors.NAVIGATION_BAR_COLOR,
                     borderRadius: BorderRadius.circular(10)),
                 child: TextField(
                   decoration: InputDecoration(
+                      border: InputBorder.none,
                       hintText: "Search...",
                       suffixIcon: Icon(
                         OpenIconicIcons.magnifyingGlass,
@@ -66,14 +65,6 @@ class _DashBoardState extends State<DashBoard>
                 )),
             SizedBox(height: 10),
             Category(),
-            RaisedButton.icon(
-              icon: Icon(Icons.pages),
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Profile()));
-              },
-              label: Text("Profile"),
-            )
           ],
         ),
       ),

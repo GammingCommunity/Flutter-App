@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gamming_community/resources/values/app_colors.dart';
-import 'package:gamming_community/resources/values/app_constraint.dart';
 
 class ForgotPassword extends StatefulWidget {
   @override
@@ -23,9 +21,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 clipBehavior: Clip.antiAlias,
                 child: IconButton(
                     icon: Icon(Icons.keyboard_arrow_left),
-                    color: AppColors.PRIMARY_COLOR,
                     onPressed: () {
-                      Navigator.of(context).popAndPushNamed('/login');
+                      Navigator.of(context).pushNamed('/login');
                     }),
               ),
             ),

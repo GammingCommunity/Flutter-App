@@ -4,5 +4,5 @@ class AppConstraint{
   static const double genre_title_action=18;
   static const double container_border_radius= 15;
   static const double button_radius= 15;
-  
+  static const String sample_proifle_url="https://via.placeholder.com/150";
 }

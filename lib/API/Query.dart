@@ -13,6 +13,7 @@ class GraphQLQuery {
         }
     """;
   }
+  /* fetch all room */
   String getAllRoom()=> """
     query(\$page:Int!,\$limit:Int!){
        getAllRoom(page:\$page,limit:\$limit){
@@ -56,41 +57,44 @@ class GraphQLQuery {
   String getRoomByID(String id) {
     return """
      query{
-  getRoomByID(idRoom:"$id") {
-     _id
-    member{
-      username
-      avatar
-    }
-    room_name
-    host_name{
-      username
-      avatar
-    }
-    isPrivate
-    password
-    description
-  }
-}
-    """;
-  }
-
-  String updateRoom(String idRoom, String roomName, bool isPrivate, String pwd,
-      String descrp) {
-    return """
-    query{
-      EditRoom(idRoom:"$idRoom",newData:{
-          room_name:"$roomName"
-          isPrivate:$isPrivate
-          password:"$pwd"
-          description:"$descrp"
-        }){
-          result
+        getRoomByID(idRoom:"$id") {
+          _id
+          member{
+            username
+            avatar
+          }
+          room_name
+          host_name{
+            username
+            avatar
+          }
+          isPrivate
+          password
+          description
         }
-    }
-     
+      }
     """;
   }
+  String getRoomCurrentUser(String currentUserID)=>"""
+    query{
+      roomManage(hostID:"$currentUserID"){
+          _id
+          hostID
+          roomName
+          isPrivate
+          game{
+            gameID
+            gameName
+          }
+          maxOfMember
+          member
+          description
+          createAt
+      }
+    }
+  """;
+
+ 
 
   String getRoomJoin(String userID) {
     return """
@@ -116,50 +120,19 @@ class GraphQLQuery {
     """;
   }
 
-  String getAllMessage(String idRoom) {
-    return """
-      query{
-        getAllMessage(id_room:"$idRoom"){
-          messages{
-            IDUser
-            text
-            datetime
-          }
-        }
-      }
-    """;
-  }
-
-  String findRoomByName(String roomName) {
-    return """
-      query{
-          findRoomByName(room_name:"$roomName"){
-            _id
-            member{
-              username
-              avatar
-            }
-            room_name
-            host_name{
-              username
-              avatar
-            }
-            isPrivate
-            password
-            description
-             }
-        }
-    """;
-  }
-
   String getListGame(int limit) {
     return """
-        query{
-      LG:getListGame(limit:$limit){
-        _id
-        game_name
-        logo
-        image
+      query{
+        getListGame(limit:$limit){
+          _id
+          name
+          logo{
+            imageUrl
+          }
+          images
+          video{
+            trailer
+          }
       }
     }
     """;
@@ -169,24 +142,74 @@ class GraphQLQuery {
     query{
       getGameByGenre(type:"$genre"){
           _id
-          game_name
+          name
           genres
           platforms
-          cover_image
+          images
+          logo{
+            imageUrl
+          }
+          coverImage{
+            imageUrl
+          }
+          video{
+            trailer
+          }
+          summary
         }
     }
   """;
-  String getAccountInfo(String accessToken, String codeToken) {
-    return """
-      query{
-      getAccount(auth:{
-        access_token:"$accessToken"
-        code_token:"$codeToken"
-      }){
-        account_name
-        id_account
+ String getCurrentUserInfo() =>"""
+  query{
+    lookAccount {
+    account {
+      name
+      describe
+      email {
+        email
+      }
+      phone {
+        phone
+      }
+      birth_month {
+        month
+      }
+      birth_year {
+        year
+      }
+      phone {
+        phone
       }
     }
-    """;
   }
+  }
+ """;
+ String getUserInfo(String id){
+   return """
+    query{
+      lookAccount (id:$id){
+        account {
+          name
+        }
+      }
+    }
+   """;
+ }
+ String getPrivateMessage(String userID) =>"""
+   query{
+      getPrivateChat(ID:"$userID"){
+        messages{
+          text
+          createAt
+        }
+      }
+   }
+ """;
+ String getSummaryByGameID(String gameID)=>"""
+    query{
+      getSummaryByGameID(gameID:"$gameID"){
+          summary
+        }
+    }
+ """;
 }

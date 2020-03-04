@@ -1,17 +1,44 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:gamming_community/resources/values/app_colors.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gamming_community/API/Query.dart';
+import 'package:gamming_community/API/config.dart';
+import 'package:gamming_community/class/Message.dart';
+import 'package:gamming_community/class/PrivateRoom.dart';
+import 'package:gamming_community/resources/values/app_constraint.dart';
+import 'package:gamming_community/view/messages/models/get_list_room.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:intl/intl.dart';
+
+String formatDate(DateTime dateTime) {
+  var formatter = DateFormat('dd MMM');
+  return formatter.format(dateTime);
+}
+
+String formatDateTime(DateTime dateTime) {
+  var formatter = DateFormat('hh:mm');
+  return formatter.format(dateTime);
+}
 
 class Messages extends StatefulWidget {
+  final String userID;
+  Messages({this.userID});
   @override
   _MessagesState createState() => _MessagesState();
 }
 
 class _MessagesState extends State<Messages>
-    with AutomaticKeepAliveClientMixin<Messages> {
+    with AutomaticKeepAliveClientMixin<Messages>, TickerProviderStateMixin {
+  GraphQLQuery query = GraphQLQuery();
+  Config config = Config();
   String roomName = "Sample here";
   bool isSubmited = false;
   final chatController = TextEditingController();
+  ScrollController _scrollController;
+  AnimationController animationController;
+  List<Message> item = [];
+  List<PrivateRoom> listPrivateRoom= [];
   List<String> sampleUser = [
     "https://api.adorable.io/avatars/90/abott@adorable.io.png",
     "https://api.adorable.io/avatars/90/magic.png",
@@ -28,190 +55,238 @@ class _MessagesState extends State<Messages>
     return sampleUser;
   }
 
+  void _scrollListener() {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      setState(() {});
+      print("to bottom");
+    }
+  }
+
+  @override
+  void initState() {
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    )..forward();
+    GetListRoom(userID: widget.userID);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      child: Column(
-        children: <Widget>[
-          Container(
-              width: MediaQuery.of(context).size.width,
-              height: 30,
-              decoration: BoxDecoration(color: Colors.white),
-              child: Stack(
-                alignment: Alignment.center,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        '$roomName',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ],
-                  ),
-                  Positioned(
-                      right: 5,
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Row(
+    final screenSize = MediaQuery.of(context).size;
+    super.build(context);
+    return GraphQLProvider(
+        client: config.client,
+        child: CacheProvider(
+          child: Scaffold(
+            floatingActionButton:
+                FloatingActionButton(
+                  heroTag: "addnewMessage",
+                  child: Icon(Icons.add), onPressed: () {}),
+            body: Container(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                        flex: 1,
+                        child: Container(
+                            child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            IconButton(
-                              color: Colors.black,
-                              icon: Icon(Icons.call),
-                              onPressed: () {
-                                callGroup(context, getImage());
-                              },
+                            Expanded(
+                              flex: 2,
+                              child: TextField(
+                                decoration: InputDecoration(
+                                  hintText: "Search",
+                                  suffixIcon: Padding(
+                                    padding: const EdgeInsetsDirectional.only(
+                                        end: 12.0),
+                                    child: Icon(Icons
+                                        .search), // myIcon is a 48px-wide widget.
+                                  ),
+                                ),
+                              ),
                             ),
-                            IconButton(
-                              icon: Icon(Icons.group),
-                              onPressed: () {},
-                              color: Colors.black,
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                "Active friends",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            //demo
+                            Expanded(
+                              flex: 4,
+                              child: FutureBuilder(
+                                future: getImage(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Container();
+                                  } else
+                                    {
+                                     
+                                      return ListView.separated(
+                                        separatorBuilder: (context, index) =>
+                                            SizedBox(
+                                              width: 20,
+                                            ),
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: snapshot.data.length,
+                                        itemBuilder: (context, index) {
+                                          return CachedNetworkImage(
+                                            fadeInCurve: Curves.easeIn,
+                                            fadeInDuration:
+                                                Duration(seconds: 2),
+                                            imageBuilder:
+                                                (context, imageProvider) =>
+                                                    Container(
+                                              height: 100,
+                                              width: 100,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10000),
+                                                  image: DecorationImage(
+                                                      image: imageProvider)),
+                                            ),
+                                            imageUrl: snapshot.data[index],
+                                            placeholder: (context, url) =>
+                                                SpinKitThreeBounce(
+                                                    color: Colors.white,
+                                                    size: 10),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Icon(Icons.error),
+                                          );
+                                        });
+                                    }
+                                },
+                              ),
+                            ),
+                          ],
+                        ))),
+                    Expanded(
+                        flex: 2,
+                        child: Container(
+                            child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                "Messages",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: Query(
+                                  options: QueryOptions(
+                                      documentNode: gql(query
+                                          .getPrivateMessage(widget.userID))),
+                                  builder: (QueryResult result,
+                                      {VoidCallback refetch,
+                                      FetchMore fetchMore}) {
+                                    if (result.hasException) {
+                                      return Align(
+                                        alignment: Alignment.center,
+                                        child: SvgPicture.asset(
+                                            "assets/icons/empty_icon.svg"),
+                                      );
+                                    }
+                                    if (result.loading) {
+                                      return Align(
+                                        alignment: Alignment.center,
+                                        child: SpinKitCubeGrid(
+                                            size: 20, color: Colors.white),
+                                      );
+                                    }
+                                    if (result.data.isNotEmpty == true) {
+                                      return Align(
+                                        alignment: Alignment.center,
+                                        child: SvgPicture.asset(
+                                            "assets/icons/empty_icon.svg"),
+                                      );
+                                    } else
+                                      {
+                                        //listPrivateRoom=  PrivateRoom.fromJson(result.data);
+                                        return ListView.builder(
+                                        controller: _scrollController,
+                                        itemBuilder: (context, index) {
+                                          var animation =
+                                              Tween(begin: 0.0, end: 1.0)
+                                                  .animate(CurvedAnimation(
+                                            parent: animationController,
+                                            curve: Interval(
+                                                (1 / listPrivateRoom.length) * index, 1.0,
+                                                curve: Curves.fastOutSlowIn),
+                                          ));
+                                          return FadeTransition(
+                                              opacity: animation,
+                                              child: ListTile(
+                                                leading: CircleAvatar(
+                                                    backgroundImage:
+                                                        NetworkImage(AppConstraint.sample_proifle_url
+                                                            )),
+                                                title: Text(
+                                                    "${listPrivateRoom[index].name}"),
+                                                onTap: () {
+                                                  /*Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                      builder: (ctx) =>
+                                                          ConversationPage(
+                                                              rooms[index]),
+                                                    ),
+                                                  );*/
+                                                },
+                                                subtitle: Row(
+                                                  children: <Widget>[
+                                                    Text(
+                                                      "${listPrivateRoom[index].featureMessage}",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .caption,
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              6.0),
+                                                      child: Icon(
+                                                          Icons
+                                                              .fiber_manual_record,
+                                                          size: 8),
+                                                    ),
+                                                    Text(
+                                                      "${formatDate(DateTime.now().toLocal())}",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .caption,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ));
+                                        },
+                                        itemExtent: 100.0,
+                                        itemCount: item.length,
+                                      );}
+                                  }),
                             )
                           ],
-                        ),
-                      ))
-                ],
-              )),
-          SizedBox(height: 10),
-          Flexible(
-              child: Container(
-            color: Colors.blue,
-          )),
-          SizedBox(height: 10),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.white70,
-            ),
-            child: Row(
-              children: <Widget>[
-                IconButton(
-                    icon: Icon(Icons.attach_file),
-                    onPressed: () {
-                      print('Attach');
-                    },
-                    color: Colors.black),
-                Flexible(
-                  fit: FlexFit.tight,
-                  child: TextField(
-                      onSubmitted: (value) {
-                        setState(() {
-                          isSubmited = true;
-                        });
-                      },
-                      controller: chatController,
-                      style: TextStyle(color: Colors.black),
-                      decoration: InputDecoration(
-                          border: InputBorder.none, hintText: 'Text here')),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
+                        )))
+                  ],
+                )),
+          ),
+        ));
   }
 
   @override
   bool get wantKeepAlive => true;
-}
-
-void callGroup(BuildContext context, Future getImage) {
-  var bottomSheetController = showModalBottomSheet(
-      context: context,
-      builder: (bottomSheetBuilder) => Container(
-          height: 300,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(color: AppColors.BACKGROUND_COLOR),
-          child: Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.search),
-                    onPressed: () {},
-                  ),
-                  Column(
-                    children: <Widget>[
-                      Text(
-                        'Invite to call',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      Text('Select user')
-                    ],
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.close),
-                    onPressed: () {},
-                  )
-                ],
-              ),
-              Expanded(
-                  flex: 1,
-                  child: FutureBuilder(
-                      future: getImage,
-                      initialData: [],
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (!snapshot.hasData) {
-                          return CircularProgressIndicator();
-                        } else
-                          return ListView.separated(
-                              separatorBuilder: (context, index) => Divider(
-                                    thickness: 1,
-                                  ),
-                              itemCount: snapshot.data.length,
-                              itemBuilder: (context, index) {
-                                return Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Row(
-                                      children: <Widget>[
-                                        ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(10000.0),
-                                            child: CachedNetworkImage(
-                                              height: 50,
-                                              width: 50,
-                                              imageUrl: snapshot.data[index],
-                                              fadeInDuration:
-                                                  Duration(seconds: 3),
-                                              placeholder: (context, url) =>
-                                                  CircularProgressIndicator(),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      Icon(Icons.error),
-                                            )),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          "Hummmmmmmmm",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Spacer(),
-                                        Stack(
-                                          alignment: Alignment.centerRight,
-                                          children: <Widget>[
-                                            Positioned(
-                                                child: SizedBox(
-                                              width: 60,
-                                              child: RaisedButton(
-                                                  onPressed: () {},
-                                                  child: Text("Add")),
-                                            ))
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              });
-                      }))
-            ],
-          )));
 }

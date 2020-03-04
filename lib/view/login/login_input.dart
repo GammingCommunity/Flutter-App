@@ -17,8 +17,9 @@ class _LoginInputState extends State<LoginInput> {
   TextEditingController password = TextEditingController();
   FocusNode _usernameFocus = FocusNode();
   FocusNode _passwordFocus = FocusNode();
+  FocusNode _loginButton = FocusNode();
   bool loginButton = false;
-  bool showPwd= true;
+  bool showPwd = true;
   final style = TextStyle(
     fontWeight: FontWeight.w200,
     color: Colors.white,
@@ -68,70 +69,75 @@ class _LoginInputState extends State<LoginInput> {
         }
       },
       child: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
-        
-                return Form(
-                    key: _formKey,
-                    child: Column(
-                      children: <Widget>[
-                        TextFormField(
-                          focusNode: _usernameFocus,
-                          textInputAction: TextInputAction.next,
-                          validator: (text) {
-                            return !Validators.isVaildUsername(username.text)
-                                ? 'Invalid Username'
-                                : null;
-                          },
-                          onFieldSubmitted: (String val) {
-                            FocusScope.of(context).requestFocus(_passwordFocus);
-                          },
-                          onChanged: (String val) {
-                            if (_formKey.currentState.validate()) {
-                              setState(() {
-                                loginButton = true;
-                              });
-                            }
-                          },
-                          controller: username,
-                          style: style,
-                          decoration: InputDecoration(
-                            icon: Icon(
-                              Icons.alternate_email,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            labelText: 'Your username or email',
-                            labelStyle: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        TextFormField(
-                            focusNode: _passwordFocus,
-                            textInputAction: TextInputAction.go,
-                            validator: (String text) {
-                              print(text);
-                              return !Validators.isValidPassword(text)
-                                  ? "Invaild password"
-                                  : null;
-                            },
-                            controller: password,
-                            obscureText: showPwd,
-                            style: style,
-                            
-                            decoration: InputDecoration(
-                              icon: Icon(
-                                Icons.lock,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              suffixIcon: IconButton(
-                                        icon: Icon(showPwd
-                                    ? Icons.visibility
-                                    : Icons.visibility_off),
-                                onPressed: () {
-                                  showPwd = !showPwd;
-                                }),
+        return Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                  focusNode: _usernameFocus,
+                  textInputAction: TextInputAction.next,
+                  validator: (text) {
+                    return !Validators.isVaildUsername(username.text)
+                        ? 'Invalid Username'
+                        : null;
+                  },
+                  onFieldSubmitted: (String val) {
+                    FocusScope.of(context).requestFocus(_passwordFocus);
+                  },
+                  onChanged: (String val) {
+                    if (_formKey.currentState.validate()) {
+                      setState(() {
+                        loginButton = true;
+                      });
+                    }
+                  },
+                  controller: username,
+                  style: style,
+                  decoration: InputDecoration(
+                    icon: Icon(
+                      Icons.alternate_email,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    labelText: 'Your username or email',
+                    labelStyle: TextStyle(color: Colors.white),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                TextFormField(
+                    focusNode: _passwordFocus,
+                    textInputAction: TextInputAction.go,
+                    validator: (String text) {
+                     // print(text);
+                      return !Validators.isValidPassword(text)
+                          ? "Invaild password"
+                          : null;
+                    },
+                    controller: password,
+                    obscureText: showPwd,
+                    onFieldSubmitted: (String val) {
+                      if (_formKey.currentState.validate()) {
+                        loginBloc.add(Submited(
+                            email: username.text, password: password.text));
+                      }
+                      FocusScope.of(context).requestFocus(_loginButton);
+                    },
+                    style: style,
+                    decoration: InputDecoration(
+                      icon: Icon(
+                        Icons.lock,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      suffixIcon: IconButton(
+                          icon: Icon(showPwd
+                              ? Icons.visibility
+                              : Icons.visibility_off),
+                          onPressed: () {
+                            showPwd = !showPwd;
+                          }),
                       labelText: 'Your password',
                       labelStyle: TextStyle(color: Colors.white),
                     )),
@@ -142,16 +148,17 @@ class _LoginInputState extends State<LoginInput> {
                   height: 50,
                   minWidth: MediaQuery.of(context).size.width,
                   buttonColor: Colors.indigo,
-                  child: OutlineButton(
+                  child: RaisedButton(
+                    focusNode: _loginButton,
                     onPressed: () {
-                      if (_formKey.currentState.validate()) {
+                     if (_formKey.currentState.validate()) {
                         loginBloc.add(Submited(
                             email: username.text, password: password.text));
                       }
 
                       //Navigator.of(context).pushNamed('/homepage');
                     },
-                    borderSide: BorderSide(color: Colors.white, width: 1),
+                    //borderSide: BorderSide(color: Colors.white, width: 1),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15)),
                     child: Stack(
@@ -263,4 +270,3 @@ Future myDialog(BuildContext context) {
       });
 }
 
-Function loginWithBloc(BuildContext context, String username, String pwd) {}

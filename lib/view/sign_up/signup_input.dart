@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gamming_community/utils/validators.dart';
-import 'package:gamming_community/view/login/bloc/bloc/login_bloc.dart';
 import 'package:gamming_community/view/sign_up/bloc/bloc/signup_bloc.dart';
-import 'package:gamming_community/view/sign_up/sign_up.dart';
 
 class SignUpInput extends StatefulWidget {
   @override
@@ -59,6 +57,7 @@ class _InputState extends State<SignUpInput> {
         if(state is SignUpFailed){
           print("Sign up faild;");
         }
+        return null;
       },
       child: BlocBuilder<SignUpBloc, SignUpState>(
         builder: (context, state) {

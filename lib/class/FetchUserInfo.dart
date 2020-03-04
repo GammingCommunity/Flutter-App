@@ -1,7 +1,0 @@
-
-class FetchUserInfo{
-  String userName;
-  
-  
-  
-}

@@ -9,7 +9,7 @@ class Category extends StatefulWidget {
 class _CategoryState extends State<Category> {
   List<String> _listGenre = [
     "Action",
-    "Massively Mutiplayer",
+    "Massive Mutiplayer",
     "Singleplayer",
     "Indie",
     "Horror",

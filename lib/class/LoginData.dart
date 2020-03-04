@@ -2,14 +2,17 @@ class LoginData{
   String token;
   String status;
   String userName;
-  LoginData({this.token,this.status,this.userName});
+  String userID;
+  LoginData({this.token,this.status,this.userName,this.userID});
   factory LoginData.fromJson(Map<String,dynamic> json){
     var value= json.values.first;
-   // print(value["account"]["name"]);
+    print(value["account"]["id"]);
     return LoginData(
       status: value["status"],
       token: value["token"],
-      userName:value["account"]["name"]
+      userID:value["account"]["id"].toString(),
+      userName:value["account"]["name"],
+      
       );
   }
 }
