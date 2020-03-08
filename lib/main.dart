@@ -118,7 +118,13 @@ class MyApp extends StatelessWidget {
                       builder: (context) => ForgotPassword());
                   break;
                 case "homepage":
-                  return MaterialPageRoute(builder: (context) => HomePage());
+                  return PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) => HomePage(),
+                    transitionsBuilder:(context, animation, secondaryAnimation, child) => SlideTransition(
+                      
+                      position: animation.drive(SlideTransitionAnimated.tween),child: child,),
+                    
+                    );
                   break;
                 case "profile":
                   return MaterialPageRoute(builder: (context) => Profile());

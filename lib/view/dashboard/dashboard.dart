@@ -6,6 +6,7 @@ import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/dashboard/carousel.dart';
 import 'package:gamming_community/view/dashboard/categories/categories.dart';
 import 'package:open_iconic_flutter/open_iconic_flutter.dart';
+import 'news/News.dart';
 
 class DashBoard extends StatefulWidget {
   @override
@@ -47,7 +48,7 @@ class _DashBoardState extends State<DashBoard>
                 )),
             SizedBox(height: 10),
             Container(
-                height: 150,
+                height: 200,
                 width: MediaQuery.of(context).size.width,
                 child: Carousel()),
             SizedBox(height: 10),
@@ -59,12 +60,25 @@ class _DashBoardState extends State<DashBoard>
                     Text("Category",
                         style: TextStyle(fontSize: AppConstraint.categoryText)),
                     Material(
+                      clipBehavior: Clip.antiAlias,
+                      color: Colors.transparent,
+                      type: MaterialType.circle,
                         child: IconButton(
-                            icon: Icon(Icons.expand_more), onPressed: null))
+                            icon: Icon(Icons.expand_more), onPressed: () {}))
                   ],
                 )),
             SizedBox(height: 10),
             Category(),
+            SizedBox(height: 10),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text("News",
+                    style: TextStyle(fontSize: AppConstraint.categoryText)),
+                Divider(),
+              ],
+            ),
+            News(),
           ],
         ),
       ),

@@ -26,21 +26,25 @@ class ListRoom {
   factory ListRoom.fromJson(Map<String, dynamic> json) {
     List<Room> _listRoom = [];
 
-    for (var item in json.values.first) {
-      //String time = item["createAt"];
-      //var v = DateTime.now().difference(DateTime.tryParse(time).toLocal());
-      //print(v.inMinutes);
-      _listRoom.add(Room(
-          id: item["_id"],
-          hostID: item["hostID"],
-          roomName: item["roomName"],
-          gameInfo: item["game"],
-          isPrivate: item["isPrivate"],
-          maxOfMember: item["maxOfMember"],
-          memberID: item["member"],
-          createAt: item["createAt"]));
-          
+    try {
+      for (var item in json.values.first) {
+        //String time = item["createAt"];
+        //var v = DateTime.now().difference(DateTime.tryParse(time).toLocal());
+        //print(v.inMinutes);
+        _listRoom.add(Room(
+            id: item["_id"],
+            hostID: item["hostID"],
+            roomName: item["roomName"],
+            gameInfo: item["game"],
+            isPrivate: item["isPrivate"],
+            maxOfMember: item["maxOfMember"],
+            memberID: item["member"],
+            createAt: item["createAt"]));
+       
+      }
+    } catch (e) {
+      return ListRoom(listRoom: []);
     }
-    return ListRoom(listRoom: _listRoom);
+     return ListRoom(listRoom: _listRoom);
   }
 }

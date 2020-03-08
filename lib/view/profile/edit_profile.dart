@@ -55,7 +55,13 @@ class _EditProfileState extends State<EditProfile> {
     });
     //print(result.data);
   }
-
+  @override
+  void dispose() { 
+    _nickname.dispose();
+    _birthday.dispose();
+    _phone.dispose();
+    super.dispose();
+  }
   Future<bool> _onWillPop() async {
     return (await showDialog(
           context: context,

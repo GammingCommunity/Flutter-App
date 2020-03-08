@@ -32,6 +32,12 @@ class _ProgressBUttonState extends State<ProgressButton>
   GraphQLMutation mutation = GraphQLMutation();
 
   @override
+  void initState() {
+    
+    super.initState();
+    _controller=AnimationController(vsync: this);
+  }
+  @override
   void dispose() {
     super.dispose();
     _controller.dispose();

@@ -70,7 +70,7 @@ class _HomeState extends State<HomePage> {
           BottomNavyBarItem(
               textAlign: TextAlign.center,
               icon: Icon(OpenIconicIcons.task),
-              title: Text("Room"),
+              title: Text("Explore"),
               inactiveColor: Colors.white),
           BottomNavyBarItem(
               textAlign: TextAlign.center,

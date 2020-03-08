@@ -36,11 +36,13 @@ class _CategoriesDetailState extends State<CategoriesDetail>
   bool displaytoAppbar = true;
   bool showControl = false;
   bool hideCreateButton = false;
+  // hide more text
+  bool descTextShowFlag = false;
   Config config = Config();
   GraphQLQuery query = GraphQLQuery();
   @override
   void initState() {
-    tabController = TabController(length: 2, vsync: this);
+    tabController = TabController(length: 3, vsync: this);
     _controller = VideoPlayerController.network(widget.gameDetail.trailerUrl);
     _chewieController = ChewieController(
       autoInitialize: true,
@@ -53,7 +55,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
       errorBuilder: (context, errorMessage) {
         return Container(color: Colors.blueGrey);
       },
-      autoPlay: true,
+      autoPlay: false,
       showControls: showControl,
       overlay: Stack(
         alignment: Alignment.topLeft,
@@ -209,42 +211,186 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                   delegate: SliverChildListDelegate([
                 Container(
                     width: screenSize.width,
-                    height: screenSize.height,
-                    child: TabBar(controller: tabController, tabs: [
-                      new Tab(
-                        icon: const Icon(Icons.home),
-                        text: 'Address',
-                      ),
-                      new Tab(
-                        icon: const Icon(Icons.my_location),
-                        text: 'Location',
-                      ),
-                    ])),
-                Container(
-                  height: 80.0,
-                  child: TabBarView(
-                    controller: tabController,
-                    children: <Widget>[
-                      new Card(
-                        child: new ListTile(
-                          leading: const Icon(Icons.home),
-                          title: new TextField(
-                            decoration: const InputDecoration(
-                                hintText: 'Search for address...'),
+                    child: TabBar(
+                        indicatorSize: TabBarIndicatorSize.label,
+                        controller: tabController,
+                        tabs: [
+                          Tab(
+                            text: 'Summary',
                           ),
-                        ),
+                          Tab(
+                            text: 'Room',
+                          ),
+                          Tab(
+                            text: 'Community',
+                          )
+                        ])),
+                GraphQLProvider(
+                  client: config.client,
+                  child: CacheProvider(
+                    child: Container(
+                      height: screenSize.height
+                      ,
+                      padding: EdgeInsets.all(10),
+                      child: TabBarView(
+                        controller: tabController,
+                        children: <Widget>[
+                          // Tab 1: Summary info
+                          Column(
+                            children: <Widget>[
+                              Visibility(
+                                maintainState: true,
+                                maintainSize: true,
+                                maintainAnimation: true,
+                                visible: displaytoAppbar,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      imageUrl: game.logo,
+                                      placeholder: (context, url) =>Placeholder(color: Colors.grey,),
+                                          
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        height: 100,
+                                        width: 100,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                            image: DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image: imageProvider)),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Icon(
+                                        Icons.error_outline,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.only(left: 20.0, top: 10),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            game.name,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20),
+                                          ),
+                                          //TODO: sample here, add soon
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 10.0),
+                                            child: Wrap(
+                                              spacing: 10,
+                                              children: <Widget>[
+                                                for (var item in [1, 2, 3])
+                                                  Chip(label: Text("No Tag"))
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Column(
+                                children: <Widget>[
+                                  Text(
+                                    game.summary,
+                                    textAlign: TextAlign.justify,
+                                    overflow: TextOverflow.fade,
+                                    maxLines: descTextShowFlag ? 8 : 20,
+                                  ),
+                                  Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: InkWell(
+                                        onTap: () {
+                                          print(descTextShowFlag);
+                                          setState(() {
+                                            descTextShowFlag =
+                                                !descTextShowFlag;
+                                          });
+                                        },
+                                        child: descTextShowFlag
+                                            ? Text("Show more")
+                                            : Text("Show less"),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              // this for screenshot slider
+                              CarouselSlider.builder(
+                                itemCount: game.images.length,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    width: screenSize.width,
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
+                                    child: CachedNetworkImage(
+                                      imageUrl: game.images[index],
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                                },
+                                height: 200,
+                                realPage: game.images.length,
+                              )
+                            ],
+                          ),
+                          // tab 2 : list room base on GameID
+                          FutureBuilder(
+                            future: Future.delayed(Duration(seconds: 2)),
+                            builder: (context, snapshot) => Query(
+                              options: QueryOptions(
+                                  variables: {"page": 1, "limit": 5},
+                                  documentNode: gql(query.getAllRoom())),
+                              builder: (result, {fetchMore, refetch}) {
+                                if (result.loading) {
+                                  return SpinKitFadingCircle(
+                                      color: Colors.white, size: 20);
+                                } else {
+                                  print(result.data);
+                                  return ListView.builder(
+                                    itemCount: result.data['getAllRoom'].length,
+                                    itemBuilder: (context, index) {
+                                      return Container(
+                                        height: 40,
+                                      );
+                                    },
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.topCenter,
+                            child: RaisedButton(
+                              onPressed: () {},
+                              child: Text("Join our community"),
+                            ),
+                          )
+                        ],
                       ),
-                      new Card(
-                        child: new ListTile(
-                          leading: const Icon(Icons.location_on),
-                          title: new Text(
-                              'Latitude: 48.09342\nLongitude: 11.23403'),
-                          trailing: new IconButton(
-                              icon: const Icon(Icons.my_location),
-                              onPressed: () {}),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ]))

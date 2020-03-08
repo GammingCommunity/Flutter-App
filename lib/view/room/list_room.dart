@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config.dart';
 import 'package:gamming_community/class/Room.dart';
@@ -124,7 +125,14 @@ class _RoomState extends State<RoomList>
                           size: 20,
                         ),
                       );
-                    } else {
+                    }if(result.hasException){
+                      return Align(
+                        alignment: Alignment.topCenter,
+                        child: SvgPicture.asset('assets/icons/empty_logo/svg')
+                      );
+                    }
+                    
+                     else {
                       ListRoom v = ListRoom.fromJson(result.data);
                       room = v.listRoom;
                       return Consumer<FetchMoreValue>(
@@ -173,11 +181,10 @@ class _RoomState extends State<RoomList>
                                             SizedBox(height: 10)
                                           ],
                                         ),
-                                    itemCount: value.getMoreValue.length,
+                                    itemCount: room.length,
                                     itemBuilder: (context, index) {
                                       var v = DateTime.now().difference(
-                                          DateTime.tryParse(value
-                                                  .getMoreValue[index].createAt)
+                                          DateTime.tryParse(room[index].createAt)
                                               .toLocal());
 
                                       return Material(
@@ -256,7 +263,7 @@ class _RoomState extends State<RoomList>
                                                               children: <
                                                                   Widget>[
                                                                 Text(
-                                                                  value.getMoreValue[index]
+                                                                  room[index]
                                                                           .roomName ??
                                                                       "Room name",
                                                                   style: TextStyle(
@@ -272,7 +279,7 @@ class _RoomState extends State<RoomList>
                                                                         "${v.inMinutes} minuties ago")),
                                                                 Row(
                                                                   children: <Widget>[
-                                                                    for (var item in value.getMoreValue[index].memberID) 
+                                                                    for (var item in room[index].memberID) 
                                                                     Container(
                                                                       height: 40,
                                                                       width: 40,
@@ -300,9 +307,9 @@ class _RoomState extends State<RoomList>
                                                                 InkWell(
                                                                     onTap:
                                                                         () {},
-                                                                    child: Text(value.getMoreValue[index].gameInfo !=
+                                                                    child: Text(room[index].gameInfo !=
                                                                             null
-                                                                        ? "${value.getMoreValue[index].gameInfo["gameName"]}"
+                                                                        ? "${room[index].gameInfo["gameName"]}"
                                                                         : "null")),
                                                               ],
                                                             )
@@ -325,7 +332,7 @@ class _RoomState extends State<RoomList>
                                                                         .circular(
                                                                             15)),
                                                             child: Text(
-                                                                "${value.getMoreValue[index].memberID.length}/ ${value.getMoreValue[index].maxOfMember}")),
+                                                                "${room[index].memberID.length}/ ${room[index].maxOfMember}")),
                                                       )
                                                     ],
                                                   ),

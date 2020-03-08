@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:gamming_community/API/Mutation.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config1.dart';
+import 'package:gamming_community/class/LoginData.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,38 +25,34 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   ) async* {
     if (event is Submited) {
       yield LoginLoading();
-      //TODO: wait fix
-      /*String email = event.email;
+      
+      String email = event.email;
       String password = event.password;
-      GraphQLClient client = config.clientToQuery();*/
-      //var result = await client.mutate(MutationOptions(documentNode: gql(query.login(email.trim(), password.trim()))));
+      GraphQLClient client = config.clientToQuery();
+      var result = await client.mutate(MutationOptions(documentNode: gql(query.login(email.trim(), password.trim()))));
       try {
         //print(result.data.values.first["status"]);
-        //LoginData loginData = LoginData.fromJson(result.data);
+        LoginData loginData = LoginData.fromJson(result.data);
         {
           SharedPreferences refs = await SharedPreferences.getInstance();
 
           yield LoginSuccess();
-          refs.setStringList("userToken", [
+          /*refs.setStringList("userToken", [
             "Baka",
             "39",
             "f6fc42184e6383194abbca3e771cc22622727968c274ba6b586b7993d1beaa0c"
-          ]);
+          ]);*/
         }
-        /*if (loginData.status == "SUCCESS") {
+        if (loginData.status == "SUCCESS") {
           yield LoginSuccess();
 
           SharedPreferences refs = await SharedPreferences.getInstance();
-          //refs.setStringList("userToken", [loginData.userName,loginData.userID,loginData.token]);
-          refs.setStringList("userToken", [
-            "Baka",
-            "39",
-            "f6fc42184e6383194abbca3e771cc22622727968c274ba6b586b7993d1beaa0c"
-          ]);
+          refs.setStringList("userToken", [loginData.userName,loginData.userID,loginData.token]);
+          
           print(loginData.userID);
         } else {
           yield LoginFailed();
-        }*/
+        }
       } catch (e) {
         yield LoginFailed();
       }
