@@ -212,4 +212,15 @@ class GraphQLQuery {
         }
     }
  """;
+ String getNews()=>"""
+  query(\$page:Int!,\$limit:Int!){
+    fetchNews(page:\$page,limit:\$limit){
+    article_url
+    article_short
+    article_image
+    release_date
+  }
+  }
+ 
+ """;
 }

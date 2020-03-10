@@ -34,7 +34,7 @@ dependencies:
   graphql_flutter: ^3.0.1-beta.1
   carousel_slider: ^1.4.1
   flutter_spinkit: "^4.1.1"
-  equatable: ^1.0.3
+  equatable: ^1.1.0
   flutter_bloc: ^3.2.0
   shared_preferences: ^0.5.6+1
   pull_to_refresh: ^1.5.7
@@ -43,10 +43,9 @@ dependencies:
   states_rebuilder: ^1.14.0
   intl: ^0.16.1
   incrementally_loading_listview: ^0.3.0
-  flutter_blurhash: ^0.1.2
   video_player: ^0.10.8+1
   chewie: ^0.9.8+1
-
+  shimmer: ^1.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -68,6 +67,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+      - assets/icons/article_logo/
       - assets/icons/logo/
       - assets/icons/platforms/
       - assets/images/
