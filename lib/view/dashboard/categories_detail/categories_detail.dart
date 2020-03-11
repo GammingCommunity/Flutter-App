@@ -38,6 +38,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
   bool hideCreateButton = false;
   // hide more text
   bool descTextShowFlag = false;
+  bool hidePlayButton = false;
   Config config = Config();
   GraphQLQuery query = GraphQLQuery();
   @override
@@ -58,19 +59,39 @@ class _CategoriesDetailState extends State<CategoriesDetail>
       autoPlay: false,
       showControls: showControl,
       overlay: Stack(
-        alignment: Alignment.topLeft,
         children: <Widget>[
-          Material(
-            color: Colors.transparent,
-            clipBehavior: Clip.antiAlias,
-            type: MaterialType.circle,
-            child: IconButton(
-              color: Colors.white,
-              icon: Icon(Icons.chevron_left),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+          Align(
+            alignment: Alignment.topLeft,
+            child: Material(
+              color: Colors.transparent,
+              clipBehavior: Clip.antiAlias,
+              type: MaterialType.circle,
+              child: IconButton(
+                color: Colors.white,
+                icon: Icon(Icons.chevron_left),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
             ),
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: Visibility(
+              visible: hidePlayButton,
+              child: IconButton(
+                  icon: Icon(Icons.play_circle_filled),
+                  onPressed: () {
+                    setState(() {
+                      _chewieController.play();
+                      hidePlayButton=!hidePlayButton;
+                    });
+                  }),
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: IconButton(icon: Icon(Icons.volume_up), onPressed: () {}),
           )
         ],
       ),
@@ -229,8 +250,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                   client: config.client,
                   child: CacheProvider(
                     child: Container(
-                      height: screenSize.height
-                      ,
+                      height: screenSize.height,
                       padding: EdgeInsets.all(10),
                       child: TabBarView(
                         controller: tabController,
@@ -249,8 +269,13 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                                     CachedNetworkImage(
                                       fit: BoxFit.cover,
                                       imageUrl: game.logo,
-                                      placeholder: (context, url) =>Placeholder(color: Colors.grey,),
-                                          
+                                      placeholder: (context, url) => Container(
+                                          height: 100,
+                                          width: 100,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              color: Colors.grey)),
                                       imageBuilder: (context, imageProvider) =>
                                           Container(
                                         height: 100,
@@ -308,7 +333,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                                     game.summary,
                                     textAlign: TextAlign.justify,
                                     overflow: TextOverflow.fade,
-                                    maxLines: descTextShowFlag ? 8 : 20,
+                                    maxLines: descTextShowFlag ? 20 : 8,
                                   ),
                                   Align(
                                     alignment: Alignment.bottomRight,
@@ -316,15 +341,14 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                                       padding: const EdgeInsets.all(10.0),
                                       child: InkWell(
                                         onTap: () {
-                                          print(descTextShowFlag);
                                           setState(() {
                                             descTextShowFlag =
                                                 !descTextShowFlag;
                                           });
                                         },
                                         child: descTextShowFlag
-                                            ? Text("Show more")
-                                            : Text("Show less"),
+                                            ? Text("Show less")
+                                            : Text("Show more"),
                                       ),
                                     ),
                                   )
@@ -344,9 +368,23 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                                     width: screenSize.width,
                                     decoration: BoxDecoration(
                                         borderRadius:
-                                            BorderRadius.circular(15)),
+                                            BorderRadius.circular(10)),
                                     child: CachedNetworkImage(
+                                      width: screenSize.width,
                                       imageUrl: game.images[index],
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 15),
+                                        decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image: imageProvider)),
+                                      ),
+                                      placeholder: (context, url) => Container(
+                                        width: screenSize.width,
+                                        color: Colors.grey,
+                                      ),
                                       fit: BoxFit.cover,
                                     ),
                                   );

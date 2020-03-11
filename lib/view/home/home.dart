@@ -20,14 +20,15 @@ class _HomeState extends State<HomePage> {
   PageController _pageController;
   List<Widget> _listWidget;
   String userID;
-  Future getUserInfo() async{
-    SharedPreferences ref= await SharedPreferences.getInstance();
+  Future getUserInfo() async {
+    SharedPreferences ref = await SharedPreferences.getInstance();
     List<String> res = ref.getStringList("userToken");
     setState(() {
-      userID= res[2];
+      userID = res[2];
     });
     return res;
   }
+
   @override
   void initState() {
     getUserInfo();
@@ -36,7 +37,9 @@ class _HomeState extends State<HomePage> {
       DashBoard(),
       RoomList(),
       RoomManager(),
-      Messages(userID: userID,),
+      Messages(
+        userID: userID,
+      ),
       Profile()
     ];
     print(userID);
@@ -77,18 +80,16 @@ class _HomeState extends State<HomePage> {
               icon: Icon(OpenIconicIcons.spreadsheet),
               title: Text("Manager"),
               inactiveColor: Colors.white),
-     
           BottomNavyBarItem(
-                    textAlign: TextAlign.center,
-                    icon: Icon(OpenIconicIcons.chat),
-                    title: Text("Message"),
-                    inactiveColor: Colors.white),      
+              textAlign: TextAlign.center,
+              icon: Icon(OpenIconicIcons.chat),
+              title: Text("Message"),
+              inactiveColor: Colors.white),
           BottomNavyBarItem(
               textAlign: TextAlign.center,
               icon: Icon(Icons.supervised_user_circle),
               title: Text("Profile"),
               inactiveColor: Colors.white),
-          
         ],
       ),
       body: Scaffold(
