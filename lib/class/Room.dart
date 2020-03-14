@@ -31,11 +31,12 @@ class ListRoom {
         //String time = item["createAt"];
         //var v = DateTime.now().difference(DateTime.tryParse(time).toLocal());
         //print(v.inMinutes);
+        //??= set default if first val is null
         _listRoom.add(Room(
             id: item["_id"],
             hostID: item["hostID"],
             roomName: item["roomName"],
-            gameInfo: item["game"],
+            gameInfo: item["game"]  ??= item["game"],
             isPrivate: item["isPrivate"],
             maxOfMember: item["maxOfMember"],
             memberID: item["member"],

@@ -28,6 +28,8 @@ class _LoginInputState extends State<LoginInput> {
   @override
   void initState() {
     loginBloc = BlocProvider.of<LoginBloc>(context);
+    username.text="jojo195";
+    password.text="hoanglee1998";
     super.initState();
   }
 
@@ -53,6 +55,7 @@ class _LoginInputState extends State<LoginInput> {
           myDialog(listenerContext);
         }
         if (state is LoginSuccess) {
+          //Navigator.pop(context);
           Navigator.of(context).pushNamedAndRemoveUntil(
               "/homepage", (Route<dynamic> route) => false);
         }
@@ -255,6 +258,7 @@ class _LoginInputState extends State<LoginInput> {
 
 Future myDialog(BuildContext context) {
   return showDialog(
+    useRootNavigator: true,
       context: context,
       builder: (context) {
         return SimpleDialog(

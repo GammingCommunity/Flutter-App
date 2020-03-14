@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config.dart';
@@ -25,7 +26,7 @@ class _NewsState extends State<News> {
         child: Query(
           options: QueryOptions(
               variables: {"page": 1, "limit": 5},
-              documentNode: gql(query.getNews())),
+              documentNode: gql(query.getNews("pcgamer"))),
           builder: (result, {fetchMore, refetch}) {
             if (result.loading) {
               return Shimmer.fromColors(
@@ -43,55 +44,68 @@ class _NewsState extends State<News> {
             } else {
               var listNews =
                   ListNews.fromJson(result.data['fetchNews']).listNews;
-              return Container(
-                height: 200,
-                width: screenSize.width,
-                child: Column(
-                  children: <Widget>[
-                    CachedNetworkImage(
-                        height: 200,
+              return Align(
+                alignment: Alignment.topCenter,
+                child: CarouselSlider.builder(
+                    viewportFraction: 1.2,
+                    height: 300,
+                    itemCount: listNews.length,
+                    itemBuilder: (context, i) {
+                      return Container(
+                        padding: EdgeInsets.all(10),
                         width: screenSize.width,
-                        fit: BoxFit.cover,
-                        imageUrl: listNews[1].imageUrl),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                               Image.asset(
-                                  'assets/icons/article_logo/pc_gamer.png',
-                                  height: 50,
-                                  width: 50,
-                                ),
-                                SizedBox(width:10),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  Container(
-                                      width: screenSize.width - 100,
-                                      child: Row(
+                        child: Column(
+                          children: <Widget>[
+                            CachedNetworkImage(
+                                height: 200,
+                                width: screenSize.width,
+                                fit: BoxFit.cover,
+                                imageUrl: listNews[i].imageUrl),
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      Image.asset(
+                                        'assets/icons/article_logo/pc_gamer.png',
+                                        height: 50,
+                                        width: 50,
+                                      ),
+                                      SizedBox(width: 10),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
                                         children: <Widget>[
-                                          Flexible(
-                                              child: Text(
-                                            listNews[1].shortText,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ))
+                                          Container(
+                                              width: screenSize.width - 80,
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Flexible(
+                                                      child: Text(
+                                                    listNews[i].shortText,
+                                                    
+                                                    style: TextStyle(
+                                                      
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ))
+                                                ],
+                                              )),
+                                          Text("${listNews[1].time} days ago")
                                         ],
-                                      )),
-                                  Align(
-                                      alignment: Alignment.bottomRight,
-                                      child:
-                                          Text("${listNews[1].time} days ago"))
-                                ],
-                              )
-                            ],
-                          )),
-                    )
-                  ],
-                ),
+                                      )
+                                    ],
+                                  )),
+                            )
+                          ],
+                        ),
+                      );
+                    }),
               );
             }
           },

@@ -48,8 +48,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
           SharedPreferences refs = await SharedPreferences.getInstance();
           refs.setStringList("userToken", [loginData.userName,loginData.userID,loginData.token]);
-          
-          print(loginData.userID);
+          refs.setString("userID", loginData.userID);
+          refs.setString("userProfile",loginData.userProfile);
+          refs.setString("userName", loginData.userName);
+          refs.setBool("isLogin", true);
+          print("loginBloc "+loginData.userID + refs.getBool("isLogin ").toString() + loginData.userProfile + loginData.userName );
         } else {
           yield LoginFailed();
         }

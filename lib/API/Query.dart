@@ -8,6 +8,7 @@ class GraphQLQuery {
                 account{
                   id
                   name
+                  avatar_url
                 }
               }
         }
@@ -54,7 +55,7 @@ class GraphQLQuery {
       """;
   }
 
-  String getRoomByID(String id) {
+  /*String getRoomByID(String id) {
     return """
      query{
         getRoomByID(idRoom:"$id") {
@@ -74,7 +75,7 @@ class GraphQLQuery {
         }
       }
     """;
-  }
+  }*/
   String getRoomCurrentUser(String currentUserID)=>"""
     query{
       roomManage(hostID:"$currentUserID"){
@@ -212,15 +213,40 @@ class GraphQLQuery {
         }
     }
  """;
- String getNews()=>"""
+ /// pcgamer, 
+ String getNews(String articleHost)=>"""
   query(\$page:Int!,\$limit:Int!){
-    fetchNews(page:\$page,limit:\$limit){
-    article_url
+    fetchNews(name:"$articleHost",page:\$page,limit:\$limit){
+     article_url
     article_short
     article_image
     release_date
   }
   }
  
+ """;
+ ///sort: ASC, DESC
+ String countRoomOnEachGame(String sort) =>"""
+  query{
+    countRoomOnEachGame(sort:$sort){
+      _id
+      name
+      background
+      count
+    }
+  }
+ """;
+ String getListRoomByID(String id) =>"""
+  query{
+    getRoomByGame(gameID:"$id"){
+      _id
+      member
+      roomName
+      hostID
+      isPrivate
+      maxOfMember
+      createAt 
+  }
+  }
  """;
 }

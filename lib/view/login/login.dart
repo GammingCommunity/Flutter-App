@@ -10,7 +10,14 @@ class Login extends StatefulWidget {
   _LoginState createState() => _LoginState();
 }
 
-class _LoginState extends State<Login> {
+class _LoginState extends State<Login> with TickerProviderStateMixin{
+  AnimationController _animationController;
+  @override
+  void initState() {
+    super.initState();
+    _animationController= AnimationController(duration: Duration(seconds: 2),vsync: this);
+
+  }
   @override
   Widget build(BuildContext context) {
     return BlocProvider<LoginBloc>(

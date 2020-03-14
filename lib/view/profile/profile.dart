@@ -9,6 +9,8 @@ import 'package:open_iconic_flutter/open_iconic_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Profile extends StatefulWidget {
+  final String userID, userProfile, userName;
+  Profile({this.userID, this.userProfile, this.userName});
   @override
   _ProfileState createState() => _ProfileState();
 }
@@ -27,6 +29,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
     SharedPreferences refs = await SharedPreferences.getInstance();
     List<String> res = refs.getStringList("userToken");
     //print(res[0]);
+    print('profile ${widget.userProfile}');
     return res;
   }
 
@@ -59,6 +62,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
+                    //Edit button
                     Expanded(
                         flex: 2,
                         child: Stack(
@@ -81,12 +85,15 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                             onPressed: () {
                                               Navigator.of(context).push(
                                                   PageRouteBuilder(
-                                                      pageBuilder:
-                                                          (context, a1, a2) =>
-                                                              EditProfile(
-                                                                token: snapshot
-                                                                    .data[2],
-                                                              ),
+                                                      pageBuilder: (context, a1,
+                                                              a2) =>
+                                                          EditProfile(
+                                                              token: snapshot
+                                                                  .data[2],
+                                                              userID:
+                                                                  widget.userID,
+                                                              currentProfile: widget
+                                                                  .userProfile),
                                                       transitionsBuilder:
                                                           (context, anim, a2,
                                                               child) {
@@ -114,6 +121,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                     ],
                                   ),
                                 )),
+                            // profile image
                             Positioned(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -132,10 +140,15 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                           borderRadius:
                                               BorderRadius.circular(1000),
                                           image: DecorationImage(
+                                              fit: BoxFit.cover,
                                               image: imageProvider)),
                                     ),
-                                    imageUrl: AppConstraint.sample_proifle_url,
+                                    imageUrl: widget.userProfile == null
+                                        ? AppConstraint.sample_proifle_url
+                                        : widget.userProfile,
                                     placeholder: (context, url) => Container(
+                                      height: 100,
+                                      width: 100,
                                       decoration: BoxDecoration(
                                           color: Colors.grey,
                                           borderRadius:
@@ -148,9 +161,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                     height: 10,
                                   ),
                                   Text(
-                                    snapshot.data != null
-                                        ? snapshot.data[0]
-                                        : username,
+                                    widget.userName ?? username,
                                     style: usernameStyle,
                                   ),
                                   SizedBox(
@@ -193,6 +204,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                             ),
                           ],
                         )),
+                    // Setting blablabla....
                     Expanded(
                       flex: 3,
                       child: Material(

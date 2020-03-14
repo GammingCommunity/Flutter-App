@@ -1,18 +1,22 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Auth.dart';
 import 'package:gamming_community/API/Mutation.dart';
+import 'package:gamming_community/utils/uploadFile.dart';
 
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 class ProgressButton extends StatefulWidget {
-  //TODO: error on update 
-
+  //TODO: error on update
+  final File imagePath;
   final String token;
-  final String nickname, email, phone, describe, birthday;
+  final String nickname, email, phone, describe, birthday,userID;
   ProgressButton(
-      {this.token,
+      {this.imagePath,
+      this.token,
+      this.userID,
       this.nickname,
       this.email,
       this.phone,
@@ -33,10 +37,10 @@ class _ProgressBUttonState extends State<ProgressButton>
 
   @override
   void initState() {
-    
     super.initState();
-    _controller=AnimationController(vsync: this);
+    _controller = AnimationController(vsync: this);
   }
+
   @override
   void dispose() {
     super.dispose();
@@ -53,27 +57,28 @@ class _ProgressBUttonState extends State<ProgressButton>
         ),
       );
     } else if (_state == 1) {
-      return FutureBuilder(
-        future: Future(() async {
-          GraphQLClient client = authAPI(widget.token);
-         return await client.mutate(MutationOptions(
+      return FutureBuilder(future: Future(() async {
+        print("Hree ${widget.imagePath.path}");
+        GraphQLClient client = authAPI(widget.token);
+        var avatarUrl = await uploadFile(widget.userID,widget.imagePath);
+        return await client.mutate(MutationOptions(
             documentNode: gql(mutation.editAccount(
-                widget.nickname, widget.describe, widget.email, "", ""))));
-        }),
-        builder: (context,snapshot){
+                widget.nickname, widget.describe, widget.email, "", "",avatarUrl))));
+      }), builder: (context, snapshot){
+        if (snapshot.connectionState == ConnectionState.waiting)
+          return SizedBox(
+            height: 20,
+            width: 20,
+            child: CircularProgressIndicator(
+              value: null,
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            ),
+          );
+        else {
+          print(snapshot.data);
           
-          if(snapshot.connectionState == ConnectionState.waiting) return SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    value: null,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                );
-          else {
-            print(snapshot.data);
-            return Icon(Icons.check, color: Colors.white);
-          }
+          return Icon(Icons.check, color: Colors.white);
+        }
       });
     } else {
       return Icon(Icons.check, color: Colors.white);
@@ -112,7 +117,7 @@ class _ProgressBUttonState extends State<ProgressButton>
     return PhysicalModel(
       color: Colors.transparent,
       child: Container(
-        margin: EdgeInsets.only(right:10),
+        margin: EdgeInsets.only(right: 10),
         height: 28,
         key: _globalKey,
         child: RaisedButton(

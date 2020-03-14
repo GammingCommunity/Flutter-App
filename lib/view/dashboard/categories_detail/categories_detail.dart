@@ -1,15 +1,13 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config.dart';
 import 'package:gamming_community/class/Game.dart';
-import 'package:gamming_community/view/dashboard/categories_detail/add_room.dart';
+import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/room/create_room.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:video_player/video_player.dart';
@@ -80,7 +78,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
             child: Visibility(
               visible: hidePlayButton,
               child: IconButton(
-                  icon: Icon(Icons.play_circle_filled),
+                  icon: Icon(Icons.play_circle_filled,color: Colors.white,),
                   onPressed: () {
                     setState(() {
                       _chewieController.play();
@@ -91,16 +89,14 @@ class _CategoriesDetailState extends State<CategoriesDetail>
           ),
           Align(
             alignment: Alignment.bottomRight,
-            child: IconButton(icon: Icon(Icons.volume_up), onPressed: () {}),
+            child: IconButton(icon: Icon(Icons.volume_up), onPressed: () {
+              _chewieController.setVolume(0);
+
+            }),
           )
         ],
       ),
-      materialProgressColors: ChewieProgressColors(
-        playedColor: Colors.white,
-        handleColor: Colors.indigo,
-        backgroundColor: Colors.grey,
-        bufferedColor: Colors.blueGrey,
-      ),
+      materialProgressColors: AppConstraint.chewieProgressColors
     );
     //print("${_scrollController.offset}");
     _scrollController = ScrollController()
@@ -133,9 +129,9 @@ class _CategoriesDetailState extends State<CategoriesDetail>
     super.dispose();
   }
 
-  bool get _isAppBarExpanded {
+  /*bool get _isAppBarExpanded {
     return _scrollController.hasClients && _scrollController.offset < (190);
-  }
+  }*/
 
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -327,6 +323,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                               SizedBox(
                                 height: 10,
                               ),
+                              // game summary 
                               Column(
                                 children: <Widget>[
                                   Text(
@@ -419,6 +416,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                               },
                             ),
                           ),
+                          // Tab 3 : Commnutiy discussion
                           Container(
                             alignment: Alignment.topCenter,
                             child: RaisedButton(

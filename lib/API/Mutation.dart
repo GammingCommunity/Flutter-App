@@ -103,7 +103,7 @@ class GraphQLMutation {
       }
     """;
   }
-  String editAccount(String name,String des,String phone,String month,String year) => """
+  String editAccount(String name,String des,String phone,String month,String year,String avatarUrl) => """
     mutation{
       editAccount(account:{
         name:"$name"
@@ -111,6 +111,7 @@ class GraphQLMutation {
         phone:{phone:"$phone"}
         birth_month:{ month:"$month"}
         birth_year:{year:"$year"}
+        avatar_url:"$avatarUrl"
       }){
         status
         describe

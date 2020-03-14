@@ -5,15 +5,22 @@ class User{
   String email;
   String phoneNumber;
   User({this.birthday,this.describe,this.email,this.nickname,this.phoneNumber});
-  factory User.fromJson(Map<String,dynamic> json){
-      var result = json.values.first;
-      //print(result["account"]["name"]);
-      return User(
-        email: result["account"]["email"] == null ? "" :result["account"]["email"].values,
-        birthday: "",
-        nickname: result["account"]["name"],
-        phoneNumber: result["account"]["phone"] == null ? "": result["account"]["phone"].values,
-        describe: result["account"]["describe"]);
+  factory User.fromJson(json){
+    //print(json['name']);
+    var user = User();
+      try {
+        user =  User(
+            email: json['email'] ??= '',
+            birthday: '',
+            nickname: json['name'] ??= '',
+            phoneNumber: json['phone']['phone'] ??= '',
+            describe: json['describe']);
+        
+      } catch (e) {
+        print(e);
+        return User(birthday: "",describe: "",email: "",nickname: "",phoneNumber: "");
+      }
+      return user;
 
   }
 }

@@ -3,47 +3,55 @@ import 'package:flutter/material.dart';
 import 'package:gamming_community/view/dashboard/dashboard.dart';
 import 'package:gamming_community/view/messages/messages.dart';
 import 'package:gamming_community/view/profile/profile.dart';
-import 'package:gamming_community/view/room/list_room.dart';
+import 'package:gamming_community/view/room/summary_room.dart';
 import 'package:gamming_community/view/room_manager/room_manager.dart';
 import 'package:open_iconic_flutter/open_iconic_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
-
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<HomePage> {
   int _currentIndex = 0;
-  PageController _pageController;
-  List<Widget> _listWidget;
   String userID;
-  Future getUserInfo() async {
-    SharedPreferences ref = await SharedPreferences.getInstance();
-    List<String> res = ref.getStringList("userToken");
-    setState(() {
-      userID = res[2];
-    });
-    return res;
-  }
+  String userProfile,userName;
+  PageController _pageController;
+  List<Widget> _listWidget = [];
 
   @override
   void initState() {
-    getUserInfo();
-    _pageController = PageController();
-    _listWidget = [
-      DashBoard(),
-      RoomList(),
-      RoomManager(),
-      Messages(
-        userID: userID,
-      ),
-      Profile()
-    ];
-    print(userID);
+    //print(userID);
+
     super.initState();
+    getUserInfo().then((value) => {
+          _listWidget = [
+            DashBoard(),
+            SummaryRoom(),
+            RoomManager(),
+            Messages(
+              userID: userID,
+            ),
+            Profile(userID: userID,userName:userName ,userProfile: userProfile)
+          ]
+        });
+
+    _pageController = PageController();
+  }
+
+  Future getUserInfo() async {
+    SharedPreferences ref = await SharedPreferences.getInstance();
+    List<String> res = ref.getStringList("userToken");
+
+    setState(() {
+      userID = ref.getString("userID");
+      userProfile = ref.getString("userProfile");
+      userName= ref.getString("userName");
+    });
+
+    //print("get profile home $userProfile");
+    return [userID, userProfile];
   }
 
   @override

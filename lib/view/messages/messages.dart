@@ -8,6 +8,7 @@ import 'package:gamming_community/class/Message.dart';
 import 'package:gamming_community/class/PrivateRoom.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/messages/models/get_list_room.dart';
+import 'package:gamming_community/view/messages/right_side_friends.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -38,7 +39,7 @@ class _MessagesState extends State<Messages>
   ScrollController _scrollController;
   AnimationController animationController;
   List<Message> item = [];
-  List<PrivateRoom> listPrivateRoom= [];
+  List<PrivateRoom> listPrivateRoom = [];
   List<String> sampleUser = [
     "https://api.adorable.io/avatars/90/abott@adorable.io.png",
     "https://api.adorable.io/avatars/90/magic.png",
@@ -84,10 +85,12 @@ class _MessagesState extends State<Messages>
         client: config.client,
         child: CacheProvider(
           child: Scaffold(
-            floatingActionButton:
-                FloatingActionButton(
-                  heroTag: "addnewMessage",
-                  child: Icon(Icons.add), onPressed: () {}),
+            endDrawer:  RightSideFriends(),
+            
+            floatingActionButton: FloatingActionButton(
+                heroTag: "addnewMessage",
+                child: Icon(Icons.add),
+                onPressed: () {}),
             body: Container(
                 padding: EdgeInsets.all(10),
                 child: Column(
@@ -95,23 +98,11 @@ class _MessagesState extends State<Messages>
                     Expanded(
                         flex: 1,
                         child: Container(
+                          
                             child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Expanded(
-                              flex: 2,
-                              child: TextField(
-                                decoration: InputDecoration(
-                                  hintText: "Search",
-                                  suffixIcon: Padding(
-                                    padding: const EdgeInsetsDirectional.only(
-                                        end: 12.0),
-                                    child: Icon(Icons
-                                        .search), // myIcon is a 48px-wide widget.
-                                  ),
-                                ),
-                              ),
-                            ),
+                            // text header
                             Expanded(
                               flex: 1,
                               child: Text(
@@ -120,19 +111,17 @@ class _MessagesState extends State<Messages>
                                     fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                             ),
-                            //demo
+                            //demo , friends example
                             Expanded(
-                              flex: 4,
+                              flex: 2,
                               child: FutureBuilder(
                                 future: getImage(),
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
                                     return Container();
-                                  } else
-                                    {
-                                     
-                                      return ListView.separated(
+                                  } else {
+                                    return ListView.separated(
                                         separatorBuilder: (context, index) =>
                                             SizedBox(
                                               width: 20,
@@ -140,147 +129,187 @@ class _MessagesState extends State<Messages>
                                         scrollDirection: Axis.horizontal,
                                         itemCount: snapshot.data.length,
                                         itemBuilder: (context, index) {
-                                          return CachedNetworkImage(
-                                            fadeInCurve: Curves.easeIn,
-                                            fadeInDuration:
-                                                Duration(seconds: 2),
-                                            imageBuilder:
-                                                (context, imageProvider) =>
-                                                    Container(
-                                              height: 100,
-                                              width: 100,
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10000),
-                                                  image: DecorationImage(
-                                                      image: imageProvider)),
+                                          return ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10000),
+                                            child: CachedNetworkImage(
+                                              fadeInCurve: Curves.easeIn,
+                                              fadeInDuration:
+                                                  Duration(seconds: 2),
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
+                                                      Container(
+                                                height: 80,
+                                                width: 80,
+                                                decoration: BoxDecoration(
+                                                    color: Colors.red,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10000),
+                                                    image: DecorationImage(
+                                                        fit: BoxFit.cover,
+                                                        image: imageProvider)),
+                                              ),
+                                              imageUrl: snapshot.data[index],
+                                              placeholder: (context, url) =>
+                                                  Container(color: Colors.grey),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      Icon(Icons.error),
                                             ),
-                                            imageUrl: snapshot.data[index],
-                                            placeholder: (context, url) =>
-                                                SpinKitThreeBounce(
-                                                    color: Colors.white,
-                                                    size: 10),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    Icon(Icons.error),
                                           );
                                         });
-                                    }
+                                  }
                                 },
                               ),
                             ),
                           ],
                         ))),
+                    // list message
                     Expanded(
-                        flex: 2,
+                        flex: 6,
                         child: Container(
+                          alignment: Alignment.topLeft,
+                          
+                            margin: EdgeInsets.only(top: 10),
                             child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                "Messages",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 3,
-                              child: Query(
-                                  options: QueryOptions(
-                                      documentNode: gql(query
-                                          .getPrivateMessage(widget.userID))),
-                                  builder: (QueryResult result,
-                                      {VoidCallback refetch,
-                                      FetchMore fetchMore}) {
-                                    if (result.hasException) {
-                                      return Align(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 1,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Text(
+                                        "Messages",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      SizedBox(width: 10),
+                                      Container(
                                         alignment: Alignment.center,
-                                        child: SvgPicture.asset(
-                                            "assets/icons/empty_icon.svg"),
-                                      );
-                                    }
-                                    if (result.loading) {
-                                      return Align(
-                                        alignment: Alignment.center,
-                                        child: SpinKitCubeGrid(
-                                            size: 20, color: Colors.white),
-                                      );
-                                    }
-                                    if (result.data.isNotEmpty == true) {
-                                      return Align(
-                                        alignment: Alignment.center,
-                                        child: SvgPicture.asset(
-                                            "assets/icons/empty_icon.svg"),
-                                      );
-                                    } else
-                                      {
-                                        //listPrivateRoom=  PrivateRoom.fromJson(result.data);
-                                        return ListView.builder(
-                                        controller: _scrollController,
-                                        itemBuilder: (context, index) {
-                                          var animation =
-                                              Tween(begin: 0.0, end: 1.0)
-                                                  .animate(CurvedAnimation(
-                                            parent: animationController,
-                                            curve: Interval(
-                                                (1 / listPrivateRoom.length) * index, 1.0,
-                                                curve: Curves.fastOutSlowIn),
-                                          ));
-                                          return FadeTransition(
-                                              opacity: animation,
-                                              child: ListTile(
-                                                leading: CircleAvatar(
-                                                    backgroundImage:
-                                                        NetworkImage(AppConstraint.sample_proifle_url
-                                                            )),
-                                                title: Text(
-                                                    "${listPrivateRoom[index].name}"),
-                                                onTap: () {
-                                                  /*Navigator.of(context).push(
+                                        height: 20,
+                                        width: 20,
+                                        decoration: BoxDecoration(
+                                            color: Colors.indigo,
+                                            borderRadius:
+                                                BorderRadius.circular(15)),
+                                        child: Text(
+                                          "10",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 6,
+                                  child: Query(
+                                      options: QueryOptions(
+                                          documentNode: gql(
+                                              query.getPrivateMessage(
+                                                  widget.userID))),
+                                      builder: (QueryResult result,
+                                          {VoidCallback refetch,
+                                          FetchMore fetchMore}) {
+                                        if (result.hasException) {
+                                          return Align(
+                                            alignment: Alignment.center,
+                                            child: SvgPicture.asset(
+                                                "assets/icons/empty_icon.svg"),
+                                          );
+                                        }
+                                        if (result.loading) {
+                                          return Align(
+                                            alignment: Alignment.center,
+                                            child: SpinKitCubeGrid(
+                                                size: 20, color: Colors.white),
+                                          );
+                                        }
+                                        if (result.data.isNotEmpty == true) {
+                                          return Align(
+                                            alignment: Alignment.center,
+                                            child: SvgPicture.asset(
+                                                "assets/icons/empty_icon.svg"),
+                                          );
+                                        } else {
+                                          //listPrivateRoom=  PrivateRoom.fromJson(result.data);
+                                          return ListView.builder(
+                                            controller: _scrollController,
+                                            itemBuilder: (context, index) {
+                                              var animation =
+                                                  Tween(begin: 0.0, end: 1.0)
+                                                      .animate(CurvedAnimation(
+                                                parent: animationController,
+                                                curve: Interval(
+                                                    (1 /
+                                                            listPrivateRoom
+                                                                .length) *
+                                                        index,
+                                                    1.0,
+                                                    curve:
+                                                        Curves.fastOutSlowIn),
+                                              ));
+                                              return FadeTransition(
+                                                  opacity: animation,
+                                                  child: ListTile(
+                                                    leading: CircleAvatar(
+                                                        backgroundImage:
+                                                            NetworkImage(
+                                                                AppConstraint
+                                                                    .sample_proifle_url)),
+                                                    title: Text(
+                                                        "${listPrivateRoom[index].name}"),
+                                                    onTap: () {
+                                                      /*Navigator.of(context).push(
                                                     MaterialPageRoute(
                                                       builder: (ctx) =>
                                                           ConversationPage(
                                                               rooms[index]),
                                                     ),
                                                   );*/
-                                                },
-                                                subtitle: Row(
-                                                  children: <Widget>[
-                                                    Text(
-                                                      "${listPrivateRoom[index].featureMessage}",
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .caption,
+                                                    },
+                                                    subtitle: Row(
+                                                      children: <Widget>[
+                                                        Text(
+                                                          "${listPrivateRoom[index].featureMessage}",
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .caption,
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(6.0),
+                                                          child: Icon(
+                                                              Icons
+                                                                  .fiber_manual_record,
+                                                              size: 8),
+                                                        ),
+                                                        Text(
+                                                          "${formatDate(DateTime.now().toLocal())}",
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .caption,
+                                                        ),
+                                                      ],
                                                     ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              6.0),
-                                                      child: Icon(
-                                                          Icons
-                                                              .fiber_manual_record,
-                                                          size: 8),
-                                                    ),
-                                                    Text(
-                                                      "${formatDate(DateTime.now().toLocal())}",
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .caption,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ));
-                                        },
-                                        itemExtent: 100.0,
-                                        itemCount: item.length,
-                                      );}
-                                  }),
-                            )
-                          ],
-                        )))
+                                                  ));
+                                            },
+                                            itemExtent: 100.0,
+                                            itemCount: item.length,
+                                          );
+                                        }
+                                      }),
+                                )
+                              ],
+                            )))
                   ],
                 )),
           ),

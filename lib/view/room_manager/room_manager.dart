@@ -256,7 +256,7 @@ class _RoomManagerState extends State<RoomManager>
                                                                 children: <
                                                                     Widget>[
                                                                   for (var item
-                                                                      in sampleUser)
+                                                                      in r[index].memberID)
                                                                     ClipRRect(
                                                                       borderRadius:
                                                                           BorderRadius.circular(
