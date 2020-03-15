@@ -24,7 +24,7 @@ Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var status = prefs.getBool('isLogin') ?? false;
-  runApp(status == true ? MyApp() : HomePage());
+  runApp(status == true ? MyApp() : MaterialApp(home: HomePage(),));
   SystemChrome.setEnabledSystemUIOverlays([]);
 }
 

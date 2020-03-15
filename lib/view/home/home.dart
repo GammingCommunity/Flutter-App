@@ -62,6 +62,7 @@ class _HomeState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       bottomNavigationBar: BottomNavyBar(
         selectedIndex: _currentIndex,
@@ -102,7 +103,7 @@ class _HomeState extends State<HomePage> {
       ),
       body: Scaffold(
         body: Container(
-          height: MediaQuery.of(context).size.height,
+          height: screenSize.height,
           decoration: BoxDecoration(color: Color(0xff322E2E)),
           child: PageView(
             onPageChanged: (index) {
