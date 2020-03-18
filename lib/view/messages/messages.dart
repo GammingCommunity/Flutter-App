@@ -8,6 +8,7 @@ import 'package:gamming_community/class/Conservation.dart';
 import 'package:gamming_community/class/PrivateRoom.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/messages/models/get_list_room.dart';
+import 'package:gamming_community/view/messages/private_message_detail.dart';
 import 'package:gamming_community/view/messages/right_side_friends.dart';
 import 'package:gamming_community/view/messages/search_friends.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -260,75 +261,99 @@ class _MessagesState extends State<Messages>
                                               ));
                                               return FadeTransition(
                                                   opacity: animation,
-                                                  child: Row(
-                                                    mainAxisSize: MainAxisSize.max,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .center,
-                                                      children: <Widget>[
-                                                        CachedNetworkImage(
-                                                          height: 70,
-                                                          width: 70,
-                                                          placeholder: (context,
-                                                                  url) =>
-                                                              Container(
-                                                                  color: Colors
-                                                                          .grey[
-                                                                      400]),
-                                                          imageUrl:
-                                                              privateConservations[
-                                                                          index]
-                                                                      .friend[
-                                                                  'profileUrl'],
-                                                        ),
-                                                        SizedBox(width: 10),
-                                                        Column(
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      Navigator.of(context)
+                                                          .push(
+                                                              MaterialPageRoute(
+                                                        maintainState: true,
+                                                        fullscreenDialog: true,
+                                                        builder: (context) =>
+                                                            PrivateMessages(),
+                                                      ));
+                                                    },
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Row(
                                                           mainAxisSize:
                                                               MainAxisSize.max,
                                                           crossAxisAlignment:
                                                               CrossAxisAlignment
-                                                                  .start,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
+                                                                  .center,
                                                           children: <Widget>[
-                                                            // get lastest message here
-                                                            Text(
-                                                                "${privateConservations[index].friend['id']}"),
-                                                            Row(
-                                                              mainAxisSize: MainAxisSize.max,
-                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                            ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          1000),
+                                                              child:
+                                                                  CachedNetworkImage(
+                                                                height: 70,
+                                                                width: 70,
+                                                                placeholder: (context,
+                                                                        url) =>
+                                                                    Container(
+                                                                        color: Colors
+                                                                            .grey[400]),
+                                                                imageUrl: privateConservations[
+                                                                            index]
+                                                                        .friend[
+                                                                    'profileUrl'],
+                                                              ),
+                                                            ),
+                                                            SizedBox(width: 10),
+                                                            Wrap(
+                                                              spacing: 10,
+                                                              direction:
+                                                                  Axis.vertical,
                                                               children: <
                                                                   Widget>[
+                                                                // get lastest message here
                                                                 Text(
-                                                                  "${privateConservations[index].message[0].text}",
-                                                                  style: Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .caption,
+                                                                  "${privateConservations[index].friend['id']}",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          20),
                                                                 ),
-                                                                Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                              .all(
-                                                                          6.0),
-                                                                  child: Icon(
-                                                                      Icons
-                                                                          .fiber_manual_record,
-                                                                      size: 8),
-                                                                ),
-                                                                Text(
-                                                                  "${formatDate(DateTime.now().toLocal())}",
-                                                                  style: Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .caption,
+                                                                Row(
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .max,
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: <
+                                                                      Widget>[
+                                                                    Text(
+                                                                        "${privateConservations[index].message[0].text}",
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                15)),
+                                                                    Padding(
+                                                                      padding:
+                                                                          const EdgeInsets.all(
+                                                                              6.0),
+                                                                      child: Icon(
+                                                                          Icons
+                                                                              .fiber_manual_record,
+                                                                          size:
+                                                                              8),
+                                                                    ),
+                                                                    Text(
+                                                                      "${formatDate(DateTime.now().toLocal())}",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              15),
+                                                                    ),
+                                                                  ],
                                                                 ),
                                                               ],
                                                             ),
-                                                          ],
-                                                        ),
-                                                      ]));
+                                                          ]),
+                                                    ),
+                                                  ));
                                             },
                                           );
                                         }

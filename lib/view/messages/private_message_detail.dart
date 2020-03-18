@@ -29,88 +29,95 @@ class _MessagesState extends State<PrivateMessages>
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Container(
-      padding: EdgeInsets.all(10),
-      child: Column(
-        children: <Widget>[
-          Container(
-              width: MediaQuery.of(context).size.width,
-              height: 30,
-              decoration: BoxDecoration(color: Colors.white),
-              child: Stack(
-                alignment: Alignment.center,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        '$roomName',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ],
-                  ),
-                  Positioned(
-                      right: 5,
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Row(
-                          children: <Widget>[
-                            IconButton(
-                              color: Colors.black,
-                              icon: Icon(Icons.call),
-                              onPressed: () {
-                                callGroup(context, getImage());
-                              },
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.group),
-                              onPressed: () {},
-                              color: Colors.black,
-                            )
-                          ],
+    return Scaffold(
+      body: Container(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          children: <Widget>[
+            Container(
+                width: MediaQuery.of(context).size.width,
+                height: 40,
+                decoration: BoxDecoration(color: Colors.white),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          '$roomName',
+                          style: TextStyle(color: Colors.black),
                         ),
-                      ))
-                ],
-              )),
-          SizedBox(height: 10),
-          Flexible(
-              child: Container(
-            color: Colors.blue,
-          )),
-          SizedBox(height: 10),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.white70,
-            ),
-            child: Row(
-              children: <Widget>[
-                IconButton(
-                    icon: Icon(Icons.attach_file),
-                    onPressed: () {
-                      print('Attach');
-                    },
-                    color: Colors.black),
-                Flexible(
-                  fit: FlexFit.tight,
-                  child: TextField(
-                      onSubmitted: (value) {
-                        setState(() {
-                          isSubmited = true;
-                        });
+                      ],
+                    ),
+                    Positioned(
+                        right: 5,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Row(
+                            children: <Widget>[
+                              IconButton(
+                                color: Colors.black,
+                                icon: Icon(Icons.call),
+                                onPressed: () {
+                                  callGroup(context, getImage());
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.group),
+                                onPressed: () {},
+                                color: Colors.black,
+                              )
+                            ],
+                          ),
+                        ))
+                  ],
+                )),
+            SizedBox(height: 10),
+            Flexible(
+                child: Container(
+              color: Colors.blue,
+            )),
+            SizedBox(height: 10),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.white70,
+              ),
+              child: Row(
+                children: <Widget>[
+                  IconButton(
+                      icon: Icon(Icons.attach_file),
+                      onPressed: () {
+                        print('Attach');
                       },
-                      controller: chatController,
-                      style: TextStyle(color: Colors.black),
-                      decoration: InputDecoration(
-                          border: InputBorder.none, hintText: 'Text here')),
-                ),
-              ],
-            ),
-          )
-        ],
+                      color: Colors.black),
+                  Flexible(
+                    fit: FlexFit.tight,
+                    child: TextField(
+                        onSubmitted: (value) {
+                          setState(() {
+                            isSubmited = true;
+                          });
+                        },
+                        controller: chatController,
+                        style: TextStyle(color: Colors.black),
+                        decoration: InputDecoration(
+                            border: InputBorder.none, hintText: 'Text here')),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

@@ -140,11 +140,13 @@ class _RoomManagerState extends State<RoomManager>
                                     return FutureBuilder<List<Room>>(
                                         future: ListRoom.getList(result.data['roomManage']),
                                         builder: (context, snapshot) {
-                                          var r = snapshot.data;
+                                          
                                           if(snapshot.connectionState ==ConnectionState.waiting){
                                             return AppConstraint.spinKitCubeGrid;
                                           }
-                                          else return Container(
+                                          else {
+                                            var r = snapshot.data;
+                                            return Container(
                                               height: screenSize.height,
                                               width: screenSize.width,
                                               padding: EdgeInsets.symmetric(
@@ -340,6 +342,7 @@ class _RoomManagerState extends State<RoomManager>
                                                   },
                                                 ),
                                               ));
+                                          }
                                         });
                                   }
                                 });
