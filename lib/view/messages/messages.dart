@@ -9,6 +9,7 @@ import 'package:gamming_community/class/PrivateRoom.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/messages/models/get_list_room.dart';
 import 'package:gamming_community/view/messages/right_side_friends.dart';
+import 'package:gamming_community/view/messages/search_friends.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -85,12 +86,17 @@ class _MessagesState extends State<Messages>
         client: config.client,
         child: CacheProvider(
           child: Scaffold(
-            endDrawer:  RightSideFriends(),
-            
+            endDrawer: RightSideFriends(),
+            //create new conservation with friends
             floatingActionButton: FloatingActionButton(
                 heroTag: "addnewMessage",
                 child: Icon(Icons.add),
-                onPressed: () {}),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      fullscreenDialog: true,
+                      maintainState: true,
+                      builder: (context) => SearchFriends()));
+                }),
             body: Container(
                 padding: EdgeInsets.all(10),
                 child: Column(
@@ -98,7 +104,6 @@ class _MessagesState extends State<Messages>
                     Expanded(
                         flex: 1,
                         child: Container(
-                          
                             child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
@@ -169,8 +174,7 @@ class _MessagesState extends State<Messages>
                     Expanded(
                         flex: 6,
                         child: Container(
-                          alignment: Alignment.topLeft,
-                          
+                            alignment: Alignment.topLeft,
                             margin: EdgeInsets.only(top: 10),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config.dart';
 import 'package:gamming_community/class/Room.dart';
+import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/room/create_room.dart';
 import 'package:gamming_community/view/room_manager/bloc/room_manager_bloc.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -53,9 +54,7 @@ class _RoomManagerState extends State<RoomManager>
                 _tapPosition & Size(40, 40), // smaller rect, the touch area
                 Offset.zero & overlay.size // Bigger rect, the entire screen
                 ))
-
         .then<void>((int delta) {
-
       if (delta == null) return;
 
       setState(() {
@@ -79,7 +78,7 @@ class _RoomManagerState extends State<RoomManager>
 
   @override
   void initState() {
-    roomManagerBloc=  BlocProvider.of<RoomManagerBloc>(context);
+    roomManagerBloc = BlocProvider.of<RoomManagerBloc>(context);
     super.initState();
   }
 
@@ -89,13 +88,8 @@ class _RoomManagerState extends State<RoomManager>
     super.build(context);
     return BlocListener<RoomManagerBloc, RoomManagerState>(
       listener: (context, state) {
-        if(state is CreateRoom){
-
-        }
-        if(state is RemoveRoom){
-          
-        }
-
+        if (state is CreateRoom) {}
+        if (state is RemoveRoom) {}
       },
       child: BlocBuilder<RoomManagerBloc, RoomManagerState>(
         builder: (context, state) {
@@ -134,7 +128,8 @@ class _RoomManagerState extends State<RoomManager>
                                       ),
                                     );
                                   }
-                                  if (result.data.values.first == 0||result.hasException) {
+                                  if (result.data.values.first == 0 ||
+                                      result.hasException) {
                                     return AnimatedContainer(
                                         duration: Duration(seconds: 10),
                                         curve: Curves.bounceInOut,
@@ -142,218 +137,207 @@ class _RoomManagerState extends State<RoomManager>
                                         child: SvgPicture.asset(
                                             "assets/icons/empty_icon.svg"));
                                   } else {
-                                    List<Room> r =
-                                        ListRoom.fromJson(result.data).listRoom;
-                                    print(r.length);
-                                    return Container(
-                                        height: screenSize.height,
-                                        width: screenSize.width,
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 40),
-                                        child: Material(
-                                          color: Colors.transparent,
-                                          type: MaterialType.card,
-                                          child: GridView.builder(
-                                            gridDelegate:
-                                                SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisSpacing: 30,
-                                              crossAxisCount: 2,
-                                              mainAxisSpacing: 30,
-                                              childAspectRatio:
-                                                  (screenSize.width / 2) /
-                                                      ((screenSize.height) / 3),
-                                            ),
-                                            itemCount: r.length,
-                                            itemBuilder: (context, index) {
-                                              return InkWell(
-                                                splashColor: Colors.black,
-                                                onTap: () {
-                                                  print(index);
-                                                },
-                                                // long press on each room
-                                                onLongPress: () {
-                                                  _showCustomMenu();
-                                                },
-                                                onTapDown: _storePosition,
-                                                child: Container(
-                                                  height: 200,
-                                                  width: 100,
-                                                  alignment: Alignment.center,
-                                                  decoration: BoxDecoration(
-                                                      color: Colors.grey,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15)),
-                                                  child: Stack(
-                                                    children: <Widget>[
-                                                      Column(
-                                                        children: <Widget>[
-                                                          //background room (default, if spectify, display here)
-                                                          Container(
-                                                            alignment: Alignment
-                                                                .center,
-                                                            height: 100,
-                                                            decoration: BoxDecoration(
-                                                                color:
-                                                                    Colors.red,
-                                                                borderRadius: BorderRadius.only(
-                                                                    topLeft: Radius
-                                                                        .circular(
-                                                                            15),
-                                                                    topRight: Radius
-                                                                        .circular(
-                                                                            15))),
-                                                          ),
-                                                          SizedBox(
-                                                            height: 30,
-                                                          ),
-                                                          Wrap(
-                                                            spacing: 10,
-                                                            runSpacing: 5,
-                                                            alignment:
-                                                                WrapAlignment
-                                                                    .center,
-                                                            children: <Widget>[
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .center,
-                                                                children: <
-                                                                    Widget>[
-                                                                  Flexible(
-                                                                      fit: FlexFit
-                                                                          .loose,
-                                                                      child:
-                                                                          Padding(
-                                                                        padding:
-                                                                            const EdgeInsets.symmetric(horizontal: 10),
-                                                                        child:
-                                                                            Text(
-                                                                          r[index]
-                                                                              .roomName,
-                                                                          style: TextStyle(
-                                                                              fontWeight: FontWeight.bold,
-                                                                              fontSize: 20),
-                                                                          overflow:
-                                                                              TextOverflow.ellipsis,
-                                                                        ),
-                                                                      )),
-                                                                ],
-                                                              ),
-                                                              Text(
-                                                                  "${r[index].memberID.length} member"),
-                                                              // display some member in room
-                                                              Row(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .center,
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                children: <
-                                                                    Widget>[
-                                                                  for (var item
-                                                                      in r[index].memberID)
-                                                                    ClipRRect(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              1000),
-                                                                      child:
-                                                                          CachedNetworkImage(
-                                                                        imageUrl:
-                                                                            item,
-                                                                        height:
-                                                                            30,
-                                                                        width:
-                                                                            30,
-                                                                        fit: BoxFit
-                                                                            .cover,
-                                                                        placeholder: (context, image) => SpinKitCubeGrid(
-                                                                            color:
-                                                                                Colors.white,
-                                                                            size: 10),
-                                                                        errorWidget: (context,
-                                                                                error,
-                                                                                image) =>
-                                                                            Icon(Icons.error),
-                                                                      ),
+                                    return FutureBuilder<List<Room>>(
+                                        future: ListRoom.getList(result.data['roomManage']),
+                                        builder: (context, snapshot) {
+                                          var r = snapshot.data;
+                                          return Container(
+                                              height: screenSize.height,
+                                              width: screenSize.width,
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 40),
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                type: MaterialType.card,
+                                                child: GridView.builder(
+                                                  gridDelegate:
+                                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisSpacing: 30,
+                                                    crossAxisCount: 2,
+                                                    mainAxisSpacing: 30,
+                                                    childAspectRatio:
+                                                        (screenSize.width / 2) /
+                                                            ((screenSize
+                                                                    .height) /
+                                                                3),
+                                                  ),
+                                                  itemCount: r.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return InkWell(
+                                                      splashColor: Colors.black,
+                                                      onTap: () {
+                                                        print(index);
+                                                      },
+                                                      // long press on each room
+                                                      onLongPress: () {
+                                                        _showCustomMenu();
+                                                      },
+                                                      onTapDown: _storePosition,
+                                                      child: Container(
+                                                        height: 200,
+                                                        width: 100,
+                                                        alignment:
+                                                            Alignment.center,
+                                                        decoration: BoxDecoration(
+                                                            color: Colors.grey,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15)),
+                                                        child: Stack(
+                                                          children: <Widget>[
+                                                            Column(
+                                                              children: <
+                                                                  Widget>[
+                                                                //background room (default, if spectify, display here)
+                                                                Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  height: 100,
+                                                                  decoration: BoxDecoration(
+                                                                      color: Colors
+                                                                          .red,
+                                                                      borderRadius: BorderRadius.only(
+                                                                          topLeft: Radius.circular(
+                                                                              15),
+                                                                          topRight:
+                                                                              Radius.circular(15))),
+                                                                ),
+                                                                SizedBox(
+                                                                  height: 30,
+                                                                ),
+                                                                Wrap(
+                                                                  spacing: 10,
+                                                                  runSpacing: 5,
+                                                                  alignment:
+                                                                      WrapAlignment
+                                                                          .center,
+                                                                  children: <
+                                                                      Widget>[
+                                                                    Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .center,
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .center,
+                                                                      children: <
+                                                                          Widget>[
+                                                                        Flexible(
+                                                                            fit:
+                                                                                FlexFit.loose,
+                                                                            child: Padding(
+                                                                              padding: EdgeInsets.symmetric(horizontal: 10),
+                                                                              child: Text(
+                                                                                r[index].roomName,
+                                                                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                                                overflow: TextOverflow.ellipsis,
+                                                                              ),
+                                                                            )),
+                                                                      ],
                                                                     ),
-                                                                ],
-                                                              )
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Positioned(
-                                                          top: 5,
-                                                          right: 5,
-                                                          child: Material(
-                                                            clipBehavior:
-                                                                Clip.antiAlias,
-                                                            type: MaterialType
-                                                                .circle,
-                                                            color: Colors
-                                                                .transparent,
-                                                            child: IconButton(
-                                                              icon: Icon(Icons
-                                                                  .more_vert),
-                                                              onPressed: () {},
+                                                                    Text(
+                                                                        "${r[index].memberID.length} member"),
+                                                                    // display some member in room
+                                                                    Row(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .center,
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .center,
+                                                                      children: <
+                                                                          Widget>[
+                                                                        for (var item
+                                                                            in r[index].memberID)
+                                                                          ClipRRect(
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(1000),
+                                                                            child:
+                                                                                CachedNetworkImage(
+                                                                              imageUrl: AppConstraint.default_profile,
+                                                                              height: 30,
+                                                                              width: 30,
+                                                                              fit: BoxFit.cover,
+                                                                              placeholder: (context, image) => SpinKitCubeGrid(color: Colors.white, size: 10),
+                                                                              errorWidget: (context, error, image) => Icon(Icons.error),
+                                                                            ),
+                                                                          ),
+                                                                      ],
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ],
                                                             ),
-                                                          )),
-                                                      Positioned(
-                                                        top: 50,
-                                                        left: 50,
-                                                        child: //logo room
-                                                            CachedNetworkImage(
-                                                          imageUrl:
-                                                              "https://via.placeholder.com/150",
-                                                          imageBuilder: (context,
-                                                              imageProvider) {
-                                                            return Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              height: 80,
-                                                              width: 80,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                      border: Border.all(
-                                                                          color: Colors
-                                                                              .black,
-                                                                          width:
-                                                                              2),
-                                                                      shape: BoxShape
-                                                                          .circle,
-                                                                      image:
-                                                                          DecorationImage(
-                                                                        image:
-                                                                            imageProvider,
-                                                                        fit: BoxFit
-                                                                            .cover,
-                                                                      )),
-                                                            );
-                                                          },
-                                                          placeholder: (context,
-                                                                  url) =>
-                                                              SpinKitChasingDots(
+                                                            Positioned(
+                                                                top: 5,
+                                                                right: 5,
+                                                                child: Material(
+                                                                  clipBehavior:
+                                                                      Clip.antiAlias,
+                                                                  type: MaterialType
+                                                                      .circle,
                                                                   color: Colors
-                                                                      .white,
-                                                                  size: 20),
-                                                          errorWidget: (context,
-                                                                  url, error) =>
-                                                              Icon(Icons.error),
+                                                                      .transparent,
+                                                                  child:
+                                                                      IconButton(
+                                                                    icon: Icon(Icons
+                                                                        .more_vert),
+                                                                    onPressed:
+                                                                        () {},
+                                                                  ),
+                                                                )),
+                                                            Positioned(
+                                                              top: 50,
+                                                              left: 50,
+                                                              child: //logo room
+                                                                  CachedNetworkImage(
+                                                                imageUrl:
+                                                                    "https://via.placeholder.com/150",
+                                                                imageBuilder:
+                                                                    (context,
+                                                                        imageProvider) {
+                                                                  return Container(
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .center,
+                                                                    height: 80,
+                                                                    width: 80,
+                                                                    decoration: BoxDecoration(
+                                                                        border: Border.all(color: Colors.black, width: 2),
+                                                                        shape: BoxShape.circle,
+                                                                        image: DecorationImage(
+                                                                          image:
+                                                                              imageProvider,
+                                                                          fit: BoxFit
+                                                                              .cover,
+                                                                        )),
+                                                                  );
+                                                                },
+                                                                placeholder: (context,
+                                                                        url) =>
+                                                                    SpinKitChasingDots(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        size:
+                                                                            20),
+                                                                errorWidget: (context,
+                                                                        url,
+                                                                        error) =>
+                                                                    Icon(Icons
+                                                                        .error),
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
                                                       ),
-                                                    ],
-                                                  ),
+                                                    );
+                                                  },
                                                 ),
-                                              );
-                                            },
-                                          ),
-                                        ));
+                                              ));
+                                        });
                                   }
                                 });
                         })),

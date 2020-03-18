@@ -3,7 +3,7 @@ class PrivateRoom{
     String featureMessage;
     String image;
     PrivateRoom(this.name, this.featureMessage, this.image);
-    factory PrivateRoom.fromJson(Map<String,dynamic> json){
+    factory PrivateRoom.fromJson(List json){
       //TODO: Check private room
       //var result = json.values;
       return null;

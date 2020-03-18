@@ -42,7 +42,7 @@ class _HomeState extends State<HomePage> {
 
   Future getUserInfo() async {
     SharedPreferences ref = await SharedPreferences.getInstance();
-    List<String> res = ref.getStringList("userToken");
+    //List<String> res = ref.getStringList("userToken");
 
     setState(() {
       userID = ref.getString("userID");
@@ -62,6 +62,7 @@ class _HomeState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size;
     return Scaffold(
       bottomNavigationBar: BottomNavyBar(
         selectedIndex: _currentIndex,
@@ -100,9 +101,8 @@ class _HomeState extends State<HomePage> {
               inactiveColor: Colors.white),
         ],
       ),
-      body: Scaffold(
-        body: Container(
-          height: MediaQuery.of(context).size.height,
+      body: Container(
+          height: screenSize.height,
           decoration: BoxDecoration(color: Color(0xff322E2E)),
           child: PageView(
             onPageChanged: (index) {
@@ -114,7 +114,7 @@ class _HomeState extends State<HomePage> {
             children: _listWidget,
           ),
         ),
-      ),
+    
     );
   }
 }

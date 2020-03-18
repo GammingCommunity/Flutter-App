@@ -20,16 +20,23 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
-Future main() async {
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  var status = prefs.getBool('isLogin') ?? false;
-  runApp(status == true ? MyApp() : HomePage());
+  Widget defaultHome = Login();
+  SharedPreferences ref= await SharedPreferences.getInstance();
+  bool isLoggin= ref.getBool('isLogin');
+  if(isLoggin ){
+    defaultHome=HomePage();
+  }
+  runApp(MyApp(home: defaultHome)); 
   SystemChrome.setEnabledSystemUIOverlays([]);
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+  Widget home;
+  MyApp({this.home});
+
+  
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -147,7 +154,7 @@ class MyApp extends StatelessWidget {
               '/homepage': (context) => HomePage(),
               '/profile': (context) => Profile()
             },*/
-                        home: Login(),
+                        home: home,
                       ));
             },
           )),

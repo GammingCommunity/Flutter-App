@@ -33,18 +33,18 @@ dependencies:
   flutter_webrtc: ^0.2.2
   graphql_flutter: ^3.0.1-beta.1
   carousel_slider: ^1.4.1
-  flutter_spinkit: "^4.1.1"
-  equatable: ^1.1.0
+  flutter_spinkit: ^4.1.2
+  equatable: ^1.1.1
   flutter_bloc: ^3.2.0
-  shared_preferences: ^0.5.6+1
+  shared_preferences: ^0.5.6+3
   pull_to_refresh: ^1.5.7
   provider: ^4.0.4
-  socket_io_client: ^0.9.8
+  socket_io_client: ^0.9.9
   states_rebuilder: ^1.14.0
   intl: ^0.16.1
   incrementally_loading_listview: ^0.3.0
   video_player: ^0.10.8+1
-  chewie: ^0.9.8+1
+  chewie: ^0.9.10
   shimmer: ^1.1.0
   image_picker: ^0.6.3+4
 dev_dependencies:

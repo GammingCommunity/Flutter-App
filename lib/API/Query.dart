@@ -185,12 +185,13 @@ class GraphQLQuery {
   }
   }
  """;
- String getUserInfo(String id){
+ String getUserInfo(List<int> ids){
    return """
     query{
-      lookAccount (id:$id){
+      lookAccount (ids:$ids){
         account {
           name
+          avatar_url
         }
       }
     }

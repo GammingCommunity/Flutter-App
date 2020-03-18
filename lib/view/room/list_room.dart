@@ -45,7 +45,7 @@ class _RoomState extends State<RoomList>
       var result = await client.query(QueryOptions(
           variables: {"page": page, "limit": limit},
           documentNode: gql(query.getAllRoom())));
-      List<Room> v = ListRoom.fromJson(result.data).listRoom;
+      var v = await ListRoom.getList(result.data);
       Provider.of(context, listen: false).firstLoad(v);
 
       if (mounted) {}
@@ -65,7 +65,7 @@ class _RoomState extends State<RoomList>
     var result = await client.query(QueryOptions(
         variables: {"page": nextPage, "limit": limit},
         documentNode: gql(query.getAllRoom())));
-    List<Room> v = ListRoom.fromJson(result.data).listRoom;
+    var v = await ListRoom.getList(result.data);
     Provider.of<FetchMoreValue>(context, listen: false).setMoreValue(v);
     if (mounted)
       setState(() {
@@ -133,8 +133,8 @@ class _RoomState extends State<RoomList>
                     }
                     
                      else {
-                      ListRoom v = ListRoom.fromJson(result.data);
-                      room = v.listRoom;
+                      //var v = await ListRoom.getList(result.data);
+                     // room = v.listRoom;
                       return Consumer<FetchMoreValue>(
                           builder: (context, model, child) => SmartRefresher(
                                 enablePullUp: true,
