@@ -33,7 +33,7 @@ void main() async{
 }
 
 class MyApp extends StatelessWidget {
-  Widget home;
+  final Widget home;
   MyApp({this.home});
 
   
