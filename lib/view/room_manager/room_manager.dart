@@ -141,7 +141,10 @@ class _RoomManagerState extends State<RoomManager>
                                         future: ListRoom.getList(result.data['roomManage']),
                                         builder: (context, snapshot) {
                                           var r = snapshot.data;
-                                          return Container(
+                                          if(snapshot.connectionState ==ConnectionState.waiting){
+                                            return AppConstraint.spinKitCubeGrid;
+                                          }
+                                          else return Container(
                                               height: screenSize.height,
                                               width: screenSize.width,
                                               padding: EdgeInsets.symmetric(

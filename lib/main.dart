@@ -24,8 +24,8 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   Widget defaultHome = Login();
   SharedPreferences ref= await SharedPreferences.getInstance();
-  bool isLoggin= ref.getBool('isLogin');
-  if(isLoggin ){
+  bool isLoggin= ref.getBool('isLogin') != null ?? false;
+  if(isLoggin){
     defaultHome=HomePage();
   }
   runApp(MyApp(home: defaultHome)); 

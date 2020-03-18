@@ -14,7 +14,7 @@ class GetListRoom extends StatesRebuilder{
   GetListRoom({this.userID});
   
   void initRoom() async{
-    var result = await client.query(QueryOptions(documentNode: gql(query.getPrivateMessage(userID))));
+    var result = await client.query(QueryOptions(documentNode: gql(query.getPrivateConservation(userID))));
     print("Data ${result.data}");
   }
 }

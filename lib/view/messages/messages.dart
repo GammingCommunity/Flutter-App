@@ -4,7 +4,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config.dart';
-import 'package:gamming_community/class/Message.dart';
+import 'package:gamming_community/class/Conservation.dart';
 import 'package:gamming_community/class/PrivateRoom.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/messages/models/get_list_room.dart';
@@ -39,7 +39,7 @@ class _MessagesState extends State<Messages>
   final chatController = TextEditingController();
   ScrollController _scrollController;
   AnimationController animationController;
-  List<Message> item = [];
+  // List<Message> item = [];
   List<PrivateRoom> listPrivateRoom = [];
   List<String> sampleUser = [
     "https://api.adorable.io/avatars/90/abott@adorable.io.png",
@@ -215,7 +215,7 @@ class _MessagesState extends State<Messages>
                                   child: Query(
                                       options: QueryOptions(
                                           documentNode: gql(
-                                              query.getPrivateMessage(
+                                              query.getPrivateConservation(
                                                   widget.userID))),
                                       builder: (QueryResult result,
                                           {VoidCallback refetch,
@@ -233,16 +233,16 @@ class _MessagesState extends State<Messages>
                                             child: SpinKitCubeGrid(
                                                 size: 20, color: Colors.white),
                                           );
-                                        }
-                                        if (result.data.isNotEmpty == true) {
-                                          return Align(
-                                            alignment: Alignment.center,
-                                            child: SvgPicture.asset(
-                                                "assets/icons/empty_icon.svg"),
-                                          );
                                         } else {
-                                          //listPrivateRoom=  PrivateRoom.fromJson(result.data);
+                                          var privateConservations =
+                                              PrivateConservations.fromJson(
+                                                      result.data[
+                                                          'getPrivateChat'])
+                                                  .conservations;
                                           return ListView.builder(
+                                            //itemExtent: 100.0,
+                                            itemCount:
+                                                privateConservations.length,
                                             controller: _scrollController,
                                             itemBuilder: (context, index) {
                                               var animation =
@@ -260,54 +260,76 @@ class _MessagesState extends State<Messages>
                                               ));
                                               return FadeTransition(
                                                   opacity: animation,
-                                                  child: ListTile(
-                                                    leading: CircleAvatar(
-                                                        backgroundImage:
-                                                            NetworkImage(
-                                                                AppConstraint
-                                                                    .sample_proifle_url)),
-                                                    title: Text(
-                                                        "${listPrivateRoom[index].name}"),
-                                                    onTap: () {
-                                                      /*Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                      builder: (ctx) =>
-                                                          ConversationPage(
-                                                              rooms[index]),
-                                                    ),
-                                                  );*/
-                                                    },
-                                                    subtitle: Row(
+                                                  child: Row(
+                                                    mainAxisSize: MainAxisSize.max,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
                                                       children: <Widget>[
-                                                        Text(
-                                                          "${listPrivateRoom[index].featureMessage}",
-                                                          style:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .caption,
+                                                        CachedNetworkImage(
+                                                          height: 70,
+                                                          width: 70,
+                                                          placeholder: (context,
+                                                                  url) =>
+                                                              Container(
+                                                                  color: Colors
+                                                                          .grey[
+                                                                      400]),
+                                                          imageUrl:
+                                                              privateConservations[
+                                                                          index]
+                                                                      .friend[
+                                                                  'profileUrl'],
                                                         ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(6.0),
-                                                          child: Icon(
-                                                              Icons
-                                                                  .fiber_manual_record,
-                                                              size: 8),
+                                                        SizedBox(width: 10),
+                                                        Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.max,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: <Widget>[
+                                                            // get lastest message here
+                                                            Text(
+                                                                "${privateConservations[index].friend['id']}"),
+                                                            Row(
+                                                              mainAxisSize: MainAxisSize.max,
+                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                              children: <
+                                                                  Widget>[
+                                                                Text(
+                                                                  "${privateConservations[index].message[0].text}",
+                                                                  style: Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .caption,
+                                                                ),
+                                                                Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                              .all(
+                                                                          6.0),
+                                                                  child: Icon(
+                                                                      Icons
+                                                                          .fiber_manual_record,
+                                                                      size: 8),
+                                                                ),
+                                                                Text(
+                                                                  "${formatDate(DateTime.now().toLocal())}",
+                                                                  style: Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .caption,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
                                                         ),
-                                                        Text(
-                                                          "${formatDate(DateTime.now().toLocal())}",
-                                                          style:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .caption,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ));
+                                                      ]));
                                             },
-                                            itemExtent: 100.0,
-                                            itemCount: item.length,
                                           );
                                         }
                                       }),

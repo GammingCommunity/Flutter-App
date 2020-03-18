@@ -197,10 +197,23 @@ class GraphQLQuery {
     }
    """;
  }
- String getPrivateMessage(String userID) =>"""
+ String getPrivateConservation(String userID) =>"""
    query{
       getPrivateChat(ID:"$userID"){
+        currentUser{
+          id
+          profile_url
+        }
+        friend{
+          id
+          profile_url
+        }
         messages{
+          _id
+          user{
+            id
+            profile_url
+          }
           text
           createAt
         }
