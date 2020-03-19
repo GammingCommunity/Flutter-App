@@ -6,7 +6,6 @@ import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config.dart';
 import 'package:gamming_community/class/Conservation.dart';
 import 'package:gamming_community/class/PrivateRoom.dart';
-import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/messages/models/get_list_room.dart';
 import 'package:gamming_community/view/messages/private_message_detail.dart';
 import 'package:gamming_community/view/messages/right_side_friends.dart';
@@ -77,6 +76,11 @@ class _MessagesState extends State<Messages>
     )..forward();
     GetListRoom(userID: widget.userID);
     super.initState();
+  }
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -240,8 +244,9 @@ class _MessagesState extends State<Messages>
                                                       result.data[
                                                           'getPrivateChat'])
                                                   .conservations;
+                                                  
                                           return ListView.builder(
-                                            //itemExtent: 100.0,
+                                            itemExtent: 100.0,
                                             itemCount:
                                                 privateConservations.length,
                                             controller: _scrollController,
@@ -263,13 +268,14 @@ class _MessagesState extends State<Messages>
                                                   opacity: animation,
                                                   child: InkWell(
                                                     onTap: () {
+                                                      // navigate to convservation_detail
                                                       Navigator.of(context)
                                                           .push(
                                                               MaterialPageRoute(
                                                         maintainState: true,
                                                         fullscreenDialog: true,
                                                         builder: (context) =>
-                                                            PrivateMessages(),
+                                                            PrivateMessagesDetail(currentID: privateConservations[index].currentUser['id'],),
                                                       ));
                                                     },
                                                     child: Padding(

@@ -287,7 +287,9 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                         size: 30, color: Colors.red[300]),
                                     "Restrict users"),
                                 InkWell(
-                                    onTap: () {},
+                                    onTap: () {
+                                      loggout(context);
+                                    },
                                     child: rowAccountSetting(
                                         Icon(Icons.power_settings_new,
                                             size: 30, color: Colors.red[300]),
@@ -305,4 +307,9 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
 
   @override
   bool get wantKeepAlive => true;
+}
+void loggout(BuildContext context) async{
+  SharedPreferences ref= await SharedPreferences.getInstance();
+  ref.setBool('isLogin', false);
+  Navigator.of(context).pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
 }

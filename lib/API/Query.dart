@@ -263,4 +263,19 @@ class GraphQLQuery {
   }
   }
  """;
+ String getPrivateMessges(String currentID) =>"""
+  query{
+    getPrivateChat(ID:"$currentID"){
+      messages{
+        user{
+          id
+          profile_url
+        }
+        text
+        createAt
+      }
+    }
+  }
+  
+ """;
 }

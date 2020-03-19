@@ -1,17 +1,34 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:gamming_community/API/Query.dart';
+import 'package:gamming_community/API/config.dart';
+import 'package:gamming_community/class/PrivateMessage.dart';
+import 'package:gamming_community/models/chat_provider.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
+import 'package:gamming_community/view/messages/chat_message.dart';
+import 'package:gamming_community/view/messages/messages.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
 
-class PrivateMessages extends StatefulWidget {
+class PrivateMessagesDetail extends StatefulWidget {
+  final String currentID;
+  PrivateMessagesDetail({this.currentID});
   @override
   _MessagesState createState() => _MessagesState();
 }
 
-class _MessagesState extends State<PrivateMessages>
-    with AutomaticKeepAliveClientMixin<PrivateMessages> {
+class _MessagesState extends State<PrivateMessagesDetail>
+    with
+        AutomaticKeepAliveClientMixin<PrivateMessagesDetail>,
+        TickerProviderStateMixin {
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
   String roomName = "Sample here";
   bool isSubmited = false;
-  final chatController = TextEditingController();
+  TextEditingController chatController;
+  ChatProvider chatProvider;
+  ScrollController scrollController;
+  Config config = Config();
+
   List<String> sampleUser = [
     "https://api.adorable.io/avatars/90/abott@adorable.io.png",
     "https://api.adorable.io/avatars/90/magic.png",
@@ -28,15 +45,101 @@ class _MessagesState extends State<PrivateMessages>
     return sampleUser;
   }
 
+  void loadMessage() async {
+    var animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    GraphQLQuery query = GraphQLQuery();
+    GraphQLClient client = config.clientToQueryMongo();
+    var queryOptions = QueryOptions(
+        documentNode: gql(query.getPrivateMessges(widget.currentID)));
+    var result = await client.query(queryOptions);
+    var listMessage = PrivateMessages.fromJson(
+            result.data['getPrivateChat'], animationController)
+        .privateMessages;
+    chatProvider.onAddListMessage(listMessage);
+  }
+
+  void onSendMesasge(String message) {
+    if (chatController.text.isEmpty) return;
+    var animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    var chatMessage = ChatMessage(
+      animationController: animationController,
+      text: chatController.text,
+      sendDate: DateTime.now().toString(),
+    );
+    sendMessageToSocket();
+
+    chatMessage.animationController.forward();
+
+    chatProvider.onAddNewMessage(chatMessage);
+
+    chatController.clear();
+  }
+
+  void sendMessageToSocket() {
+    chatProvider.socket.emit('message', [
+      {
+        "message": chatController.text,
+      }
+    ]);
+  }
+
+  void onRecieveMessage() {
+    chatProvider.socket.on('message', (data) async {
+      print('recive message' + data.toString());
+      var animationController = AnimationController(
+          vsync: this, duration: Duration(milliseconds: 500));
+      var chatMessage = ChatMessage(
+        text: data['message'],
+        animationController: animationController,
+        sendDate: DateTime.now().toString(),
+      );
+      //add message to end
+      chatMessage.animationController.forward();
+      // add message to list and update UI
+      chatProvider.onAddNewMessage(chatMessage);
+
+      await Future.delayed(Duration(milliseconds: 100));
+
+      animateToBottom();
+    });
+  }
+
+  void animateToBottom() async {
+    await scrollController.animateTo(
+      scrollController.position.maxScrollExtent,
+      curve: Curves.linear,
+      duration: Duration(milliseconds: 200),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
+    scrollController = ScrollController();
+    chatController = TextEditingController();
+    loadMessage();
+    WidgetsBinding.instance.addPostFrameCallback((d) {
+      chatProvider.initSocket();
+      onRecieveMessage();
+      animateToBottom();
+    });
+  }
+
+  @override
+  void dispose() {
+    chatController.dispose();
+    chatProvider.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    chatProvider = Injector.get(context: context);
     super.build(context);
     return Scaffold(
+      key: scaffoldKey,
       body: Container(
         padding: EdgeInsets.all(10),
         child: Column(
@@ -82,9 +185,27 @@ class _MessagesState extends State<PrivateMessages>
                   ],
                 )),
             SizedBox(height: 10),
+            // message area
             Flexible(
-                child: Container(
-              color: Colors.blue,
+                child: ListView.builder(
+              padding: EdgeInsets.only(left: 8, right: 8, bottom: 12, top: 12),
+              itemCount: chatProvider.messages.length,
+              controller: scrollController,
+              itemBuilder: (context, index) => Column(
+                children: <Widget>[
+                  if (index == 0)
+                    Text(formatDate(
+                        DateTime.parse(chatProvider.messages[index].sendDate))),
+                  if (index != 0 &&
+                      DateTime.parse(chatProvider.messages[index - 1].sendDate)
+                              .minute !=
+                          DateTime.parse(chatProvider.messages[index].sendDate)
+                              .minute)
+                    Text(formatDateTime(
+                        DateTime.parse(chatProvider.messages[index].sendDate))),
+                  chatProvider.messages[index],
+                ],
+              ),
             )),
             SizedBox(height: 10),
             Container(
@@ -94,12 +215,17 @@ class _MessagesState extends State<PrivateMessages>
               ),
               child: Row(
                 children: <Widget>[
-                  IconButton(
-                      icon: Icon(Icons.attach_file),
-                      onPressed: () {
-                        print('Attach');
-                      },
-                      color: Colors.black),
+                  Material(
+                    type: MaterialType.circle,
+                    clipBehavior: Clip.antiAlias,
+                    color: Colors.transparent,
+                    child: IconButton(
+                        icon: Icon(Icons.attach_file),
+                        onPressed: () {
+                          print('Attach');
+                        },
+                        color: Colors.black),
+                  ),
                   Flexible(
                     fit: FlexFit.tight,
                     child: TextField(
@@ -113,6 +239,16 @@ class _MessagesState extends State<PrivateMessages>
                         decoration: InputDecoration(
                             border: InputBorder.none, hintText: 'Text here')),
                   ),
+                  Material(
+                      type: MaterialType.circle,
+                      clipBehavior: Clip.antiAlias,
+                      color: Colors.transparent,
+                      child: IconButton(
+                          color: Colors.black,
+                          icon: Icon(Icons.bubble_chart),
+                          onPressed: () {
+                            onSendMesasge(chatController.text);
+                          }))
                 ],
               ),
             )
@@ -209,6 +345,7 @@ Future callGroup(BuildContext context, Future getImage) {
                                                 child: SizedBox(
                                               width: 60,
                                               child: RaisedButton(
+                                                  color: Colors.indigo,
                                                   onPressed: () {},
                                                   child: Text("Add")),
                                             ))

@@ -10,6 +10,10 @@ class ChatProvider extends StatesRebuilder{
     this.messages.add(chatMessage);
     rebuildStates();
   }
+  void onAddListMessage(List<ChatMessage> listChat){
+    this.messages.addAll(listChat);
+    rebuildStates();
+  }
 
   void initSocket() async {
     socket = IO.io('https://socketchat.glitch.me/', <String, dynamic>{

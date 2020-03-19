@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 
 class ChatMessage extends StatelessWidget {
+
+  final Map<String,dynamic> sender;
   final String text;
-  final String userID;
   final AnimationController animationController;
   final DateTime sendDate;
-
-  ChatMessage({this.text, this.animationController, this.userID, this.sendDate});
+  ChatMessage({this.text, this.animationController, this.sender, this.sendDate});
   @override
   Widget build(BuildContext context) {
     //ThemeModel themeModel = Injector.get(context: context);
    // bool isMe = themeModel.sender == sender;
-   bool isMe= true;
+   bool isMe = false ;
+   
     return SizeTransition(
         sizeFactor: CurvedAnimation(parent: animationController, curve: Curves.easeOut), //new
         axisAlignment: 0.0,
@@ -24,7 +25,7 @@ class ChatMessage extends StatelessWidget {
             children: <Widget>[
               if (!isMe)
                 CircleAvatar(
-                  backgroundImage: NetworkImage(userID),
+                  backgroundImage: NetworkImage(sender['profile_url']),
                 ),
               Flexible(
                 child: Container(

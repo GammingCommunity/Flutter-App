@@ -12,8 +12,6 @@ import 'package:gamming_community/view/room/create_room.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:video_player/video_player.dart';
 
-GlobalKey _globalKey = GlobalKey();
-
 class CategoriesDetail extends StatefulWidget {
   final String itemTag;
   final Game gameDetail;
