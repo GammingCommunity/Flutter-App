@@ -66,7 +66,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
     var chatMessage = ChatMessage(
       animationController: animationController,
       text: chatController.text,
-      sendDate: DateTime.now().toString(),
+      sendDate: DateTime.now(),
     );
     sendMessageToSocket();
 
@@ -91,10 +91,9 @@ class _MessagesState extends State<PrivateMessagesDetail>
       var animationController = AnimationController(
           vsync: this, duration: Duration(milliseconds: 500));
       var chatMessage = ChatMessage(
-        text: data['message'],
-        animationController: animationController,
-        sendDate: DateTime.now().toString(),
-      );
+          text: data['message'],
+          animationController: animationController,
+          sendDate: DateTime.now());
       //add message to end
       chatMessage.animationController.forward();
       // add message to list and update UI
@@ -194,15 +193,11 @@ class _MessagesState extends State<PrivateMessagesDetail>
               itemBuilder: (context, index) => Column(
                 children: <Widget>[
                   if (index == 0)
-                    Text(formatDate(
-                        DateTime.parse(chatProvider.messages[index].sendDate))),
+                    Text(formatDate(chatProvider.messages[index].sendDate)),
                   if (index != 0 &&
-                      DateTime.parse(chatProvider.messages[index - 1].sendDate)
-                              .minute !=
-                          DateTime.parse(chatProvider.messages[index].sendDate)
-                              .minute)
-                    Text(formatDateTime(
-                        DateTime.parse(chatProvider.messages[index].sendDate))),
+                      chatProvider.messages[index - 1].sendDate.minute !=
+                          chatProvider.messages[index].sendDate.minute)
+                    Text(formatDateTime(chatProvider.messages[index].sendDate)),
                   chatProvider.messages[index],
                 ],
               ),
