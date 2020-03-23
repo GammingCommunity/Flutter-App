@@ -7,9 +7,6 @@ class ChangeProfile with ChangeNotifier{
   bool changeAvatar= false;
   get getFile=> _file;
   get isChangeAvatar => changeAvatar;
-  void addPath(){
-
-  }
 
   void setFilePath(File file) {
 

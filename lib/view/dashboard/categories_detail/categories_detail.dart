@@ -8,7 +8,7 @@ import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config.dart';
 import 'package:gamming_community/class/Game.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
-import 'package:gamming_community/view/room/create_room.dart';
+import 'package:gamming_community/view/room/create_room_v2.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:video_player/video_player.dart';
 
@@ -199,7 +199,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                           ),
                           Padding(
                             padding: EdgeInsets.all(10.0),
-                            child: Text(game.name),
+                            child: Text(game.name,overflow: TextOverflow.fade,),
                           ),
                           Spacer(),
                           Padding(
@@ -211,9 +211,9 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => CreateRoom()));
+                                        builder: (context) => CreateRoomV2()));
                               },
-                              child: Text("Create room"),
+                              child: Text("Create rooms"),
                             ),
                           )
                         ],

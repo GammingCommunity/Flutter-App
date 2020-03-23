@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gamming_community/models/chat_provider.dart';
 import 'package:gamming_community/provider/changeProfile.dart';
 import 'package:gamming_community/provider/fetchMore.dart';
+import 'package:gamming_community/provider/search_bar.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
-import 'package:gamming_community/utils/slide_transition.dart';
 import 'package:gamming_community/view/forgot_password/forgotPassword.dart';
 import 'package:gamming_community/view/home/home.dart';
 import 'package:gamming_community/view/login/bloc/bloc/login_bloc.dart';
@@ -20,15 +20,15 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Widget defaultHome = Login();
-  SharedPreferences ref= await SharedPreferences.getInstance();
-  bool isLoggin= ref.getBool('isLogin') != null ?? false;
-  if(isLoggin){
-    defaultHome=HomePage();
+  SharedPreferences ref = await SharedPreferences.getInstance();
+  bool isLoggin = ref.getBool('isLogin') != null ?? false;
+  if (isLoggin) {
+    defaultHome = HomePage();
   }
-  runApp(MyApp(home: defaultHome)); 
+  runApp(MyApp(home: defaultHome));
   SystemChrome.setEnabledSystemUIOverlays([]);
 }
 
@@ -36,15 +36,13 @@ class MyApp extends StatelessWidget {
   final Widget home;
   MyApp({this.home});
 
-  
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<FetchMoreValue>(
-            create: (context) => FetchMoreValue()),
-        ChangeNotifierProvider<ChangeProfile>(
-            create: (context) => ChangeProfile())
+        ChangeNotifierProvider<FetchMoreValue>(create: (context) => FetchMoreValue()),
+        ChangeNotifierProvider<ChangeProfile>(create: (context) => ChangeProfile()),
+        ChangeNotifierProvider(create: (context) => Search())
       ],
       child: MultiBlocProvider(
           providers: [
@@ -79,8 +77,7 @@ class MyApp extends StatelessWidget {
                             primarySwatch: Colors.indigo,
                             accentColor: Colors.indigo,
                             cursorColor: Colors.amber,
-                            toggleableActiveColor:
-                                Colors.amber, //color cho switch, cac kieu
+                            toggleableActiveColor: Colors.amber, //color cho switch, cac kieu
                             appBarTheme: AppBarTheme(color: Color(0xff322E2E)),
                             indicatorColor: AppColors.PRIMARY_COLOR,
                             inputDecorationTheme: InputDecorationTheme(
@@ -91,14 +88,11 @@ class MyApp extends StatelessWidget {
                             bottomAppBarTheme: BottomAppBarTheme(
                               color: Color(0xff6A45E7),
                             ),
-                            textTheme: TextTheme(
-                                    bodyText2: TextStyle(color: Colors.white))
-                                .apply(
+                            textTheme: TextTheme(bodyText2: TextStyle(color: Colors.white)).apply(
                               bodyColor: Colors.white,
                               displayColor: Colors.blue,
                             ),
-                            accentIconTheme:
-                                IconThemeData(color: Colors.white)),
+                            accentIconTheme: IconThemeData(color: Colors.white)),
                         theme: ThemeData(
                             brightness: Brightness.light,
                             fontFamily: "GoogleSans-Regular",
@@ -114,34 +108,27 @@ class MyApp extends StatelessWidget {
                           if (pathElements[0] != "") return null;
                           switch (pathElements[1]) {
                             case "login":
-                              return MaterialPageRoute(
-                                  builder: (context) => Login());
+                              return MaterialPageRoute(builder: (context) => Login());
                               break;
                             case "signup":
-                              return MaterialPageRoute(
-                                  builder: (context) => SignUp());
+                              return MaterialPageRoute(builder: (context) => SignUp());
                               break;
                             case "forgot":
-                              return MaterialPageRoute(
-                                  builder: (context) => ForgotPassword());
+                              return MaterialPageRoute(builder: (context) => ForgotPassword());
                               break;
                             case "homepage":
-                              return MaterialPageRoute(
-                                  builder: (context) =>HomePage());
+                              return MaterialPageRoute(builder: (context) => HomePage());
                               break;
                             case "profile":
-                              return MaterialPageRoute(
-                                  builder: (context) => Profile());
+                              return MaterialPageRoute(builder: (context) => Profile());
                               break;
                             case "createRoom":
-                              return MaterialPageRoute(
-                                  builder: (context) => CreateRoom());
+                              return MaterialPageRoute(builder: (context) => CreateRoom());
                             default:
                               return MaterialPageRoute(builder: (_) {
                                 return Scaffold(
                                   body: Center(
-                                    child: Text(
-                                        'No route defined for ${settings.name}'),
+                                    child: Text('No route defined for ${settings.name}'),
                                   ),
                                 );
                               });

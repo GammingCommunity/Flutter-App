@@ -6,6 +6,8 @@ import 'package:gamming_community/class/Room.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:gamming_community/utils/skeleton_items.dart';
+import 'package:shimmer/shimmer.dart';
 
 class RoomByGame extends StatefulWidget {
   final String gameID;
@@ -47,7 +49,8 @@ class _RoomByGameState extends State<RoomByGame> {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           return AppConstraint.spinKitCubeGrid;
-                        } else {
+                        }
+                        else {
                           var room = snapshot.data;
                           return ListView.separated(
                               separatorBuilder: (context, index) => Column(
@@ -136,7 +139,9 @@ class _RoomByGameState extends State<RoomByGame> {
                                                             child: Text(
                                                                 "${v.inMinutes} minuties ago")),
                                                         Row(
-                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
                                                           children: <Widget>[
                                                             for (var user
                                                                 in room[index]

@@ -67,7 +67,7 @@ class _CarouselState extends State<Carousel> {
                     itemBuilder: (context, indexItem) {
                       return Container(
                           margin: EdgeInsets.symmetric(horizontal: 5.0),
-                          height: 150,
+                          height: 200,
                           width: screenSize.width,
                           child: CachedNetworkImage(
                               filterQuality: FilterQuality.medium,

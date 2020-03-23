@@ -22,4 +22,5 @@ class AppConstraint {
     bufferedColor: Colors.blueGrey,
   );
   static const double bottom_bar_height= 62;
+  
 }

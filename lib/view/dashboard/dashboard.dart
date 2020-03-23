@@ -31,23 +31,6 @@ class _DashBoardState extends State<DashBoard>
         child: Column(
           children: <Widget>[
             Container(
-                width: screenSize.width,
-                height: 40,
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                    color: AppColors.NAVIGATION_BAR_COLOR,
-                    borderRadius: BorderRadius.circular(10)),
-                child: TextField(
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "Search...",
-                      suffixIcon: Icon(
-                        OpenIconicIcons.magnifyingGlass,
-                        size: 20,
-                      )),
-                )),
-            SizedBox(height: 10),
-            Container(
                 height: 200,
                 width: MediaQuery.of(context).size.width,
                 child: Carousel()),

@@ -18,7 +18,6 @@ class PrivateMessages {
       for (var item in json) {
         item['messages'].forEach((e) => {
               _listPrivateMessage.add(ChatMessage(
-                
                 animationController: controller,
                 text: e['text'],
                 sendDate: DateTime.parse(e['createAt']),

@@ -65,7 +65,7 @@ class _SearchFriendsState extends State<SearchFriends> {
                     child: TextFormField(
                       decoration: InputDecoration.collapsed(
                           hintText: "Type a name or phone number",
-                          border: InputBorder.none),
+                          border: InputBorder.none,)
                     ),
                   )
                 ],
@@ -82,37 +82,42 @@ class _SearchFriendsState extends State<SearchFriends> {
                   )),
               Expanded(
                 child: ListView.separated(
-                  separatorBuilder: (context, index) => SizedBox(height: 20,),
+                  separatorBuilder: (context, index) => SizedBox(
+                    height: 20,
+                  ),
                   itemCount: sampleUser.length,
                   itemBuilder: (context, index) {
                     return Container(
                       height: 60,
                       width: screenSize.width,
                       child: Row(
-                        
                         children: <Widget>[
-                           Container(
-                             margin: EdgeInsets.only(right:10),
-                             padding: EdgeInsets.all(5),
-                                child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10000),
-                                    child: CachedNetworkImage(
-                                      height: 50,
-                                      width: 50,
-                                        imageUrl: sampleUser[index])),
-                              ),
+                          Container(
+                            margin: EdgeInsets.only(right: 10),
+                            padding: EdgeInsets.all(5),
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10000),
+                                child: CachedNetworkImage(
+                                    height: 50,
+                                    width: 50,
+                                    imageUrl: sampleUser[index])),
+                          ),
                           Expanded(
-                            flex: 5,
+                              flex: 5,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.end,
-
-                            children: <Widget>[
-                              Text("Sample name",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                              SizedBox(height: 10),
-                              Text("Same describle")
-                            ],
-                          ))
+                                children: <Widget>[
+                                  Text(
+                                    "Sample name",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text("Same describle")
+                                ],
+                              ))
                         ],
                       ),
                     );

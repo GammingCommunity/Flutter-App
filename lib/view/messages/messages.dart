@@ -32,6 +32,7 @@ class Messages extends StatefulWidget {
 
 class _MessagesState extends State<Messages>
     with AutomaticKeepAliveClientMixin<Messages>, TickerProviderStateMixin {
+  GlobalKey<ScaffoldState> _globalKey = GlobalKey<ScaffoldState>();
   GraphQLQuery query = GraphQLQuery();
   Config config = Config();
   String roomName = "Sample here";
@@ -74,9 +75,9 @@ class _MessagesState extends State<Messages>
       vsync: this,
       duration: const Duration(milliseconds: 2000),
     )..forward();
-    GetListRoom(userID: widget.userID);
     super.initState();
   }
+
   @override
   void dispose() {
     animationController.dispose();
@@ -244,7 +245,7 @@ class _MessagesState extends State<Messages>
                                                       result.data[
                                                           'getPrivateChat'])
                                                   .conservations;
-                                                  
+
                                           return ListView.builder(
                                             itemExtent: 100.0,
                                             itemCount:
@@ -264,102 +265,114 @@ class _MessagesState extends State<Messages>
                                                     curve:
                                                         Curves.fastOutSlowIn),
                                               ));
-                                              return FadeTransition(
-                                                  opacity: animation,
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      // navigate to convservation_detail
-                                                      Navigator.of(context)
-                                                          .push(
-                                                              MaterialPageRoute(
-                                                        maintainState: true,
-                                                        fullscreenDialog: true,
-                                                        builder: (context) =>
-                                                            PrivateMessagesDetail(currentID: privateConservations[index].currentUser['id'],),
-                                                      ));
-                                                    },
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Row(
-                                                          mainAxisSize:
-                                                              MainAxisSize.max,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .center,
-                                                          children: <Widget>[
-                                                            ClipRRect(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          1000),
-                                                              child:
-                                                                  CachedNetworkImage(
-                                                                height: 70,
-                                                                width: 70,
-                                                                placeholder: (context,
+                                              return InkWell(
+                                                onTap: () {
+                                                  // navigate to convservation_detail
+                                                  Navigator.of(context)
+                                                      .push(MaterialPageRoute(
+                                                    maintainState: true,
+                                                    fullscreenDialog: true,
+                                                    builder: (context) => PrivateMessagesDetail(
+                                                        currentID:
+                                                            privateConservations[
+                                                                        index]
+                                                                    .currentUser[
+                                                                'id'],
+                                                        profileUrl:
+                                                            privateConservations[
+                                                                        index]
+                                                                    .currentUser[
+                                                                'profileUrl']),
+                                                  ));
+                                                },
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: <Widget>[
+                                                        ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      1000),
+                                                          child:
+                                                              CachedNetworkImage(
+                                                            height: 70,
+                                                            width: 70,
+                                                            placeholder:
+                                                                (context,
                                                                         url) =>
                                                                     Container(
-                                                                        color: Colors
-                                                                            .grey[400]),
-                                                                imageUrl: privateConservations[
+                                                              decoration: BoxDecoration(
+                                                                  color: Colors
+                                                                          .grey[
+                                                                      400],
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              1000)),
+                                                            ),
+                                                            imageUrl:
+                                                                privateConservations[
                                                                             index]
                                                                         .friend[
                                                                     'profileUrl'],
-                                                              ),
+                                                          ),
+                                                        ),
+                                                        SizedBox(width: 10),
+                                                        Wrap(
+                                                          spacing: 10,
+                                                          direction:
+                                                              Axis.vertical,
+                                                          children: <Widget>[
+                                                            // get lastest message here
+                                                            Text(
+                                                              "${privateConservations[index].friend['id']}",
+                                                              style: TextStyle(
+                                                                  fontSize: 20),
                                                             ),
-                                                            SizedBox(width: 10),
-                                                            Wrap(
-                                                              spacing: 10,
-                                                              direction:
-                                                                  Axis.vertical,
+                                                            Row(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .max,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
                                                               children: <
                                                                   Widget>[
-                                                                // get lastest message here
                                                                 Text(
-                                                                  "${privateConservations[index].friend['id']}",
+                                                                    "${privateConservations[index].message[0].text}",
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            15)),
+                                                                Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                              .all(
+                                                                          6.0),
+                                                                  child: Icon(
+                                                                      Icons
+                                                                          .fiber_manual_record,
+                                                                      size: 8),
+                                                                ),
+                                                                Text(
+                                                                  "${formatDate(DateTime.now().toLocal())}",
                                                                   style: TextStyle(
                                                                       fontSize:
-                                                                          20),
-                                                                ),
-                                                                Row(
-                                                                  mainAxisSize:
-                                                                      MainAxisSize
-                                                                          .max,
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceBetween,
-                                                                  children: <
-                                                                      Widget>[
-                                                                    Text(
-                                                                        "${privateConservations[index].message[0].text}",
-                                                                        style: TextStyle(
-                                                                            fontSize:
-                                                                                15)),
-                                                                    Padding(
-                                                                      padding:
-                                                                          const EdgeInsets.all(
-                                                                              6.0),
-                                                                      child: Icon(
-                                                                          Icons
-                                                                              .fiber_manual_record,
-                                                                          size:
-                                                                              8),
-                                                                    ),
-                                                                    Text(
-                                                                      "${formatDate(DateTime.now().toLocal())}",
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              15),
-                                                                    ),
-                                                                  ],
+                                                                          15),
                                                                 ),
                                                               ],
                                                             ),
-                                                          ]),
-                                                    ),
-                                                  ));
+                                                          ],
+                                                        ),
+                                                      ]),
+                                                ),
+                                              );
                                             },
                                           );
                                         }

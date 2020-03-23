@@ -11,8 +11,8 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 class PrivateMessagesDetail extends StatefulWidget {
-  final String currentID;
-  PrivateMessagesDetail({this.currentID});
+  final String currentID,profileUrl;
+  PrivateMessagesDetail({this.currentID,this.profileUrl});
   @override
   _MessagesState createState() => _MessagesState();
 }
@@ -56,14 +56,20 @@ class _MessagesState extends State<PrivateMessagesDetail>
     var listMessage = PrivateMessages.fromJson(
             result.data['getPrivateChat'], animationController)
         .privateMessages;
+    print(listMessage);
     chatProvider.onAddListMessage(listMessage);
   }
 
   void onSendMesasge(String message) {
+    print(widget.profileUrl);
     if (chatController.text.isEmpty) return;
     var animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     var chatMessage = ChatMessage(
+      sender: {
+        "id":widget.currentID,
+        "profile_url":widget.profileUrl
+      },
       animationController: animationController,
       text: chatController.text,
       sendDate: DateTime.now(),
@@ -71,10 +77,11 @@ class _MessagesState extends State<PrivateMessagesDetail>
     sendMessageToSocket();
 
     chatMessage.animationController.forward();
-
+    
     chatProvider.onAddNewMessage(chatMessage);
 
     chatController.clear();
+    animateToBottom();
   }
 
   void sendMessageToSocket() {
@@ -202,7 +209,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
                 ],
               ),
             )),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),

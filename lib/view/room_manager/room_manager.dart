@@ -98,6 +98,7 @@ class _RoomManagerState extends State<RoomManager>
             child: CacheProvider(
               child: Scaffold(
                 body: Container(
+                  padding: EdgeInsets.all(10),
                     alignment: Alignment.center,
                     child: FutureBuilder(
                         future: getInfo(),

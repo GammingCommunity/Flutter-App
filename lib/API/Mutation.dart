@@ -105,7 +105,7 @@ class GraphQLMutation {
   }
   String editAccount(String name,String des,String phone,String month,String year,String avatarUrl) => """
     mutation{
-      editAccount(account:{
+      editThisAccount(account:{
         name:"$name"
         describe:"$des"
         phone:{phone:"$phone"}
@@ -118,13 +118,24 @@ class GraphQLMutation {
       }
     }
   """;
-}
-String editEmail(String email) =>"""
-  mutation {
-  editAccount(account: {email: {email: "$email"}}) {
-    status
-    describe
+  String editEmail(String email) =>"""
+    mutation {
+    editAccount(account: {email: {email: "$email"}}) {
+      status
+      describe
+    }
   }
+
+  """;
+  /// {
+  ///   respond : true => has send ;
+  ///   false => already sent or something else
+  /// }
+  String sendFriendRequest(int requestID) =>"""
+    mutation{
+      sendFriendRequest(receiver_id:$requestID)
+    }
+  """;
 }
 
-""";
+
