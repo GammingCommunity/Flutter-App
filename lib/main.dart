@@ -19,7 +19,7 @@ import 'package:gamming_community/view/sign_up/sign_up.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
-
+import 'package:gamming_community/provider/notficationModel.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Widget defaultHome = Login();
@@ -42,7 +42,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<FetchMoreValue>(create: (context) => FetchMoreValue()),
         ChangeNotifierProvider<ChangeProfile>(create: (context) => ChangeProfile()),
-        ChangeNotifierProvider(create: (context) => Search())
+        ChangeNotifierProvider<Search>(create: (context) => Search()),
+        ChangeNotifierProvider<NotificationModel>(create: (context) => NotificationModel()),
       ],
       child: MultiBlocProvider(
           providers: [

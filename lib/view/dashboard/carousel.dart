@@ -7,6 +7,7 @@ import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config.dart';
 import 'package:gamming_community/class/list_game_image.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:shimmer/shimmer.dart';
 
 class Carousel extends StatefulWidget {
   @override
@@ -49,11 +50,19 @@ class _CarouselState extends State<Carousel> {
           child: Query(
         options: QueryOptions(documentNode: gql(_query.getListGame(1))),
         builder: (result, {fetchMore, refetch}) {
-          
+          if (result.hasException) {
+            return ClipRRect(borderRadius: BorderRadius.circular(15),child: Image.asset('assets/images/no_image.png',fit: BoxFit.cover));
+          }
           if (result.loading) {
-            return Align(
-                alignment: Alignment.center,
-                child: SpinKitCubeGrid(color: Colors.white, size: 20));
+            return Shimmer.fromColors(
+                
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 3,
+                  itemBuilder: (context, index) => Container(height: 150),
+                ),
+                baseColor: Colors.grey[400],
+                highlightColor: Colors.grey);
           } else {
             var _image = ListGameImage.fromJson(result.data['getListGame']).listGameImage;
 
@@ -74,12 +83,11 @@ class _CarouselState extends State<Carousel> {
                               fit: BoxFit.cover,
                               imageUrl: _image[indexItem].imageUrl[0],
                               placeholder: (context, index) {
-                                return SpinKitCubeGrid(
-                                    size: 20, color: Colors.white);
+                                return SpinKitCubeGrid(size: 20, color: Colors.white);
                               },
-                              errorWidget: (context, url, error) => Container(alignment: Alignment.center,child:Icon(Icons.error_outline)),
-                              imageBuilder: (context, imageProvider) =>
-                                  Container(
+                              errorWidget: (context, url, error) => Container(
+                                  alignment: Alignment.center, child: Icon(Icons.error_outline)),
+                              imageBuilder: (context, imageProvider) => Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(15),
                                       image: DecorationImage(

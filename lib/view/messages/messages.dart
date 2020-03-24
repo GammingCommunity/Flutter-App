@@ -59,8 +59,7 @@ class _MessagesState extends State<Messages>
   }
 
   void _scrollListener() {
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       setState(() {});
       print("to bottom");
@@ -118,8 +117,7 @@ class _MessagesState extends State<Messages>
                               flex: 1,
                               child: Text(
                                 "Active friends",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                             ),
                             //demo , friends example
@@ -128,45 +126,35 @@ class _MessagesState extends State<Messages>
                               child: FutureBuilder(
                                 future: getImage(),
                                 builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
                                     return Container();
                                   } else {
                                     return ListView.separated(
-                                        separatorBuilder: (context, index) =>
-                                            SizedBox(
+                                        separatorBuilder: (context, index) => SizedBox(
                                               width: 20,
                                             ),
                                         scrollDirection: Axis.horizontal,
                                         itemCount: snapshot.data.length,
                                         itemBuilder: (context, index) {
                                           return ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(10000),
+                                            borderRadius: BorderRadius.circular(10000),
                                             child: CachedNetworkImage(
                                               fadeInCurve: Curves.easeIn,
-                                              fadeInDuration:
-                                                  Duration(seconds: 2),
-                                              imageBuilder:
-                                                  (context, imageProvider) =>
-                                                      Container(
-                                                height: 80,
-                                                width: 80,
+                                              fadeInDuration: Duration(seconds: 2),
+                                              imageBuilder: (context, imageProvider) => Container(
+                                                height: 70,
+                                                width: 70,
                                                 decoration: BoxDecoration(
                                                     color: Colors.red,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10000),
+                                                    borderRadius: BorderRadius.circular(10000),
                                                     image: DecorationImage(
-                                                        fit: BoxFit.cover,
-                                                        image: imageProvider)),
+                                                        fit: BoxFit.cover, image: imageProvider)),
                                               ),
                                               imageUrl: snapshot.data[index],
                                               placeholder: (context, url) =>
                                                   Container(color: Colors.grey),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      Icon(Icons.error),
+                                              errorWidget: (context, url, error) =>
+                                                  Icon(Icons.error),
                                             ),
                                           );
                                         });
@@ -188,15 +176,12 @@ class _MessagesState extends State<Messages>
                                 Expanded(
                                   flex: 1,
                                   child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
                                       Text(
                                         "Messages",
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold),
+                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                       ),
                                       SizedBox(width: 10),
                                       Container(
@@ -205,12 +190,10 @@ class _MessagesState extends State<Messages>
                                         width: 20,
                                         decoration: BoxDecoration(
                                             color: Colors.indigo,
-                                            borderRadius:
-                                                BorderRadius.circular(15)),
+                                            borderRadius: BorderRadius.circular(15)),
                                         child: Text(
                                           "10",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
+                                          style: TextStyle(fontWeight: FontWeight.bold),
                                         ),
                                       )
                                     ],
@@ -220,151 +203,102 @@ class _MessagesState extends State<Messages>
                                   flex: 6,
                                   child: Query(
                                       options: QueryOptions(
-                                          documentNode: gql(
-                                              query.getPrivateConservation(
-                                                  widget.userID))),
+                                          documentNode:
+                                              gql(query.getPrivateConservation(widget.userID))),
                                       builder: (QueryResult result,
-                                          {VoidCallback refetch,
-                                          FetchMore fetchMore}) {
+                                          {VoidCallback refetch, FetchMore fetchMore}) {
                                         if (result.hasException) {
                                           return Align(
                                             alignment: Alignment.center,
-                                            child: SvgPicture.asset(
-                                                "assets/icons/empty_icon.svg"),
+                                            child: SvgPicture.asset("assets/icons/empty_icon.svg"),
                                           );
                                         }
                                         if (result.loading) {
                                           return Align(
                                             alignment: Alignment.center,
-                                            child: SpinKitCubeGrid(
-                                                size: 20, color: Colors.white),
+                                            child: SpinKitCubeGrid(size: 20, color: Colors.white),
                                           );
                                         } else {
-                                          var privateConservations =
-                                              PrivateConservations.fromJson(
-                                                      result.data[
-                                                          'getPrivateChat'])
-                                                  .conservations;
+                                          var privateConservations = PrivateConservations.fromJson(
+                                                  result.data['getPrivateChat'])
+                                              .conservations;
 
                                           return ListView.builder(
                                             itemExtent: 100.0,
-                                            itemCount:
-                                                privateConservations.length,
+                                            itemCount: privateConservations.length,
                                             controller: _scrollController,
                                             itemBuilder: (context, index) {
-                                              var animation =
-                                                  Tween(begin: 0.0, end: 1.0)
-                                                      .animate(CurvedAnimation(
+                                              var animation = Tween(begin: 0.0, end: 1.0)
+                                                  .animate(CurvedAnimation(
                                                 parent: animationController,
                                                 curve: Interval(
-                                                    (1 /
-                                                            listPrivateRoom
-                                                                .length) *
-                                                        index,
-                                                    1.0,
-                                                    curve:
-                                                        Curves.fastOutSlowIn),
+                                                    (1 / listPrivateRoom.length) * index, 1.0,
+                                                    curve: Curves.fastOutSlowIn),
                                               ));
                                               return InkWell(
                                                 onTap: () {
                                                   // navigate to convservation_detail
-                                                  Navigator.of(context)
-                                                      .push(MaterialPageRoute(
+                                                  Navigator.of(context).push(MaterialPageRoute(
                                                     maintainState: true,
                                                     fullscreenDialog: true,
                                                     builder: (context) => PrivateMessagesDetail(
-                                                        currentID:
-                                                            privateConservations[
-                                                                        index]
-                                                                    .currentUser[
-                                                                'id'],
-                                                        profileUrl:
-                                                            privateConservations[
-                                                                        index]
-                                                                    .currentUser[
-                                                                'profileUrl']),
+                                                        currentID: privateConservations[index]
+                                                            .currentUser['id'],
+                                                        profileUrl: privateConservations[index]
+                                                            .currentUser['profileUrl']),
                                                   ));
                                                 },
                                                 child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
+                                                  padding: const EdgeInsets.all(8.0),
                                                   child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.max,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .center,
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      crossAxisAlignment: CrossAxisAlignment.center,
                                                       children: <Widget>[
                                                         ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      1000),
-                                                          child:
-                                                              CachedNetworkImage(
+                                                          borderRadius: BorderRadius.circular(1000),
+                                                          child: CachedNetworkImage(
                                                             height: 70,
                                                             width: 70,
-                                                            placeholder:
-                                                                (context,
-                                                                        url) =>
-                                                                    Container(
+                                                            fit: BoxFit.cover,
+                                                            placeholder: (context, url) =>
+                                                                Container(
                                                               decoration: BoxDecoration(
-                                                                  color: Colors
-                                                                          .grey[
-                                                                      400],
+                                                                  color: Colors.grey[400],
                                                                   borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              1000)),
+                                                                      BorderRadius.circular(1000)),
                                                             ),
-                                                            imageUrl:
-                                                                privateConservations[
-                                                                            index]
-                                                                        .friend[
-                                                                    'profileUrl'],
+                                                            imageUrl: privateConservations[index]
+                                                                .friend['profileUrl'],
                                                           ),
                                                         ),
                                                         SizedBox(width: 10),
                                                         Wrap(
                                                           spacing: 10,
-                                                          direction:
-                                                              Axis.vertical,
+                                                          direction: Axis.vertical,
                                                           children: <Widget>[
                                                             // get lastest message here
                                                             Text(
                                                               "${privateConservations[index].friend['id']}",
-                                                              style: TextStyle(
-                                                                  fontSize: 20),
+                                                              style: TextStyle(fontSize: 20),
                                                             ),
                                                             Row(
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .max,
+                                                              mainAxisSize: MainAxisSize.max,
                                                               mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceBetween,
-                                                              children: <
-                                                                  Widget>[
+                                                                  MainAxisAlignment.spaceBetween,
+                                                              children: <Widget>[
                                                                 Text(
                                                                     "${privateConservations[index].message[0].text}",
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            15)),
+                                                                    style: TextStyle(fontSize: 15)),
                                                                 Padding(
                                                                   padding:
-                                                                      const EdgeInsets
-                                                                              .all(
-                                                                          6.0),
+                                                                      const EdgeInsets.all(6.0),
                                                                   child: Icon(
-                                                                      Icons
-                                                                          .fiber_manual_record,
+                                                                      Icons.fiber_manual_record,
                                                                       size: 8),
                                                                 ),
                                                                 Text(
                                                                   "${formatDate(DateTime.now().toLocal())}",
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          15),
+                                                                  style: TextStyle(fontSize: 15),
                                                                 ),
                                                               ],
                                                             ),

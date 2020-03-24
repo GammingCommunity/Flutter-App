@@ -8,6 +8,7 @@ import 'package:gamming_community/class/Game.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/dashboard/categories_detail/categories_detail.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:page_transition/page_transition.dart';
 
 class GameGenre extends StatefulWidget {
   final String genre;
@@ -60,16 +61,14 @@ class _GameGenreState extends State<GameGenre> {
                     SizedBox(width: 10),
                     Text(
                       widget.genre,
-                      style:
-                          TextStyle(fontSize: AppConstraint.genre_title_action),
+                      style: TextStyle(fontSize: AppConstraint.genre_title_action),
                     )
                   ],
                 ),
                 Material(
                     clipBehavior: Clip.antiAlias,
                     borderRadius: BorderRadius.circular(20),
-                    child:
-                        IconButton(icon: Icon(Icons.search), onPressed: () {})),
+                    child: IconButton(icon: Icon(Icons.search), onPressed: () {})),
               ],
             ),
             preferredSize: Size.fromHeight(AppConstraint.appBarHeight)),
@@ -79,8 +78,7 @@ class _GameGenreState extends State<GameGenre> {
             child: Container(
                 padding: EdgeInsets.all(10),
                 child: Query(
-                  options: QueryOptions(
-                      documentNode: gql(_query.getGameByGenres(widget.genre))),
+                  options: QueryOptions(documentNode: gql(_query.getGameByGenres(widget.genre))),
                   builder: (result, {fetchMore, refetch}) {
                     if (result.loading) {
                       return Align(
@@ -96,15 +94,11 @@ class _GameGenreState extends State<GameGenre> {
                           duration: Duration(seconds: 10),
                           curve: Curves.bounceInOut,
                           alignment: Alignment.center,
-                          child:
-                              SvgPicture.asset("assets/icons/empty_icon.svg"));
+                          child: SvgPicture.asset("assets/icons/empty_icon.svg"));
                     } else {
-                      var listGame =
-                          ListGame.fromJson(result.data['getGameByGenre'])
-                              .games;
+                      var listGame = ListGame.fromJson(result.data['getGameByGenre']).games;
                       return ListView.separated(
-                          padding: EdgeInsets.only(
-                              top: 20, left: 10, right: 10, bottom: 10),
+                          padding: EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 10),
                           separatorBuilder: (context, index) => SizedBox(
                                 height: 30,
                               ),
@@ -112,32 +106,28 @@ class _GameGenreState extends State<GameGenre> {
                           itemBuilder: (context, index) {
                             return Material(
                               color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(
-                                  AppConstraint.container_border_radius),
+                              borderRadius:
+                                  BorderRadius.circular(AppConstraint.container_border_radius),
                               child: InkWell(
                                 onTap: () {
                                   Navigator.push(
                                       context,
-                                      MaterialPageRoute(
-                                        builder: (context) => CategoriesDetail(
-                                          itemTag: listGame[index].name,
-                                          gameDetail: listGame[index],
-                                        ),
-                                      ));
+                                      PageTransition(
+                                        type: PageTransitionType.upToDown,
+                                          child: CategoriesDetail(
+                                        itemTag: listGame[index].name,
+                                        gameDetail: listGame[index],
+                                      )));
                                 },
                                 child: Container(
                                     height: 100,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(
-                                          AppConstraint
-                                              .container_border_radius),
+                                          AppConstraint.container_border_radius),
                                       gradient: LinearGradient(
                                           begin: Alignment.topLeft,
                                           end: Alignment.bottomRight,
-                                          colors: [
-                                            Color(0xff2b5876),
-                                            Color(0xff4e4376)
-                                          ]),
+                                          colors: [Color(0xff2b5876), Color(0xff4e4376)]),
                                     ),
                                     width: screenSize.width,
                                     child: Stack(
@@ -147,10 +137,9 @@ class _GameGenreState extends State<GameGenre> {
                                           left: 20,
                                           top: -20,
                                           child: CachedNetworkImage(
-                                            imageUrl:
-                                                listGame[index].coverImage,
+                                            imageUrl: listGame[index].coverImage,
                                             placeholder: (context, url) {
-                                              return Container(color:Colors.blueGrey);
+                                              return Container(color: Colors.blueGrey);
                                             },
                                             imageBuilder: (context, url) {
                                               return Container(
@@ -158,18 +147,14 @@ class _GameGenreState extends State<GameGenre> {
                                                 height: 100,
                                                 width: 80,
                                                 decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
+                                                    borderRadius: BorderRadius.circular(10),
                                                     image: DecorationImage(
                                                       image: url,
                                                       fit: BoxFit.cover,
                                                     )),
                                               );
                                             },
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    Container(
+                                            errorWidget: (context, url, error) => Container(
                                               color: Colors.grey,
                                             ),
                                           ),
@@ -178,26 +163,22 @@ class _GameGenreState extends State<GameGenre> {
                                           left: 120,
                                           top: 20,
                                           child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: <Widget>[
                                               Text(
                                                 listGame[index].name,
                                                 style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18),
+                                                    fontWeight: FontWeight.bold, fontSize: 18),
                                               ),
                                               SizedBox(
                                                 height: 10,
                                               ),
                                               Wrap(
-                                                runAlignment:
-                                                    WrapAlignment.start,
+                                                runAlignment: WrapAlignment.start,
                                                 runSpacing: 10,
                                                 direction: Axis.horizontal,
                                                 children: <Widget>[
-                                                   getIconPlatforms(
-                                                      listGame[index].platforms)
+                                                  getIconPlatforms(listGame[index].platforms)
                                                 ],
                                               )
                                             ],
@@ -232,12 +213,10 @@ Widget getIconPlatforms(List<dynamic> list) {
   for (var item in list) {
     switch (item) {
       case 'Windows':
-        listIcon
-            .add(myDefineSvgIcon('assets/icons/platforms/windows-white.svg'));
+        listIcon.add(myDefineSvgIcon('assets/icons/platforms/windows-white.svg'));
         continue;
       case 'PS4':
-        listIcon.add(
-            myDefineSvgIcon('assets/icons/platforms/playstation-white.svg'));
+        listIcon.add(myDefineSvgIcon('assets/icons/platforms/playstation-white.svg'));
         continue;
       case 'Xbox':
         listIcon.add(myDefineSvgIcon(
@@ -260,8 +239,7 @@ Widget getIconPlatforms(List<dynamic> list) {
         ));
         continue;
       case 'Nintendo 3DS':
-        listIcon.add(myDefineSvgIcon(
-            'assets/icons/platforms/nintendo-switch-white.svg'));
+        listIcon.add(myDefineSvgIcon('assets/icons/platforms/nintendo-switch-white.svg'));
         continue;
       case 'Android':
         listIcon.add(myDefineSvgIcon(

@@ -60,12 +60,14 @@ class _NewsState extends State<News> {
                                 height: 200,
                                 width: screenSize.width,
                                 fit: BoxFit.cover,
-                                imageUrl: listNews[i].imageUrl),
+                                imageUrl: listNews[i].imageUrl,
+                                errorWidget: (context, url, error) => Image.asset('assets/images/no_image.png',fit:BoxFit.cover)
+                            ),
                             Padding(
                               padding: EdgeInsets.symmetric(vertical: 10),
                               child: Align(
                                   alignment: Alignment.centerLeft,
-                                  child: Row(
+                                  child: Row( 
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: <Widget>[

@@ -17,7 +17,7 @@ class _DashBoardState extends State<DashBoard>
     with AutomaticKeepAliveClientMixin<DashBoard> {
   @override
   void initState() {
-    print('init state');
+    //print('init state');
     super.initState();
   }
 
@@ -52,7 +52,7 @@ class _DashBoardState extends State<DashBoard>
                 )),
             SizedBox(height: 10),
             Category(),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[

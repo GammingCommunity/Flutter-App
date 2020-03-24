@@ -75,46 +75,32 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: <Widget>[
+                                      Align(alignment: Alignment.topLeft,child: IconButton(icon: Icon(Icons.chevron_left), onPressed: (){Navigator.pop(context);}),),
                                       Align(
                                         alignment: Alignment.topRight,
                                         child: RaisedButton.icon(
                                             onPressed: () {
-                                              Navigator.of(context).push(
-                                                  PageRouteBuilder(
-                                                      pageBuilder: (context, a1,
-                                                              a2) =>
-                                                          EditProfile(
-                                                              token: snapshot
-                                                                  .data[2],
-                                                              userID:
-                                                                  widget.userID,
-                                                              currentProfile: widget
-                                                                  .userProfile),
-                                                      transitionsBuilder:
-                                                          (context, anim, a2,
-                                                              child) {
-                                                        // slide from bottom to top
-                                                        var begin =
-                                                            Offset(0.0, 1.0);
-                                                        var end = Offset.zero;
-                                                        var curve = Curves.ease;
-                                                        var tween = Tween(
-                                                                begin: begin,
-                                                                end: end)
-                                                            .chain(CurveTween(
-                                                                curve: curve));
-                                                        return SlideTransition(
-                                                            child: child,
-                                                            position: anim
-                                                                .drive(tween));
-                                                      }));
+                                              Navigator.of(context).push(PageRouteBuilder(
+                                                  pageBuilder: (context, a1, a2) => EditProfile(
+                                                      token: snapshot.data[2],
+                                                      userID: widget.userID,
+                                                      currentProfile: widget.userProfile),
+                                                  transitionsBuilder: (context, anim, a2, child) {
+                                                    // slide from bottom to top
+                                                    var begin = Offset(0.0, 1.0);
+                                                    var end = Offset.zero;
+                                                    var curve = Curves.ease;
+                                                    var tween = Tween(begin: begin, end: end)
+                                                        .chain(CurveTween(curve: curve));
+                                                    return SlideTransition(
+                                                        child: child, position: anim.drive(tween));
+                                                  }));
                                             },
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius: borderRadius),
+                                            shape:
+                                                RoundedRectangleBorder(borderRadius: borderRadius),
                                             icon: Icon(Icons.wb_iridescent),
                                             label: Text("Edit")),
                                       )
@@ -132,16 +118,13 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                   CachedNetworkImage(
                                     fadeInCurve: Curves.easeIn,
                                     fadeInDuration: Duration(seconds: 2),
-                                    imageBuilder: (context, imageProvider) =>
-                                        Container(
+                                    imageBuilder: (context, imageProvider) => Container(
                                       height: 100,
                                       width: 100,
                                       decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(1000),
+                                          borderRadius: BorderRadius.circular(1000),
                                           image: DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: imageProvider)),
+                                              fit: BoxFit.cover, image: imageProvider)),
                                     ),
                                     imageUrl: widget.userProfile == null
                                         ? AppConstraint.sample_proifle_url
@@ -151,11 +134,9 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                       width: 100,
                                       decoration: BoxDecoration(
                                           color: Colors.grey,
-                                          borderRadius:
-                                              BorderRadius.circular(1000)),
+                                          borderRadius: BorderRadius.circular(1000)),
                                     ),
-                                    errorWidget: (context, url, error) =>
-                                        Icon(Icons.error),
+                                    errorWidget: (context, url, error) => Icon(Icons.error),
                                   ),
                                   SizedBox(
                                     height: 10,
@@ -218,12 +199,10 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                 Column(
                                   children: <Widget>[
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: <Widget>[
                                         Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 30),
+                                          padding: const EdgeInsets.only(left: 30),
                                           child: Row(
                                             children: <Widget>[
                                               Icon(
@@ -265,16 +244,13 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                 InkWell(
                                     onTap: () {},
                                     child: rowAccountSetting(
-                                        Icon(Icons.language,
-                                            size: 30, color: Colors.amber),
+                                        Icon(Icons.language, size: 30, color: Colors.amber),
                                         "Language")),
                                 rowAccountSetting(
-                                    Icon(Icons.leak_add,
-                                        size: 30, color: Colors.blueGrey),
+                                    Icon(Icons.leak_add, size: 30, color: Colors.blueGrey),
                                     "Follows"),
                                 rowAccountSetting(
-                                    Icon(Icons.favorite,
-                                        size: 30, color: Colors.pink),
+                                    Icon(Icons.favorite, size: 30, color: Colors.pink),
                                     "Following"),
                                 rowAccountSetting(
                                     Icon(
@@ -283,8 +259,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                     ),
                                     "Feedback"),
                                 rowAccountSetting(
-                                    Icon(Icons.leak_remove,
-                                        size: 30, color: Colors.red[300]),
+                                    Icon(Icons.leak_remove, size: 30, color: Colors.red[300]),
                                     "Restrict users"),
                                 InkWell(
                                     onTap: () {
@@ -308,8 +283,9 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 }
-void loggout(BuildContext context) async{
-  SharedPreferences ref= await SharedPreferences.getInstance();
+
+void loggout(BuildContext context) async {
+  SharedPreferences ref = await SharedPreferences.getInstance();
   ref.setBool('isLogin', false);
   Navigator.of(context).pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
 }
