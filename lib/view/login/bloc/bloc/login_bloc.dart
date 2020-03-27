@@ -3,9 +3,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:gamming_community/API/Mutation.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config1.dart';
 import 'package:gamming_community/class/LoginData.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'login_event.dart';
@@ -14,8 +13,6 @@ part 'login_state.dart';
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   @override
   LoginState get initialState => LoginInitial();
-
-  Config1 config = Config1();
 
   GraphQLMutation mutation = GraphQLMutation();
   GraphQLQuery query = GraphQLQuery();
@@ -28,8 +25,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       
       String email = event.email;
       String password = event.password;
-      GraphQLClient client = config.clientToQuery();
-      var result = await client.mutate(MutationOptions(documentNode: gql(query.login(email.trim(), password.trim()))));
+      var result = await SubRepo.queryGraphQL("", query.login(email.trim(), password.trim()));
       try {
         //print(result.data.values.first["status"]);
         LoginData loginData = LoginData.fromJson(result.data);

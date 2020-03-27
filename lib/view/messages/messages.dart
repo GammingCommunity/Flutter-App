@@ -235,6 +235,7 @@ class _MessagesState extends State<Messages>
                                                     (1 / listPrivateRoom.length) * index, 1.0,
                                                     curve: Curves.fastOutSlowIn),
                                               ));
+                                              // go to message detail + notfiy new message
                                               return InkWell(
                                                 onTap: () {
                                                   // navigate to convservation_detail
@@ -242,6 +243,7 @@ class _MessagesState extends State<Messages>
                                                     maintainState: true,
                                                     fullscreenDialog: true,
                                                     builder: (context) => PrivateMessagesDetail(
+                                                      chatID: privateConservations[index].id,
                                                         currentID: privateConservations[index]
                                                             .currentUser['id'],
                                                         profileUrl: privateConservations[index]
@@ -251,7 +253,7 @@ class _MessagesState extends State<Messages>
                                                 child: Padding(
                                                   padding: const EdgeInsets.all(8.0),
                                                   child: Row(
-                                                      mainAxisSize: MainAxisSize.min,
+                                                      
                                                       crossAxisAlignment: CrossAxisAlignment.center,
                                                       children: <Widget>[
                                                         ClipRRect(

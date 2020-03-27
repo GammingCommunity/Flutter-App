@@ -1,8 +1,9 @@
 class Conservation {
+  String id;
   Map<String, String> currentUser;
   Map<String, String> friend;
   List<Message> message;
-  Conservation({this.currentUser, this.friend, this.message});
+  Conservation({this.id, this.currentUser, this.friend, this.message});
 }
 
 class Message {
@@ -21,18 +22,17 @@ class PrivateConservations {
       json.forEach((e) {
         List<Message> _listMesasge = [];
         for (var item in e['messages']) {
-          _listMesasge.add(Message(
-              sender: item['user']['id'],
-              text: item['text'],
-              createAt: item['createAt']));
+          _listMesasge.add(
+              Message(sender: item['user']['id'], text: item['text'], createAt: item['createAt']));
         }
-        _listConservation.add(Conservation(currentUser: {
-          "id": e['currentUser']['id'],
-          "profileUrl": e['currentUser']['profile_url']
-        }, friend: {
-          "id": e['friend']['id'],
-          "profileUrl": e['friend']['profile_url']
-        }, message: _listMesasge));
+        _listConservation.add(Conservation(
+            id: e["_id"],
+            currentUser: {
+              "id": e['currentUser']['id'],
+              "profileUrl": e['currentUser']['profile_url']
+            },
+            friend: {"id": e['friend']['id'], "profileUrl": e['friend']['profile_url']},
+            message: _listMesasge));
       });
     } catch (e) {
       print(e);

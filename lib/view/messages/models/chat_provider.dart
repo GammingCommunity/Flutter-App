@@ -15,12 +15,12 @@ class ChatProvider extends StatesRebuilder{
       "autoConnect": false
     });
     socket.connect();
-    socket.on('connect', (_) {
+    socket.on('connection', (_) {
       print('connect');
     });
-    socket.on('sent', (data) => print(data));
+    
     socket.on('disconnect', (_) => print('disconnect'));
-    socket.on('fromServer', (_) => print(_));
+    
   }
   void dispose() {
     socket.disconnect();

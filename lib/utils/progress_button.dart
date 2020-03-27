@@ -1,18 +1,15 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:gamming_community/API/Auth.dart';
 import 'package:gamming_community/API/Mutation.dart';
+import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/utils/uploadFile.dart';
-
-import 'package:graphql_flutter/graphql_flutter.dart';
 
 class ProgressButton extends StatefulWidget {
   //TODO: error on update
   final File imagePath;
   final String token;
-  final String nickname, email, phone, describe, birthday,userID;
+  final String nickname, email, phone, describe, birthday, userID;
   ProgressButton(
       {this.imagePath,
       this.token,
@@ -27,8 +24,7 @@ class ProgressButton extends StatefulWidget {
   _ProgressBUttonState createState() => _ProgressBUttonState();
 }
 
-class _ProgressBUttonState extends State<ProgressButton>
-    with TickerProviderStateMixin {
+class _ProgressBUttonState extends State<ProgressButton> with TickerProviderStateMixin {
   int _state = 0;
   Animation _animation;
   AnimationController _controller;
@@ -59,12 +55,14 @@ class _ProgressBUttonState extends State<ProgressButton>
     } else if (_state == 1) {
       return FutureBuilder(future: Future(() async {
         print("Hree ${widget.imagePath.path}");
-        GraphQLClient client = authAPI(widget.token);
-        var avatarUrl = await uploadFile(widget.userID,widget.imagePath);
-        return await client.mutate(MutationOptions(
-            documentNode: gql(mutation.editAccount(
-                widget.nickname, widget.describe, widget.email, "", "",avatarUrl))));
-      }), builder: (context, snapshot){
+
+        //GraphQLClient client = authAPI(widget.token);
+        var avatarUrl = await uploadFile(widget.userID, widget.imagePath);
+        return await SubRepo.mutationGraphQL(
+            widget.token,
+            mutation.editAccount(
+                widget.nickname, widget.describe, widget.email, "", "", avatarUrl));
+      }), builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting)
           return SizedBox(
             height: 20,
@@ -76,7 +74,7 @@ class _ProgressBUttonState extends State<ProgressButton>
           );
         else {
           print(snapshot.data);
-          
+
           return Icon(Icons.check, color: Colors.white);
         }
       });
@@ -87,8 +85,7 @@ class _ProgressBUttonState extends State<ProgressButton>
 
   void animateButton() {
     //double initialWidth = _globalKey.currentContext.size.width;
-    _controller =
-        AnimationController(duration: Duration(milliseconds: 300), vsync: this);
+    _controller = AnimationController(duration: Duration(milliseconds: 300), vsync: this);
     _animation = Tween(begin: 0.0, end: 1).animate(_controller)
       ..addListener(() {
         /*setState(() {

@@ -1,6 +1,8 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:gamming_community/provider/notficationModel.dart';
 import 'package:gamming_community/provider/search_bar.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
@@ -14,9 +16,11 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:open_iconic_flutter/open_iconic_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gamming_community/view/room/explorer_room.dart';
 import 'package:tuple/tuple.dart';
+
 
 class HomePage extends StatefulWidget {
   @override
@@ -32,7 +36,17 @@ class _HomeState extends State<HomePage> with TickerProviderStateMixin {
   AnimationController controller;
   PageController _pageController;
   List<Widget> _listWidget = [];
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
+// Streams are created so that app can respond to notification-related events since the plugin is initialised in the `main` function
+final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
+    BehaviorSubject<ReceivedNotification>();
+
+final BehaviorSubject<String> selectNotificationSubject =
+    BehaviorSubject<String>();
+
+  
   @override
   void initState() {
     //print(userID);
@@ -48,15 +62,36 @@ class _HomeState extends State<HomePage> with TickerProviderStateMixin {
             RoomManager(),
             Messages(
               userID: userID,
-            ),
-            Notfications()
+            )
             //Profile(userID: userID, userName: userName, userProfile: userProfile)
           ]
         });
 
     _pageController = PageController();
+    
   }
+  Future initNotfication() async {
+    NotificationAppLaunchDetails notificationAppLaunchDetails;
+    notificationAppLaunchDetails =
+        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
 
+    var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+    // Note: permissions aren't requested here just to demonstrate that can be done later using the `requestPermissions()` method
+    // of the `IOSFlutterLocalNotificationsPlugin` class
+    
+    var initializationSettings = InitializationSettings(
+        initializationSettingsAndroid,null);
+    
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: (String payload) async {
+      if (payload != null) {
+        debugPrint('notification payload: ' + payload);
+      }
+      selectNotificationSubject.add(payload);
+    });
+    
+    
+  }
   Future getUserInfo() async {
     SharedPreferences ref = await SharedPreferences.getInstance();
     //List<String> res = ref.getStringList("userToken");
@@ -106,6 +141,17 @@ class _HomeState extends State<HomePage> with TickerProviderStateMixin {
                               decoration: InputDecoration.collapsed(hintText: "Search here ..."),
                             ),
                           ),
+                          Material(
+                            clipBehavior: Clip.antiAlias,
+                            color: Colors.transparent,
+                            child: IconButton(
+                                icon: Icon(OpenIconicIcons.bell),
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                      MaterialPageRoute(maintainState: true,builder: (context) => Notfications()));
+                                  notification.seen(true);
+                                }),
+                          ),
                           InkWell(
                             borderRadius: BorderRadius.circular(1000),
                             onTap: () {
@@ -116,7 +162,8 @@ class _HomeState extends State<HomePage> with TickerProviderStateMixin {
                                           userID: userID,
                                           userName: userName,
                                           userProfile: userProfile),
-                                      type: PageTransitionType.fade,alignment: Alignment.center));
+                                      type: PageTransitionType.fade,
+                                      alignment: Alignment.center));
                             },
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(1000),
@@ -159,13 +206,7 @@ class _HomeState extends State<HomePage> with TickerProviderStateMixin {
                       ), // home
                       GButton(text: "Manager", icon: OpenIconicIcons.globe), // explorer
                       GButton(text: "Chat", icon: OpenIconicIcons.chat), // chat
-                      GButton(
-                        text: "Notfication",
-                        icon: OpenIconicIcons.bell,
-                        onPressed: () {
-                          notification.seen(true);
-                        },
-                      ), // notificaiton
+                      // notificaiton
                     ],
                     onTabChange: (index) => {
                       setState(() {
@@ -175,28 +216,7 @@ class _HomeState extends State<HomePage> with TickerProviderStateMixin {
                       })
                     },
                     selectedIndex: _currentIndex,
-                  ),
-                  Visibility(
-                    visible: notification.isSeen,
-                    child: Container(
-                      height: 50,
-                      width: screenSize.width,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: <Widget>[
-                          Positioned(
-                            right: 15,
-                            top: 0,
-                            child: Icon(
-                              OpenIconicIcons.mediaRecord,
-                              size: 20,
-                              color: Colors.red,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
+                  )
                 ],
               ))
 

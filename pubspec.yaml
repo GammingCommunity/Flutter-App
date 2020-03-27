@@ -37,6 +37,7 @@ dependencies:
   page_transition: ^1.1.5
   google_nav_bar: ^2.1.0
   tuple: ^1.0.3
+  rxdart: ^0.23.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

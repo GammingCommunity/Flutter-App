@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gamming_community/API/Auth.dart';
 import 'package:gamming_community/API/Mutation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
@@ -22,7 +21,7 @@ class _UpdateWidgetState extends State<UpdateWidget> {
   GraphQLMutation mutation =GraphQLMutation();
 
   Future update() async {
-    GraphQLClient client = authAPI(widget.token);
+   // GraphQLClient client = authAPI(widget.token);
     //TODO: update profile data
     /*var result = await client.mutate(MutationOptions(
         documentNode: gql(mutation.editAccount(

@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 
 class ChatMessage extends StatelessWidget {
-
+  final String currentID;
   final Map<String,dynamic> sender;
   final String text;
   final AnimationController animationController;
   final DateTime sendDate;
-  ChatMessage({this.text, this.animationController, this.sender, this.sendDate});
+  ChatMessage({this.currentID,this.text, this.animationController, this.sender, this.sendDate});
   @override
   Widget build(BuildContext context) {
     //ThemeModel themeModel = Injector.get(context: context);
    // bool isMe = themeModel.sender == sender;
-   bool isMe = false ;
+   //print(sender['id']);
+   bool isMe = currentID == sender['id'] ;
    
     return SizeTransition(
         sizeFactor: CurvedAnimation(parent: animationController, curve: Curves.easeOut), //new

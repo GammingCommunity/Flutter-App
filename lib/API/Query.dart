@@ -1,5 +1,5 @@
 class GraphQLQuery {
-   String login(String username,String password){
+  String login(String username, String password) {
     return """
       query{
           login(username:"$username" pwd:"$password"){
@@ -14,8 +14,9 @@ class GraphQLQuery {
         }
     """;
   }
+
   /* fetch all room */
-  String getAllRoom()=> """
+  String getAllRoom() => """
     query(\$page:Int!,\$limit:Int!){
        getAllRoom(page:\$page,limit:\$limit){
           _id
@@ -76,7 +77,7 @@ class GraphQLQuery {
       }
     """;
   }*/
-  String getRoomCurrentUser(String currentUserID)=>"""
+  String getRoomCurrentUser(String currentUserID) => """
     query{
       roomManage(hostID:"$currentUserID"){
           _id
@@ -94,8 +95,6 @@ class GraphQLQuery {
       }
     }
   """;
-
- 
 
   String getRoomJoin(String userID) {
     return """
@@ -160,7 +159,7 @@ class GraphQLQuery {
         }
     }
   """;
- String getCurrentUserInfo() =>"""
+  String getCurrentUserInfo() => """
   query{
     lookAccount {
     account {
@@ -185,8 +184,8 @@ class GraphQLQuery {
   }
   }
  """;
- String getUserInfo(List<int> ids){
-   return """
+  String getUserInfo(List<int> ids) {
+    return """
     query{
       lookAccount (ids:$ids){
         account {
@@ -196,10 +195,12 @@ class GraphQLQuery {
       }
     }
    """;
- }
- String getPrivateConservation(String userID) =>"""
+  }
+
+  String getPrivateConservation(String userID) => """
    query{
       getPrivateChat(ID:"$userID"){
+        _id
         currentUser{
           id
           profile_url
@@ -220,15 +221,16 @@ class GraphQLQuery {
       }
    }
  """;
- String getSummaryByGameID(String gameID)=>"""
+  String getSummaryByGameID(String gameID) => """
     query{
       getSummaryByGameID(gameID:"$gameID"){
           summary
         }
     }
  """;
- /// pcgamer, 
- String getNews(String articleHost)=>"""
+
+  /// pcgamer,
+  String getNews(String articleHost) => """
   query(\$page:Int!,\$limit:Int!){
     fetchNews(name:"$articleHost",page:\$page,limit:\$limit){
      article_url
@@ -239,8 +241,9 @@ class GraphQLQuery {
   }
  
  """;
- ///sort: ASC, DESC
- String countRoomOnEachGame(String sort) =>"""
+
+  ///sort: ASC, DESC
+  String countRoomOnEachGame(String sort) => """
   query{
     countRoomOnEachGame(sort:$sort){
       _id
@@ -250,7 +253,7 @@ class GraphQLQuery {
     }
   }
  """;
- String getListRoomByID(String id) =>"""
+  String getListRoomByID(String id) => """
   query{
     getRoomByGame(gameID:"$id"){
       _id
@@ -263,7 +266,7 @@ class GraphQLQuery {
   }
   }
  """;
- String getPrivateMessges(String currentID) =>"""
+  String getPrivateMessges(String currentID) => """
   query{
     getPrivateChat(ID:"$currentID"){
       messages{
@@ -278,5 +281,14 @@ class GraphQLQuery {
   }
   
  """;
- 
+  String searchGame(String query) => """
+    query{
+      searchGame(name:"$query"){
+        name
+        logo{
+          imageUrl
+        }
+      }
+    }
+ """;
 }

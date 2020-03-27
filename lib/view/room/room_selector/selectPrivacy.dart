@@ -7,6 +7,9 @@ import 'package:gamming_community/view/room/provider/setRoomBackground.dart';
 import 'package:provider/provider.dart';
 
 class SelectRoomPrivacy extends StatefulWidget {
+  final PageController controller;
+  SelectRoomPrivacy( {this.controller});
+
   @override
   _SelectPrivacyState createState() => _SelectPrivacyState();
 }

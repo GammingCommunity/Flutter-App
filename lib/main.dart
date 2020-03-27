@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:gamming_community/models/chat_provider.dart';
 import 'package:gamming_community/provider/changeProfile.dart';
 import 'package:gamming_community/provider/fetchMore.dart';
 import 'package:gamming_community/provider/search_bar.dart';
+import 'package:gamming_community/provider/search_game.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/view/forgot_password/forgotPassword.dart';
 import 'package:gamming_community/view/home/home.dart';
@@ -12,6 +15,7 @@ import 'package:gamming_community/view/login/bloc/bloc/login_bloc.dart';
 import 'package:gamming_community/view/login/login.dart';
 import 'package:gamming_community/view/profile/profile.dart';
 import 'package:gamming_community/view/room/create_room.dart';
+import 'package:gamming_community/view/room/provider/navigateNextPage.dart';
 import 'package:gamming_community/view/room_manager/bloc/room_manager_bloc.dart';
 import 'package:gamming_community/view/room_manager/room_manager.dart';
 import 'package:gamming_community/view/sign_up/bloc/bloc/signup_bloc.dart';
@@ -20,8 +24,15 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 import 'package:gamming_community/provider/notficationModel.dart';
+
+
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  
+  // check login from logout
   Widget defaultHome = Login();
   SharedPreferences ref = await SharedPreferences.getInstance();
   bool isLoggin = ref.getBool('isLogin') != null ?? false;
@@ -44,6 +55,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<ChangeProfile>(create: (context) => ChangeProfile()),
         ChangeNotifierProvider<Search>(create: (context) => Search()),
         ChangeNotifierProvider<NotificationModel>(create: (context) => NotificationModel()),
+        ChangeNotifierProvider<SearchGame>(create: (context) => SearchGame(),),
+        ChangeNotifierProvider<NavigateNextPage>(create: (context) => NavigateNextPage(),)
+
       ],
       child: MultiBlocProvider(
           providers: [

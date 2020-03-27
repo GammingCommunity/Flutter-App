@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:gamming_community/API/Auth.dart';
+import 'package:gamming_community/API/subAuth.dart';
 import 'package:gamming_community/API/Mutation.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config.dart';
 import 'package:gamming_community/class/User.dart';
 import 'package:gamming_community/provider/changeProfile.dart';
+import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/progress_button.dart';
@@ -40,6 +41,7 @@ class _EditProfileState extends State<EditProfile> {
   FocusNode _phoneFocus = FocusNode();
   FocusNode _emailFocus = FocusNode();
   DateTime selectedDate = DateTime.now();
+  GraphQLQuery query = GraphQLQuery();
 
   void selectDay(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -56,10 +58,8 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future getProfileInfo() async {
-    GraphQLQuery query = GraphQLQuery();
-    GraphQLClient client = authAPI(widget.token);
-    var result = await client
-        .query(QueryOptions(documentNode: gql(query.getCurrentUserInfo())));
+    // TODO : TOken edit profile 
+    var result= await SubRepo.queryGraphQL("", query.getCurrentUserInfo());
     User user = User.fromJson(result.data["lookAccount"]["account"]);
     if (mounted) {
       setState(() {

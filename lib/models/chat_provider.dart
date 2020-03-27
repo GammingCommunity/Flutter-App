@@ -3,15 +3,13 @@ import 'package:states_rebuilder/states_rebuilder.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ChatProvider extends StatesRebuilder{
-   IO.Socket socket;
+  String socketID;
+  IO.Socket socket;
   List<ChatMessage> messages = [];
 
   void onAddNewMessage(ChatMessage chatMessage) {
+    
     this.messages.add(chatMessage);
-    rebuildStates();
-  }
-  void onAddListMessage(List<ChatMessage> listChat){
-    this.messages.addAll(listChat);
     rebuildStates();
   }
 
@@ -21,19 +19,29 @@ class ChatProvider extends StatesRebuilder{
       "autoConnect": false
     });
     socket.connect();
+    // request socket id
+    socket.emit("request-socket-id");
+    // after get socketid,
+    socket.on("get-socket-id", (data) => {
+      this.socketID = data
+    });
 
-    socket.on('connect', (_) {
+    // connect
+    socket.on('connection', (_) {
       print('connect');
     });
-    socket.on('sent', (data) => print(data));
+    // disconnect
     socket.on('disconnect', (_) => print('disconnect'));
-    socket.on('fromServer', (_) => print(_));
+  }
+
+  void joinRoom(String chatID){
+    socket.emit("join-chat-private",{"currentSocket": this.socketID, "roomID": chatID});
   }
 
   void dispose() {
     socket.disconnect();
-    //messages.clear();
-    socket.destroy();
+    messages.clear();
+    //socket.destroy();
     socket.clearListeners();
   }
 }

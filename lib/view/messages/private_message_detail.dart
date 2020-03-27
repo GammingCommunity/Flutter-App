@@ -1,26 +1,28 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config.dart';
 import 'package:gamming_community/class/PrivateMessage.dart';
+import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:gamming_community/models/chat_provider.dart';
+import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
+import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/messages/chat_message.dart';
 import 'package:gamming_community/view/messages/messages.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 class PrivateMessagesDetail extends StatefulWidget {
-  final String currentID,profileUrl;
-  PrivateMessagesDetail({this.currentID,this.profileUrl});
+  final String currentID, profileUrl, chatID;
+  PrivateMessagesDetail({this.currentID, this.profileUrl, this.chatID});
   @override
   _MessagesState createState() => _MessagesState();
 }
 
 class _MessagesState extends State<PrivateMessagesDetail>
-    with
-        AutomaticKeepAliveClientMixin<PrivateMessagesDetail>,
-        TickerProviderStateMixin {
+    with AutomaticKeepAliveClientMixin<PrivateMessagesDetail>, TickerProviderStateMixin {
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   String roomName = "Sample here";
   bool isSubmited = false;
@@ -28,7 +30,15 @@ class _MessagesState extends State<PrivateMessagesDetail>
   ChatProvider chatProvider;
   ScrollController scrollController;
   Config config = Config();
+  GraphQLQuery query = GraphQLQuery();
+  String senderUrl = AppConstraint.default_profile;
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
+      BehaviorSubject<ReceivedNotification>();
 
+  BehaviorSubject<String> selectNotificationSubject = BehaviorSubject<String>();
+  NotificationAppLaunchDetails notificationAppLaunchDetails;
   List<String> sampleUser = [
     "https://api.adorable.io/avatars/90/abott@adorable.io.png",
     "https://api.adorable.io/avatars/90/magic.png",
@@ -46,30 +56,39 @@ class _MessagesState extends State<PrivateMessagesDetail>
   }
 
   void loadMessage() async {
+    
     var animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
-    GraphQLQuery query = GraphQLQuery();
-    GraphQLClient client = config.clientToQueryMongo();
-    var queryOptions = QueryOptions(
-        documentNode: gql(query.getPrivateMessges(widget.currentID)));
-    var result = await client.query(queryOptions);
-    var listMessage = PrivateMessages.fromJson(
-            result.data['getPrivateChat'], animationController)
-        .privateMessages;
-    print(listMessage);
-    chatProvider.onAddListMessage(listMessage);
+    // TODO 
+    var result = await MainRepo.queryGraphQL("",query.getPrivateMessges(widget.currentID));
+
+    var listMessage = PrivateMessages.fromJson(result.data['getPrivateChat']).privateMessages;
+
+    listMessage.forEach((e) {
+      
+      
+      chatProvider.onAddNewMessage(ChatMessage(
+        currentID: widget.currentID,
+        sender: {"id": e.sender['id'], "profile_url": e.sender['profile_url']},
+        animationController: animationController,
+        text: e.text,
+        sendDate: e.createAt,
+      ));
+      animationController.forward();
+      animateToBottom();
+    });
   }
 
   void onSendMesasge(String message) {
     print(widget.profileUrl);
     if (chatController.text.isEmpty) return;
+
     var animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+
     var chatMessage = ChatMessage(
-      sender: {
-        "id":widget.currentID,
-        "profile_url":widget.profileUrl
-      },
+      currentID: widget.currentID,
+      sender: {"id": widget.currentID, "profile_url": widget.profileUrl},
       animationController: animationController,
       text: chatController.text,
       sendDate: DateTime.now(),
@@ -77,7 +96,8 @@ class _MessagesState extends State<PrivateMessagesDetail>
     sendMessageToSocket();
 
     chatMessage.animationController.forward();
-    
+
+    // add mess to listview
     chatProvider.onAddNewMessage(chatMessage);
 
     chatController.clear();
@@ -85,20 +105,51 @@ class _MessagesState extends State<PrivateMessagesDetail>
   }
 
   void sendMessageToSocket() {
-    chatProvider.socket.emit('message', [
-      {
-        "message": chatController.text,
-      }
+    chatProvider.socket.emit('chat-private', [
+      [
+        {
+          "roomID": widget.chatID,
+        },
+        {
+          "user": {"id": widget.currentID},
+          "text": chatController.text
+        }
+      ]
     ]);
+    animateToBottom();
   }
 
   void onRecieveMessage() {
-    chatProvider.socket.on('message', (data) async {
+    chatProvider.socket.on('message-private', (data) async {
       print('recive message' + data.toString());
-      var animationController = AnimationController(
-          vsync: this, duration: Duration(milliseconds: 500));
+      print(data[1]['user']['id']);
+      notificationAppLaunchDetails =
+          await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+
+      var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+
+      var initializationSettings = InitializationSettings(initializationSettingsAndroid, null);
+
+      await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+          onSelectNotification: (String payload) async {
+        if (payload != null) {
+          debugPrint('notification payload: ' + payload);
+        }
+        selectNotificationSubject.add(payload);
+      });
+      var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+          'your channel id', 'your channel name', 'your channel description',
+          importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
+
+      var platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, null);
+      await flutterLocalNotificationsPlugin
+          .show(0, data[1]['user']['id'], data[1]['text'], platformChannelSpecifics, payload: 'item x');
+
+      var animationController =
+          AnimationController(vsync: this, duration: Duration(milliseconds: 500));
       var chatMessage = ChatMessage(
-          text: data['message'],
+          sender: {"id": data[1]['user']['id'], "profile_url": widget.profileUrl},
+          text: data[1]['text'],
           animationController: animationController,
           sendDate: DateTime.now());
       //add message to end
@@ -125,9 +176,11 @@ class _MessagesState extends State<PrivateMessagesDetail>
     super.initState();
     scrollController = ScrollController();
     chatController = TextEditingController();
-    loadMessage();
+
     WidgetsBinding.instance.addPostFrameCallback((d) {
       chatProvider.initSocket();
+      chatProvider.joinRoom(widget.chatID);
+      loadMessage();
       onRecieveMessage();
       animateToBottom();
     });
@@ -199,8 +252,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
               controller: scrollController,
               itemBuilder: (context, index) => Column(
                 children: <Widget>[
-                  if (index == 0)
-                    Text(formatDate(chatProvider.messages[index].sendDate)),
+                  if (index == 0) Text(formatDate(chatProvider.messages[index].sendDate)),
                   if (index != 0 &&
                       chatProvider.messages[index - 1].sendDate.minute !=
                           chatProvider.messages[index].sendDate.minute)
@@ -238,8 +290,8 @@ class _MessagesState extends State<PrivateMessagesDetail>
                         },
                         controller: chatController,
                         style: TextStyle(color: Colors.black),
-                        decoration: InputDecoration(
-                            border: InputBorder.none, hintText: 'Text here')),
+                        decoration:
+                            InputDecoration(border: InputBorder.none, hintText: 'Text here')),
                   ),
                   Material(
                       type: MaterialType.circle,
@@ -317,27 +369,23 @@ Future callGroup(BuildContext context, Future getImage) {
                                     child: Row(
                                       children: <Widget>[
                                         ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(10000.0),
+                                            borderRadius: BorderRadius.circular(10000.0),
                                             child: CachedNetworkImage(
                                               height: 50,
                                               width: 50,
                                               imageUrl: snapshot.data[index],
-                                              fadeInDuration:
-                                                  Duration(seconds: 3),
+                                              fadeInDuration: Duration(seconds: 3),
                                               placeholder: (context, url) =>
                                                   CircularProgressIndicator(),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      Icon(Icons.error),
+                                              errorWidget: (context, url, error) =>
+                                                  Icon(Icons.error),
                                             )),
                                         SizedBox(
                                           width: 10,
                                         ),
                                         Text(
                                           "Hummmmmmmmm",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
+                                          style: TextStyle(fontWeight: FontWeight.bold),
                                         ),
                                         Spacer(),
                                         Stack(

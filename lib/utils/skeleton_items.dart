@@ -11,14 +11,16 @@ class OnDemandItem extends StatelessWidget {
       child: Container(
         height: 50,
         width: screenSize.width,
-        color: Colors.grey[400],
+        color: Color(0xff5a5757),
         child: Stack(
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.circular(15),
               child: Shimmer.fromColors(
                   enabled: true,
-                  child: Container(),
+                  child: Container(
+                    height: 10,
+                  ),
                   baseColor: Colors.grey[300],
                   highlightColor: Colors.grey[100]),
             ),
