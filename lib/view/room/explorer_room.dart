@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config.dart';
+import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/CountRoom.dart';
 import 'package:gamming_community/provider/search_bar.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
@@ -14,17 +14,20 @@ import 'package:gamming_community/utils/skeleton_items.dart';
 import 'package:video_player/video_player.dart';
 
 class Explorer extends StatefulWidget {
+  final String token;
+  Explorer({this.token});
   @override
   _SummaryRoomState createState() => _SummaryRoomState();
 }
 
-class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMixin {
-  Config config = Config();
+class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMixin<Explorer> {
   GraphQLQuery query = GraphQLQuery();
   ScrollController scrollController;
   double scrollPosition;
+
   @override
   void initState() {
+    print("init explorer room0");
     scrollController = ScrollController();
     scrollController.addListener(() {
       setState(() {
@@ -44,41 +47,24 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
   Widget build(BuildContext context) {
     super.build(context);
     final screenSize = MediaQuery.of(context).size;
-    //var search = Provider.of<Search>(context);
-    return Consumer<Search>(
-        builder: (context, value, child) => Container(
-            padding: EdgeInsets.all(10),
-            height: screenSize.height,
-            width: screenSize.width,
-            child: GraphQLProvider(
-              client: config.client,
+    var search = Provider.of<Search>(context);
+    return Scaffold(
+          body: Container(
+          padding: EdgeInsets.all(10),
+          height: screenSize.height,
+          width: screenSize.width,
+          child: GraphQLProvider(
+              client: customClient(widget.token),
               child: CacheProvider(
                   child: Query(
                 options: QueryOptions(documentNode: gql(query.countRoomOnEachGame('ASC'))),
                 builder: (result, {fetchMore, refetch}) {
                   if (result.loading) {
-                    // return Align(
-                    //     alignment: Alignment.center,
-                    //     child: AppConstraint.spinKitCubeGrid);
-                    return ListView.separated(
-                      separatorBuilder: (context, index) => SizedBox(
-                        height: 20,
-                      ),
-                      itemCount: 10,
-                      // Important code
-                      itemBuilder: (context, index) => SizedBox(
-                        height: 100,
-                        width: screenSize.width,
-                        child: Shimmer.fromColors(
-                            baseColor: Colors.grey[400],
-                            highlightColor: Colors.white,
-                            child: OnDemandItem()),
-                      ),
-                    );
+                    return itemLoading(screenSize.width);
                   }
                   if (result.hasException ||
                       result.data['countRoomOnEachGame'] as List<dynamic> == []) {
-                        print(result.exception);
+                    print(result.exception);
                     return Align(
                         alignment: Alignment.center,
                         child: Column(
@@ -88,32 +74,35 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
                           ],
                         ));
                   } else {
-                    var listRoom =
-                        ListNumberOfRoom.json(result.data['countRoomOnEachGame']).listRoom;
+                    var listRoom = ListNumberOfRoom.json(result.data['countRoomOnEachGame']).listRoom;
+                    print(listRoom.length);
                     return Container(
                       width: screenSize.width,
                       height: screenSize.height,
                       child: NotificationListener(
                         onNotification: (notification) {
-                          if (notification is ScrollUpdateNotification) {
-                            value.setCurrentScrollOffset(scrollPosition);
+                          
+                         /* if (notification is ScrollUpdateNotification) {
+                            search.setCurrentScrollOffset(scrollPosition);
                           }
                           /*print("current scroll position" + scrollPosition.toString());
-                          print(search.currentOffset);*/
+                            print(search.currentOffset);*/
 
                           if (scrollPosition == 0.0 && scrollPosition < 100) {
                             SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-                              value.setHideSearchBar(true);
+                              search.setHideSearchBar(true);
                             });
                           }
-                          if (value.currentOffset > 100) {
+                          if (search.currentOffset > 100) {
                             SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-                              value.setHideSearchBar(false);
+                              search.setHideSearchBar(false);
                             });
-                          }
+                          }*/
                         },
                         child: ListView.separated(
-                          controller: scrollController,
+                          //controller: scrollController,
+                          cacheExtent: 10,
+                          addAutomaticKeepAlives: true,
                           separatorBuilder: (context, index) => SizedBox(
                             height: 20,
                           ),
@@ -165,8 +154,8 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
                                               ),
                                               Text(
                                                 "${listRoom[index].count} room",
-                                                style: TextStyle(
-                                                    fontSize: AppConstraint.roomTitleSize),
+                                                style:
+                                                    TextStyle(fontSize: AppConstraint.roomTitleSize),
                                               ),
                                             ],
                                           ))
@@ -181,10 +170,47 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
                     );
                   }
                 },
-              )),
-            )));
+              )))),
+    );
   }
 
   @override
   bool get wantKeepAlive => true;
+}
+
+Widget itemLoading(double width) {
+  return ListView.separated(
+    separatorBuilder: (context, index) => SizedBox(
+      height: 20,
+    ),
+    itemCount: 10,
+    // Important code
+    itemBuilder: (context, index) => SizedBox(
+        height: 120,
+        width: width,
+        child: Container(
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(15)),
+          padding: EdgeInsets.only(left: 30),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                height: 15,
+                width: 100,
+                decoration:
+                    BoxDecoration(color: Colors.grey[400], borderRadius: BorderRadius.circular(15)),
+              ),
+              SizedBox(height: 10),
+              Container(
+                height: 15,
+                width: 100,
+                decoration:
+                    BoxDecoration(color: Colors.grey[400], borderRadius: BorderRadius.circular(15)),
+              ),
+            ],
+          ),
+        )),
+  );
 }

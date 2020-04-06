@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config.dart';
+import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/Game.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/dashboard/categories_detail/categories_detail.dart';
@@ -12,13 +12,13 @@ import 'package:page_transition/page_transition.dart';
 
 class GameGenre extends StatefulWidget {
   final String genre;
-  GameGenre({this.genre});
+  final String token;
+  GameGenre({this.genre, this.token});
   @override
   _GameGenreState createState() => _GameGenreState();
 }
 
 class _GameGenreState extends State<GameGenre> {
-  Config config = Config();
   GraphQLQuery _query = GraphQLQuery();
 
   /*Future<List<Game>> getGameByGenre() async {
@@ -73,7 +73,7 @@ class _GameGenreState extends State<GameGenre> {
             ),
             preferredSize: Size.fromHeight(AppConstraint.appBarHeight)),
         body: GraphQLProvider(
-          client: config.client,
+          client: customClient(widget.token),
           child: CacheProvider(
             child: Container(
                 padding: EdgeInsets.all(10),
@@ -113,11 +113,11 @@ class _GameGenreState extends State<GameGenre> {
                                   Navigator.push(
                                       context,
                                       PageTransition(
-                                        type: PageTransitionType.upToDown,
+                                          type: PageTransitionType.upToDown,
                                           child: CategoriesDetail(
-                                        itemTag: listGame[index].name,
-                                        gameDetail: listGame[index],
-                                      )));
+                                            itemTag: listGame[index].name,
+                                            gameDetail: listGame[index],
+                                          )));
                                 },
                                 child: Container(
                                     height: 100,

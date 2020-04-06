@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:gamming_community/models/chat_provider.dart';
+import 'package:gamming_community/models/group_chat_provider.dart';
 import 'package:gamming_community/provider/changeProfile.dart';
 import 'package:gamming_community/provider/fetchMore.dart';
 import 'package:gamming_community/provider/search_bar.dart';
@@ -24,9 +23,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 import 'package:gamming_community/provider/notficationModel.dart';
-
-
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -77,6 +73,7 @@ class MyApp extends StatelessWidget {
           child: Injector(
             inject: [
               Inject(() => ChatProvider()),
+              Inject(()=>GroupChatProvider())
             ],
             builder: (context) {
               return StateBuilder(

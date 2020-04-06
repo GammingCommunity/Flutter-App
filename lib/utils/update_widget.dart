@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Mutation.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 
 class UpdateWidget extends StatefulWidget {
   final String token;

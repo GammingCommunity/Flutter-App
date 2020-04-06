@@ -37,11 +37,6 @@ class _ProgressBUttonState extends State<ProgressButton> with TickerProviderStat
     _controller = AnimationController(vsync: this);
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
-  }
 
   Widget setUpChild() {
     if (_state == 0) {
@@ -93,22 +88,33 @@ class _ProgressBUttonState extends State<ProgressButton> with TickerProviderStat
         });*/
       });
     _controller.forward();
-    setState(() {
+   if(mounted){
+      setState(() {
       _state = 1;
     });
+   }
 
     Timer(Duration(milliseconds: 2000), () {
-      setState(() {
+     if(mounted){
+        setState(() {
         _state = 2;
       });
+     }
       Timer(Duration(seconds: 2), () {
-        setState(() {
+        if(mounted){
+          setState(() {
           _state = 0;
         });
+        }
       });
     });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return PhysicalModel(

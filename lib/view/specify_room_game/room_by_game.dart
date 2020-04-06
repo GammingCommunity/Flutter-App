@@ -1,24 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config.dart';
+import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/Room.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:gamming_community/utils/skeleton_items.dart';
-import 'package:shimmer/shimmer.dart';
 
 class RoomByGame extends StatefulWidget {
-  final String gameID;
-  RoomByGame({this.gameID});
+  final String gameID,token;
+  RoomByGame({this.gameID,this.token});
   @override
   _RoomByGameState createState() => _RoomByGameState();
 }
 
 class _RoomByGameState extends State<RoomByGame> {
   GraphQLQuery query = GraphQLQuery();
-  Config config = Config();
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -27,7 +24,7 @@ class _RoomByGameState extends State<RoomByGame> {
           height: screenSize.height,
           width: screenSize.width,
           child: GraphQLProvider(
-            client: config.client,
+            client: customClient(widget.token),
             child: CacheProvider(
                 child: Query(
               options: QueryOptions(

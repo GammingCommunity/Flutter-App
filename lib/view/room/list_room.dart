@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config.dart';
+import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/Room.dart';
 import 'package:gamming_community/provider/fetchMore.dart';
+import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/room/create_room.dart';
@@ -16,6 +17,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 int page = 0;
 
 class RoomList extends StatefulWidget {
+  final String token;
+  RoomList({this.token});
   @override
   _RoomState createState() => _RoomState();
 }
@@ -26,7 +29,6 @@ class _RoomState extends State<RoomList>
       RefreshController(initialRefresh: true);
   bool isJoin = false;
   GraphQLQuery query = GraphQLQuery();
-  Config config = Config();
   List<Room> room = [];
   int page = 1;
   int limit = 5;
@@ -39,12 +41,12 @@ class _RoomState extends State<RoomList>
     //Provider.of<FetchMoreValue>(context,listen: false).clearData();
     page = 1;
     //List<String> res = refs.getStringList("userToken");
-    GraphQLClient client = config.clientToQueryMongo();
+    
 
     try {
-      var result = await client.query(QueryOptions(
-          variables: {"page": page, "limit": limit},
-          documentNode: gql(query.getAllRoom())));
+      var variables ={"page": page, "limit": limit};
+      var result = await MainRepo.queryWithVariable(widget.token, query.getAllRoom(),variables);
+     
       var v = await ListRoom.getList(result.data);
       Provider.of(context, listen: false).firstLoad(v);
 
@@ -61,10 +63,9 @@ class _RoomState extends State<RoomList>
     int previousPage = page;
     int nextPage = previousPage + 1;
     print(nextPage);
-    GraphQLClient client = config.clientToQueryMongo();
-    var result = await client.query(QueryOptions(
-        variables: {"page": nextPage, "limit": limit},
-        documentNode: gql(query.getAllRoom())));
+    var variables ={"page": page, "limit": limit};
+      var result = await MainRepo.queryWithVariable(widget.token, query.getAllRoom(),variables);
+    
     var v = await ListRoom.getList(result.data);
     Provider.of<FetchMoreValue>(context, listen: false).setMoreValue(v);
     if (mounted)
@@ -88,7 +89,6 @@ class _RoomState extends State<RoomList>
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    final value = Provider.of<FetchMoreValue>(context);
     super.build(context);
     return InheritedProvider<FetchMoreValue>(
       create: (context) => FetchMoreValue(),
@@ -106,7 +106,7 @@ class _RoomState extends State<RoomList>
             }),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         body: GraphQLProvider(
-          client: config.client,
+          client: customClient(widget.token),
           child: CacheProvider(
             child: Container(
                 padding: EdgeInsets.all(10),

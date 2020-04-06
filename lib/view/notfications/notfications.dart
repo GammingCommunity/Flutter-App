@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Subscription.dart';
-import 'package:gamming_community/API/config.dart';
+import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 class Notfications extends StatefulWidget {
@@ -9,13 +9,12 @@ class Notfications extends StatefulWidget {
 }
 
 class _NotficationsState extends State<Notfications> {
-  Config config = Config();
   GqlSubscription subscription = GqlSubscription();
   @override
   Widget build(BuildContext context) {
     var screenSize =MediaQuery.of(context).size;
     return GraphQLProvider(
-      client: config.client,
+      client: customClient(""),
       child: CacheProvider(
         child: Scaffold(
           body: Container(

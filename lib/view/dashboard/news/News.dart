@@ -2,10 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config.dart';
+import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/News.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:gamming_community/utils/skeleton_template.dart';
 
 class News extends StatefulWidget {
   @override
@@ -14,36 +15,67 @@ class News extends StatefulWidget {
 
 class _NewsState extends State<News> {
   GraphQLQuery query = GraphQLQuery();
-  Config config = Config();
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     return GraphQLProvider(
-      client: config.client,
+      client: customClient(""),
       child: CacheProvider(
           child: Container(
         height: screenSize.height,
         child: Query(
           options: QueryOptions(
-              variables: {"page": 1, "limit": 5},
-              documentNode: gql(query.getNews("pcgamer"))),
+              variables: {"page": 1, "limit": 5}, documentNode: gql(query.getNews("pcgamer"))),
           builder: (result, {fetchMore, refetch}) {
             if (result.loading) {
-              return Shimmer.fromColors(
-                child: Container(
-                  height: 200,
-                  width: screenSize.width,
-                  child: Text("data"),
+              return Container(
+                margin: EdgeInsets.only(top: 10),
+                width: screenSize.width,
+                child: Column(
+                  children: <Widget>[
+                    SkeletonTemplate.image(200, screenSize.width, 0, Colors.grey),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              // logo article
+                              SkeletonTemplate.image(50, 50, 15, Colors.grey),
+                              SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget>[
+                                  // title
+                                  Container(
+                                      width: screenSize.width - 80,
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Flexible(
+                                              child: SkeletonTemplate.text(
+                                                  20, screenSize.width, 15, Colors.grey))
+                                        ],
+                                      )),
+                                  SizedBox(height: 10),
+                                  // time
+                                  SkeletonTemplate.text(20, 40, 15, Colors.grey)
+                                ],
+                              )
+                            ],
+                          )),
+                    )
+                  ],
                 ),
-                baseColor: Colors.grey[300],
-                highlightColor: Colors.grey[100],
               );
             }
             if (result.hasException) {
               return Align(alignment: Alignment.center, child: Text("No news"));
             } else {
-              var listNews =
-                  ListNews.fromJson(result.data['fetchNews']).listNews;
+              var listNews = ListNews.fromJson(result.data['fetchNews']).listNews;
               return Align(
                 alignment: Alignment.topCenter,
                 child: CarouselSlider.builder(
@@ -61,25 +93,26 @@ class _NewsState extends State<News> {
                                 width: screenSize.width,
                                 fit: BoxFit.cover,
                                 imageUrl: listNews[i].imageUrl,
-                                errorWidget: (context, url, error) => Image.asset('assets/images/no_image.png',fit:BoxFit.cover)
-                            ),
+                                errorWidget: (context, url, error) =>
+                                    Image.asset('assets/images/no_image.png', fit: BoxFit.cover)),
                             Padding(
                               padding: EdgeInsets.symmetric(vertical: 10),
                               child: Align(
                                   alignment: Alignment.centerLeft,
-                                  child: Row( 
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: <Widget>[
-                                      Image.asset(
-                                        'assets/icons/article_logo/pc_gamer.png',
-                                        height: 50,
-                                        width: 50,
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(15),
+                                        child: Image.asset(
+                                          'assets/icons/article_logo/pc_gamer.png',
+                                          height: 50,
+                                          width: 50,
+                                        ),
                                       ),
                                       SizedBox(width: 10),
                                       Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
+                                        crossAxisAlignment: CrossAxisAlignment.end,
                                         children: <Widget>[
                                           Container(
                                               width: screenSize.width - 80,
@@ -90,11 +123,7 @@ class _NewsState extends State<News> {
                                                   Flexible(
                                                       child: Text(
                                                     listNews[i].shortText,
-                                                    
-                                                    style: TextStyle(
-                                                      
-                                                        fontWeight:
-                                                            FontWeight.bold),
+                                                    style: TextStyle(fontWeight: FontWeight.bold),
                                                   ))
                                                 ],
                                               )),

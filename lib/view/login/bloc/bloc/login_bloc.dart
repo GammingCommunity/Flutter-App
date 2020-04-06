@@ -29,16 +29,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       try {
         //print(result.data.values.first["status"]);
         LoginData loginData = LoginData.fromJson(result.data);
-        {
+        /*{
           SharedPreferences refs = await SharedPreferences.getInstance();
 
           yield LoginSuccess();
-          /*refs.setStringList("userToken", [
-            "Baka",
-            "39",
-            "f6fc42184e6383194abbca3e771cc22622727968c274ba6b586b7993d1beaa0c"
-          ]);*/
-        }
+
+        }*/
         if (loginData.status == "SUCCESS") {
           yield LoginSuccess();
 

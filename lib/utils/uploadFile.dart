@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
-import 'dart:convert' show json, utf8;
+import 'dart:convert' show json;
 
 uploadFile(String userID, File imagePath) async {
   print("image path"+ imagePath.path);

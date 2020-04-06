@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config.dart';
 import 'package:gamming_community/class/PrivateMessage.dart';
 import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:gamming_community/models/chat_provider.dart';
@@ -10,6 +9,7 @@ import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/messages/chat_message.dart';
+import 'package:gamming_community/view/messages/list_user.dart';
 import 'package:gamming_community/view/messages/messages.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
@@ -29,7 +29,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
   TextEditingController chatController;
   ChatProvider chatProvider;
   ScrollController scrollController;
-  Config config = Config();
+
   GraphQLQuery query = GraphQLQuery();
   String senderUrl = AppConstraint.default_profile;
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -56,17 +56,14 @@ class _MessagesState extends State<PrivateMessagesDetail>
   }
 
   void loadMessage() async {
-    
     var animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
-    // TODO 
-    var result = await MainRepo.queryGraphQL("",query.getPrivateMessges(widget.currentID));
+    // TODO
+    var result = await MainRepo.queryGraphQL("", query.getPrivateMessges(widget.currentID));
 
     var listMessage = PrivateMessages.fromJson(result.data['getPrivateChat']).privateMessages;
 
     listMessage.forEach((e) {
-      
-      
       chatProvider.onAddNewMessage(ChatMessage(
         currentID: widget.currentID,
         sender: {"id": e.sender['id'], "profile_url": e.sender['profile_url']},
@@ -142,8 +139,9 @@ class _MessagesState extends State<PrivateMessagesDetail>
           importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
 
       var platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, null);
-      await flutterLocalNotificationsPlugin
-          .show(0, data[1]['user']['id'], data[1]['text'], platformChannelSpecifics, payload: 'item x');
+      await flutterLocalNotificationsPlugin.show(
+          0, data[1]['user']['id'], data[1]['text'], platformChannelSpecifics,
+          payload: 'item x');
 
       var animationController =
           AnimationController(vsync: this, duration: Duration(milliseconds: 500));
@@ -199,24 +197,30 @@ class _MessagesState extends State<PrivateMessagesDetail>
     super.build(context);
     return Scaffold(
       key: scaffoldKey,
+      // pass chat id here
+      endDrawer: ListUserDrawer(chatID: widget.chatID),
+      endDrawerEnableOpenDragGesture: false,
       body: Container(
-        padding: EdgeInsets.all(10),
+        padding: EdgeInsets.only(top:10),
         child: Column(
           children: <Widget>[
             Container(
                 width: MediaQuery.of(context).size.width,
-                height: 40,
-                decoration: BoxDecoration(color: Colors.white),
+                height: 50,
+                
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.black))
+                ),
                 child: Stack(
                   alignment: Alignment.center,
                   children: <Widget>[
+                    Align(alignment: Alignment.topLeft,child: IconButton(icon: Icon(Icons.chevron_left), onPressed: (){})),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          '$roomName',
-                          style: TextStyle(color: Colors.black),
+                          widget.currentID
                         ),
                       ],
                     ),
@@ -227,16 +231,17 @@ class _MessagesState extends State<PrivateMessagesDetail>
                           child: Row(
                             children: <Widget>[
                               IconButton(
-                                color: Colors.black,
                                 icon: Icon(Icons.call),
                                 onPressed: () {
                                   callGroup(context, getImage());
                                 },
                               ),
+                              // see list of user here
                               IconButton(
                                 icon: Icon(Icons.group),
-                                onPressed: () {},
-                                color: Colors.black,
+                                onPressed: () {
+                                  scaffoldKey.currentState.openEndDrawer();
+                                },  
                               )
                             ],
                           ),
@@ -247,20 +252,22 @@ class _MessagesState extends State<PrivateMessagesDetail>
             // message area
             Flexible(
                 child: ListView.builder(
-              padding: EdgeInsets.only(left: 8, right: 8, bottom: 12, top: 12),
-              itemCount: chatProvider.messages.length,
-              controller: scrollController,
-              itemBuilder: (context, index) => Column(
-                children: <Widget>[
-                  if (index == 0) Text(formatDate(chatProvider.messages[index].sendDate)),
-                  if (index != 0 &&
-                      chatProvider.messages[index - 1].sendDate.minute !=
-                          chatProvider.messages[index].sendDate.minute)
-                    Text(formatDateTime(chatProvider.messages[index].sendDate)),
-                  chatProvider.messages[index],
-                ],
-              ),
-            )),
+                    padding: EdgeInsets.only(left: 8, right: 8, bottom: 12, top: 12),
+                    itemCount: chatProvider.messages.length,
+                    controller: scrollController,
+                    itemBuilder: (context, index) {
+
+                      return Column(
+                        children: <Widget>[
+                          if (index == 0) Text(formatDate(chatProvider.messages[index].sendDate)),
+                          if (index != 0 &&
+                              chatProvider.messages[index - 1].sendDate.minute !=
+                                  chatProvider.messages[index].sendDate.minute)
+                            Text(formatDateTime(chatProvider.messages[index].sendDate)),
+                          chatProvider.messages[index],
+                        ],
+                      );
+                    })),
             SizedBox(height: 20),
             Container(
               decoration: BoxDecoration(

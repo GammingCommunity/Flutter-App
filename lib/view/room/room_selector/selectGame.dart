@@ -1,12 +1,9 @@
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:gamming_community/API/config.dart';
+import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/Game.dart';
 import 'package:gamming_community/provider/search_game.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
-import 'package:gamming_community/view/room/provider/navigateNextPage.dart';
 import 'package:gamming_community/view/room/room_selector/select_num_member.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:open_iconic_flutter/open_iconic_flutter.dart';
@@ -15,13 +12,13 @@ import 'package:tuple/tuple.dart';
 
 final _animateList = GlobalKey<AnimatedListState>();
 class SelectGame extends StatefulWidget {
+
   @override
   _SelectGameState createState() => _SelectGameState();
 }
 
 class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
   double height = 50;
-  Config config = Config();
   var searchGameController = TextEditingController();
   var searchGameFocus = FocusNode();
   AnimationController controller;
@@ -50,9 +47,9 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     var searchGame = Provider.of<SearchGame>(context);
-    var navigatePage = Provider.of<NavigateNextPage>(context);
     return GraphQLProvider(
-        client: config.client,
+      // TODO: provider get token from sharedprefrence
+        client: customClient(""),
         child: CacheProvider(
             child: Selector<SearchGame, Tuple5<bool, bool, int, int, List<Game>>>(
           selector: (_, value) => Tuple5(value.isSearch, value.isHideSearch, value.listQuery.length,

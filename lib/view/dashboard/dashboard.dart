@@ -1,14 +1,14 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/dashboard/carousel.dart';
 import 'package:gamming_community/view/dashboard/categories/categories.dart';
-import 'package:open_iconic_flutter/open_iconic_flutter.dart';
 import 'news/News.dart';
 
 class DashBoard extends StatefulWidget {
+  final String token;
+  DashBoard({this.token});
   @override
   _DashBoardState createState() => _DashBoardState();
 }
@@ -33,7 +33,7 @@ class _DashBoardState extends State<DashBoard>
             Container(
                 height: 200,
                 width: MediaQuery.of(context).size.width,
-                child: Carousel()),
+                child: Carousel(widget.token)),
             SizedBox(height: 10),
             Align(
                 alignment: Alignment.centerLeft,

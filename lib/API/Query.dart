@@ -291,4 +291,63 @@ class GraphQLQuery {
       }
     }
  """;
+  String getPrivateChatInfo(String chatID) => """
+    query{
+      getPrivateChatInfo(roomID:"$chatID"){
+        member{
+          id
+          profile_url
+        }
+      }
+    }
+ """;
+
+  ///
+  ///{search friend : 1, find all in list : 0
+  ///}
+  ///
+  String getAllFriend() => """
+    query{
+      getFriends{
+        friend{
+          id
+          name
+          avatar_url
+        }
+      }
+    }
+  """;
+  String searchFriend(String name) => """
+      query{
+        getFriends(friend_name:"$name"){
+          friend{
+            id
+            name
+            avatar_url 
+          }
+        }
+      }
+    """;
+  String getFriendRequest() => """
+    getFriendRequests{
+      sender{
+        id
+        name
+        avatar_url
+      }
+      updated_at
+    }
+  """;
+  String getRoomMessage(String roomID) => """
+    query{
+      getRoomMessage(roomID:"$roomID"){
+        messages{
+          messageType
+          userID
+          text
+          createAt
+        }
+    }
+  }
+  """;
 }

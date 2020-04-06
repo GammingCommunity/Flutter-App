@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gamming_community/API/subAuth.dart';
 import 'package:gamming_community/API/Mutation.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config.dart';
 import 'package:gamming_community/class/User.dart';
 import 'package:gamming_community/provider/changeProfile.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
@@ -11,14 +9,12 @@ import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/progress_button.dart';
 import 'package:gamming_community/view/profile/load_image.dart';
 import 'package:gamming_community/view/profile/load_image_network.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 // global variable
 bool isShownBottomAvatar = false;
-Config config = Config();
+
 GraphQLMutation mutation = GraphQLMutation();
 
 class EditProfile extends StatefulWidget {
@@ -59,7 +55,7 @@ class _EditProfileState extends State<EditProfile> {
 
   Future getProfileInfo() async {
     // TODO : TOken edit profile 
-    var result= await SubRepo.queryGraphQL("", query.getCurrentUserInfo());
+    var result= await SubRepo.queryGraphQL(widget.token, query.getCurrentUserInfo());
     User user = User.fromJson(result.data["lookAccount"]["account"]);
     if (mounted) {
       setState(() {
@@ -68,7 +64,7 @@ class _EditProfileState extends State<EditProfile> {
         _phone.text = user.phoneNumber;
       });
     }
-    //print(result.data);
+
   }
 
   @override
@@ -352,7 +348,6 @@ showBotomSheetAvatar(
           height: 50,
           child: FlatButton(
               onPressed: () async {
-                SharedPreferences refs = await SharedPreferences.getInstance();
                 var image =
                     await ImagePicker.pickImage(source: ImageSource.gallery);
                 //close modal

@@ -4,18 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config.dart';
+import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/list_game_image.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 
 class Carousel extends StatefulWidget {
+  final String token;
+  Carousel(this.token);
   @override
   _CarouselState createState() => _CarouselState();
 }
 
 class _CarouselState extends State<Carousel> {
-  Config config = Config();
   GraphQLQuery _query = GraphQLQuery();
   /*Future<List<String>> getImage() async {
     List<String> _image = [];
@@ -45,24 +46,24 @@ class _CarouselState extends State<Carousel> {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     return GraphQLProvider(
-      client: config.client,
+      client: customClient(widget.token),
       child: CacheProvider(
           child: Query(
         options: QueryOptions(documentNode: gql(_query.getListGame(1))),
         builder: (result, {fetchMore, refetch}) {
           if (result.hasException) {
-            return ClipRRect(borderRadius: BorderRadius.circular(15),child: Image.asset('assets/images/no_image.png',fit: BoxFit.cover));
+            return ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Image.asset('assets/images/no_image.png', fit: BoxFit.cover));
           }
           if (result.loading) {
-            return Shimmer.fromColors(
-                
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 3,
-                  itemBuilder: (context, index) => Container(height: 150),
-                ),
-                baseColor: Colors.grey[400],
-                highlightColor: Colors.grey);
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 3,
+              itemBuilder: (context, index) => Container(
+                color: Colors.grey,
+                height: 150),
+            );
           } else {
             var _image = ListGameImage.fromJson(result.data['getListGame']).listGameImage;
 

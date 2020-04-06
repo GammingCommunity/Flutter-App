@@ -1,5 +1,6 @@
-import 'package:gamming_community/API/subAuth.dart';
+import 'package:gamming_community/API/config/subAuth.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SubRepo{
   
@@ -10,8 +11,9 @@ class SubRepo{
     ));
     return result;
   }
-  static Future<QueryResult> mutationGraphQL(String token,String mutate){
-    GraphQLClient client = subAPI(token);
+  static Future<QueryResult> mutationGraphQL(String token,String mutate) async{
+    SharedPreferences ref =await SharedPreferences.getInstance();
+    GraphQLClient client = subAPI(ref.getStringList("userToken")[2]);
     var result = client.mutate(MutationOptions(
       documentNode: gql(mutate)
     ));

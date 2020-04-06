@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config.dart';
+import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/Game.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/room/create_room_v2.dart';
@@ -15,13 +15,13 @@ import 'package:video_player/video_player.dart';
 class CategoriesDetail extends StatefulWidget {
   final String itemTag;
   final Game gameDetail;
-  CategoriesDetail({this.itemTag, this.gameDetail});
+  final String token;
+  CategoriesDetail({this.itemTag, this.gameDetail, this.token});
   @override
   _CategoriesDetailState createState() => _CategoriesDetailState();
 }
 
-class _CategoriesDetailState extends State<CategoriesDetail>
-    with TickerProviderStateMixin {
+class _CategoriesDetailState extends State<CategoriesDetail> with TickerProviderStateMixin {
   VideoPlayerController _controller;
   ChewieController _chewieController;
   ScrollController _scrollController;
@@ -34,86 +34,94 @@ class _CategoriesDetailState extends State<CategoriesDetail>
   bool hideCreateButton = false;
   // hide more text
   bool descTextShowFlag = false;
-  bool hidePlayButton = false;
-  Config config = Config();
+  bool playButton = true;
   GraphQLQuery query = GraphQLQuery();
   @override
   void initState() {
     tabController = TabController(length: 3, vsync: this);
     _controller = VideoPlayerController.network(widget.gameDetail.trailerUrl);
     _chewieController = ChewieController(
-      autoInitialize: true,
-      videoPlayerController: _controller,
-      allowMuting: true,
-      aspectRatio: 4 / 2,
-      systemOverlaysAfterFullScreen: [SystemUiOverlay.top],
-      looping: false,
-      showControlsOnInitialize: false,
-      errorBuilder: (context, errorMessage) {
-        return Container(color: Colors.blueGrey);
-      },
-      autoPlay: false,
-      showControls: showControl,
-      overlay: Stack(
-        children: <Widget>[
-          Align(
-            alignment: Alignment.topLeft,
-            child: Material(
-              color: Colors.transparent,
-              clipBehavior: Clip.antiAlias,
-              type: MaterialType.circle,
-              child: IconButton(
-                color: Colors.white,
-                icon: Icon(Icons.chevron_left),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+        autoInitialize: true,
+        videoPlayerController: _controller,
+        allowMuting: true,
+        aspectRatio: 4 / 2,
+        systemOverlaysAfterFullScreen: [SystemUiOverlay.top],
+        looping: false,
+        showControlsOnInitialize: false,
+        errorBuilder: (context, errorMessage) {
+          return Container(color: Colors.blueGrey);
+        },
+        autoPlay: false,
+        showControls: showControl,
+        overlay: Stack(
+          children: <Widget>[
+            Align(
+              alignment: Alignment.center,
+              child: Visibility(
+                visible: !playButton,
+                child: IconButton(
+                    icon: Icon(
+                      Icons.play_circle_filled,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _chewieController.play();
+                        playButton = !playButton;
+                      });
+                    }),
               ),
             ),
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: Visibility(
-              visible: hidePlayButton,
-              child: IconButton(
-                  icon: Icon(Icons.play_circle_filled,color: Colors.white,),
+            Align(
+              alignment: Alignment.topLeft,
+              child: Material(
+                color: Colors.transparent,
+                clipBehavior: Clip.antiAlias,
+                type: MaterialType.circle,
+                child: IconButton(
+                  color: Colors.white,
+                  icon: Icon(Icons.chevron_left),
                   onPressed: () {
-                    setState(() {
-                      _chewieController.play();
-                      hidePlayButton=!hidePlayButton;
-                    });
-                  }),
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
             ),
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: IconButton(icon: Icon(Icons.volume_up), onPressed: () {
-              _chewieController.setVolume(0);
-
-            }),
-          )
-        ],
-      ),
-      materialProgressColors: AppConstraint.chewieProgressColors
-    );
+            Align(
+              alignment: Alignment.bottomRight,
+              child: IconButton(
+                  icon: Icon(Icons.volume_up),
+                  onPressed: () {
+                    _chewieController.setVolume(0);
+                  }),
+            )
+          ],
+        ),
+        materialProgressColors: AppConstraint.chewieProgressColors);
     //print("${_scrollController.offset}");
     _scrollController = ScrollController()
       ..addListener(() {
         if (_scrollController.offset > 243) {
-          setState(() {
-            titleExpanded = !titleExpanded;
-            displaytoAppbar = !displaytoAppbar;
-            hideCreateButton = !hideCreateButton;
-            // _chewieController.pause();
-          });
+          if (titleExpanded == true && displaytoAppbar == false && hideCreateButton == false) {
+            return;
+          } else
+            setState(() {
+              titleExpanded = !titleExpanded;
+              displaytoAppbar = !displaytoAppbar;
+              hideCreateButton = !hideCreateButton;
+              _chewieController.pause();
+            });
         } else if (_scrollController.offset < 200) {
-          setState(() {
-            titleExpanded = false;
-            displaytoAppbar = true;
-            hideCreateButton = true;
-            //_chewieController.play();
-            //displaytoAppbar=!displaytoAppbar;
-          });
+          if (titleExpanded == true && displaytoAppbar == false && hideCreateButton == true) {
+            return;
+          } else
+            setState(() {
+              titleExpanded = false;
+              displaytoAppbar = true;
+              hideCreateButton = true;
+              _chewieController.play();
+              //displaytoAppbar=!displaytoAppbar;
+            });
         }
       });
     super.initState();
@@ -149,11 +157,17 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                 automaticallyImplyLeading: false,
                 flexibleSpace: FlexibleSpaceBar(
                   collapseMode: CollapseMode.parallax,
-                  background: Container(
-                    height: 260,
-                    width: screenSize.width,
-                    child: Chewie(
-                      controller: _chewieController,
+                  background: GestureDetector(
+                    onTap: ()async  {
+                      _chewieController.play();
+                    },
+                    child: Container(
+                      height: 260,
+                      width: screenSize.width,
+                      color: Colors.grey,
+                      child: Chewie(
+                        controller: _chewieController,
+                      ),
                     ),
                   ),
                   titlePadding: EdgeInsets.all(0),
@@ -189,8 +203,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                               width: 50,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15),
-                                  image: DecorationImage(
-                                      fit: BoxFit.cover, image: imageProvider)),
+                                  image: DecorationImage(fit: BoxFit.cover, image: imageProvider)),
                             ),
                             errorWidget: (context, url, error) => Icon(
                               Icons.error_outline,
@@ -199,19 +212,20 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                           ),
                           Padding(
                             padding: EdgeInsets.all(10.0),
-                            child: Text(game.name,overflow: TextOverflow.fade,),
+                            child: Text(
+                              game.name,
+                              overflow: TextOverflow.fade,
+                            ),
                           ),
                           Spacer(),
                           Padding(
                             padding: EdgeInsets.all(10),
                             child: RaisedButton(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15)),
+                              shape:
+                                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                               onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => CreateRoomV2()));
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) => CreateRoomV2()));
                               },
                               child: Text("Create rooms"),
                             ),
@@ -241,7 +255,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                           )
                         ])),
                 GraphQLProvider(
-                  client: config.client,
+                  client: customClient(widget.token),
                   child: CacheProvider(
                     child: Container(
                       height: screenSize.height,
@@ -267,43 +281,34 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                                           height: 100,
                                           width: 100,
                                           decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
+                                              borderRadius: BorderRadius.circular(15),
                                               color: Colors.grey)),
-                                      imageBuilder: (context, imageProvider) =>
-                                          Container(
+                                      imageBuilder: (context, imageProvider) => Container(
                                         height: 100,
                                         width: 100,
                                         decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
+                                            borderRadius: BorderRadius.circular(15),
                                             image: DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image: imageProvider)),
+                                                fit: BoxFit.cover, image: imageProvider)),
                                       ),
-                                      errorWidget: (context, url, error) =>
-                                          Icon(
+                                      errorWidget: (context, url, error) => Icon(
                                         Icons.error_outline,
                                         size: 20,
                                       ),
                                     ),
                                     Padding(
-                                      padding:
-                                          EdgeInsets.only(left: 20.0, top: 10),
+                                      padding: EdgeInsets.only(left: 20.0, top: 10),
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
                                             game.name,
                                             style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20),
+                                                fontWeight: FontWeight.bold, fontSize: 20),
                                           ),
                                           //TODO: sample here, add soon
                                           Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 10.0),
+                                            padding: const EdgeInsets.only(top: 10.0),
                                             child: Wrap(
                                               spacing: 10,
                                               children: <Widget>[
@@ -321,7 +326,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                               SizedBox(
                                 height: 10,
                               ),
-                              // game summary 
+                              // game summary
                               Column(
                                 children: <Widget>[
                                   Text(
@@ -337,8 +342,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                                       child: InkWell(
                                         onTap: () {
                                           setState(() {
-                                            descTextShowFlag =
-                                                !descTextShowFlag;
+                                            descTextShowFlag = !descTextShowFlag;
                                           });
                                         },
                                         child: descTextShowFlag
@@ -361,20 +365,16 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                                 itemBuilder: (context, index) {
                                   return Container(
                                     width: screenSize.width,
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
+                                    decoration:
+                                        BoxDecoration(borderRadius: BorderRadius.circular(10)),
                                     child: CachedNetworkImage(
                                       width: screenSize.width,
                                       imageUrl: game.images[index],
-                                      imageBuilder: (context, imageProvider) =>
-                                          Container(
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 15),
+                                      imageBuilder: (context, imageProvider) => Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 15),
                                         decoration: BoxDecoration(
                                             image: DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image: imageProvider)),
+                                                fit: BoxFit.cover, image: imageProvider)),
                                       ),
                                       placeholder: (context, url) => Container(
                                         width: screenSize.width,
@@ -398,8 +398,7 @@ class _CategoriesDetailState extends State<CategoriesDetail>
                                   documentNode: gql(query.getAllRoom())),
                               builder: (result, {fetchMore, refetch}) {
                                 if (result.loading) {
-                                  return SpinKitFadingCircle(
-                                      color: Colors.white, size: 20);
+                                  return SpinKitFadingCircle(color: Colors.white, size: 20);
                                 } else {
                                   print(result.data);
                                   return ListView.builder(

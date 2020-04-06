@@ -1,6 +1,7 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:gamming_community/provider/notficationModel.dart';
@@ -27,10 +28,10 @@ class HomePage extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<HomePage> with TickerProviderStateMixin {
+class _HomeState extends State<HomePage> with TickerProviderStateMixin,AutomaticKeepAliveClientMixin {
   int _currentIndex = 0;
   String userID;
-  String userProfile, userName;
+  String userProfile, userName,token;
   var searchController = TextEditingController();
   Animation<double> _animation;
   AnimationController controller;
@@ -59,9 +60,12 @@ final BehaviorSubject<String> selectNotificationSubject =
           _listWidget = [
             DashBoard(),
             Explorer(),
-            RoomManager(),
+            RoomManager(
+              token: token,
+            ),
             Messages(
               userID: userID,
+              token: token,
             )
             //Profile(userID: userID, userName: userName, userProfile: userProfile)
           ]
@@ -97,13 +101,14 @@ final BehaviorSubject<String> selectNotificationSubject =
     //List<String> res = ref.getStringList("userToken");
 
     setState(() {
+      token = ref.getStringList("userToken")[2];
       userID = ref.getString("userID");
       userProfile = ref.getString("userProfile");
       userName = ref.getString("userName");
     });
 
     //print("get profile home $userProfile");
-    return [userID, userProfile];
+    return [userID, userProfile,userName,token];
   }
 
   @override
@@ -209,6 +214,7 @@ final BehaviorSubject<String> selectNotificationSubject =
                       // notificaiton
                     ],
                     onTabChange: (index) => {
+                      
                       setState(() {
                         _currentIndex = index;
                         _pageController.animateToPage(index,
@@ -273,4 +279,8 @@ final BehaviorSubject<String> selectNotificationSubject =
               ),
             ));
   }
+
+  @override
+  
+  bool get wantKeepAlive => true;
 }

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config.dart';
 import 'package:gamming_community/class/Game.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:gamming_community/repository/main_repo.dart';
 
 class SearchGame with ChangeNotifier {
-  Config config = Config();
   var query = GraphQLQuery();
   List<Game> listQuery= [];
   List<Game> games = [];
@@ -22,11 +20,12 @@ class SearchGame with ChangeNotifier {
 
   Future<void> requestGetGame(String text) async {
     requestSearch(true);
-    GraphQLClient client = config.clientToQueryMongo();
+
     loadingResult();
     try {
         listQuery.clear();
-        var result = await client.query(QueryOptions(documentNode: gql(query.searchGame(text))));
+        // TODO: token search game
+        var result = await MainRepo.queryGraphQL("", query.searchGame(text));
         var data = Game.fromJson(result.data);
         data != null ? listQuery.add(data) : listQuery = [];
         requestSearch(false);

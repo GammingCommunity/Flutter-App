@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 
 class ChatMessage extends StatelessWidget {
   final String currentID;
-  final Map<String,dynamic> sender;
+  final Map<String, dynamic> sender;
   final String text;
   final AnimationController animationController;
   final DateTime sendDate;
-  ChatMessage({this.currentID,this.text, this.animationController, this.sender, this.sendDate});
+  ChatMessage({this.currentID, this.text, this.animationController, this.sender, this.sendDate});
   @override
   Widget build(BuildContext context) {
     //ThemeModel themeModel = Injector.get(context: context);
-   // bool isMe = themeModel.sender == sender;
-   //print(sender['id']);
-   bool isMe = currentID == sender['id'] ;
-   
+    // bool isMe = themeModel.sender == sender;
+    //print(sender['id']);
+    bool isMe = currentID == sender['id'];
+
     return SizeTransition(
         sizeFactor: CurvedAnimation(parent: animationController, curve: Curves.easeOut), //new
         axisAlignment: 0.0,
@@ -25,8 +25,12 @@ class ChatMessage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               if (!isMe)
-                CircleAvatar(
-                  backgroundImage: NetworkImage(sender['profile_url']),
+                InkWell(
+                  borderRadius: BorderRadius.circular(1000),
+                  
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(sender['profile_url']),
+                  ),
                 ),
               Flexible(
                 child: Container(
@@ -37,10 +41,7 @@ class ChatMessage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                     color: Theme.of(context).primaryColor,
                   ),
-                  child: Text(
-                    text,
-                    style: Theme.of(context).textTheme.bodyText2
-                  ),
+                  child: Text(text, style: Theme.of(context).textTheme.bodyText2),
                 ),
               ),
               if (isMe)

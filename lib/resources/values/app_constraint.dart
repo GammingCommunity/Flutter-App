@@ -24,4 +24,5 @@ class AppConstraint {
   );
   static const double bottom_bar_height= 62;
   static const int searchBackground =0xff5a5757;
+  static const String noImageAsset = "assets/images/no_image.png"; 
 }
