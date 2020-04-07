@@ -208,7 +208,7 @@ packages:
       name: flutter_svg
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.15.0"
+    version: "0.17.4"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -246,14 +246,14 @@ packages:
       name: graphql
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1-beta.1"
+    version: "3.1.0-beta.1"
   graphql_flutter:
     dependency: "direct main"
     description:
       name: graphql_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1-beta.1"
+    version: "3.1.0-beta.1"
   http:
     dependency: transitive
     description:
