@@ -342,11 +342,15 @@ class GraphQLQuery {
     query{
       getRoomMessage(roomID:"$roomID"){
         messages{
-          messageType
-          userID
-          text
-          createAt
+        messageType
+        id
+        text{
+          content
+          height
+          width
         }
+        createAt
+      }
     }
   }
   """;

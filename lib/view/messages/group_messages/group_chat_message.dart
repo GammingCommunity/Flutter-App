@@ -2,11 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:gamming_community/class/GroupMessage.dart';
 import 'package:gamming_community/repository/upload_image.dart';
-import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/display_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:page_transition/page_transition.dart';
@@ -20,7 +19,7 @@ class GroupChatMessage extends StatefulWidget {
   final String currentID;
   final String roomID;
   final Map<String, dynamic> sender;
-  final String text;
+  final GMessage text;
   final String imageUrl;
   final AnimationController animationController;
   final DateTime sendDate;
@@ -162,7 +161,7 @@ class _GroupChatMessageState extends State<GroupChatMessage> with TickerProvider
                         borderRadius: BorderRadius.circular(8),
                         color: Theme.of(context).primaryColor,
                       ),
-                      child: Text(widget.text, style: Theme.of(context).textTheme.bodyText2)),
+                      child: Text(widget.text.text.content, style: Theme.of(context).textTheme.bodyText2)),
                 ),
               if (widget.type == "media")
                 Flexible(

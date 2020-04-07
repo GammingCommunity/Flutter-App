@@ -4,8 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gamming_community/API/Query.dart';
+import 'package:gamming_community/class/GroupMessage.dart';
 import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:gamming_community/models/group_chat_provider.dart';
+import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/repository/upload_image.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
@@ -77,11 +79,11 @@ class _MessagesState extends State<GroupMessage>
     // TODO current profile current null for maintain reason
     //TODO add emoji
     // TODO add add picture, video , etc
-    //var result = await MainRepo.queryGraphQL("", query.getRoomMessage(widget.roomID));
+    var result = await MainRepo.queryGraphQL("", query.getRoomMessage(widget.roomID));
 
-   // var listMessage = GroupMessages.fromJson(result.data['getPrivateChat']).groupMessages;
+   var listMessage = GroupMessages.fromJson(result.data['getPrivateChat']).groupMessages;
 
-   /* listMessage.forEach((e) {
+    listMessage.forEach((e) {
       groupchatProvider.onAddNewMessage(GroupChatMessage(
         currentID: widget.currentID,
         sender: {"id": e.sender, "profile_url":""},
@@ -91,13 +93,13 @@ class _MessagesState extends State<GroupMessage>
       ));
       animationController.forward();
       animateToBottom();
-    });*/
+    });
   }
 
   void onSendMesasge(String message, String type) {
     //print(widget.profileUrl);
     if (chatController.text.isEmpty) return;
-
+    
     var animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
 
@@ -106,7 +108,7 @@ class _MessagesState extends State<GroupMessage>
       sender: {"id": widget.currentID, "profile_url": ""},
       animationController: animationController,
       type: "text",
-      text: chatController.text,
+      text: GMessage(content: message),
       sendDate: DateTime.now(),
     );
     sendMessageToSocket(type, "");
