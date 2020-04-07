@@ -39,7 +39,7 @@ class GroupChatMessage extends StatefulWidget {
   _GroupChatMessageState createState() => _GroupChatMessageState();
 }
 
-class _GroupChatMessageState extends State<GroupChatMessage> with TickerProviderStateMixin{
+class _GroupChatMessageState extends State<GroupChatMessage> with TickerProviderStateMixin,AutomaticKeepAliveClientMixin{
   int _total = 0, _received = 0;
   bool uploadComplete = false;
   List<int> _bytes = [];
@@ -121,7 +121,9 @@ class _GroupChatMessageState extends State<GroupChatMessage> with TickerProvider
   }
 
   @override
+  
   Widget build(BuildContext context) {
+    super.build(context);
     bool isMe = widget.currentID == widget.sender['id'];
     bool fromStorage = widget.fromStorage;
     var imageUrl = widget.imageUrl;
@@ -161,7 +163,7 @@ class _GroupChatMessageState extends State<GroupChatMessage> with TickerProvider
                         borderRadius: BorderRadius.circular(8),
                         color: Theme.of(context).primaryColor,
                       ),
-                      child: Text(widget.text.text.content, style: Theme.of(context).textTheme.bodyText2)),
+                      child: Text(widget.text.content, style: Theme.of(context).textTheme.bodyText2)),
                 ),
               if (widget.type == "media")
                 Flexible(
@@ -191,8 +193,8 @@ class _GroupChatMessageState extends State<GroupChatMessage> with TickerProvider
                                   alignment: Alignment.center,
                                   child: Image.network(
                                     widget.imageUrl,
-                                    height: 100,
-                                    width: 200,
+                                    height: widget.text.height > 1000 ? widget.text.height /2 : widget.text.height,
+                                    width: widget.text.width >1000 ? widget.text.width /2 :widget.text.width,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -210,6 +212,9 @@ class _GroupChatMessageState extends State<GroupChatMessage> with TickerProvider
         ) //new
         );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 // CircularProgressIndicator(
 //                                     value: 0,

@@ -57,13 +57,21 @@ class _CarouselState extends State<Carousel> {
                 child: Image.asset('assets/images/no_image.png', fit: BoxFit.cover));
           }
           if (result.loading) {
-            return ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: 3,
-              itemBuilder: (context, index) => Container(
-                color: Colors.grey,
-                height: 150),
-            );
+            return CarouselSlider.builder(
+                    height: 200,
+                    itemCount: 3,
+                    itemBuilder: (context, indexItem) {
+                      return Container(
+                          margin: EdgeInsets.symmetric(horizontal: 5.0),
+                          height: 200,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.grey,
+                          ),
+                          width: screenSize.width,);
+                    },
+                    enlargeCenterPage: true,
+                  );
           } else {
             var _image = ListGameImage.fromJson(result.data['getListGame']).listGameImage;
 
@@ -72,7 +80,7 @@ class _CarouselState extends State<Carousel> {
                     alignment: Alignment.center,
                     child: SvgPicture.asset('assets/icons/empty_icon.svg'))
                 : CarouselSlider.builder(
-                    height: 150,
+                    height: 200,
                     itemCount: 3,
                     itemBuilder: (context, indexItem) {
                       return Container(

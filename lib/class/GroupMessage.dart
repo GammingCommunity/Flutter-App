@@ -27,7 +27,7 @@ class GroupMessages {
               type: e['messageType'],
                 messageID: e['_id'],
                 sender: e['id'],
-                createAt: e['createAt'],
+                createAt: DateTime.parse(e['createAt']) ,
                 text: GMessage.fromMap(e['text'])))
           });
     } catch (e) {

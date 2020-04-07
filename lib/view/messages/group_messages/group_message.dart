@@ -81,7 +81,7 @@ class _MessagesState extends State<GroupMessage>
     // TODO add add picture, video , etc
     var result = await MainRepo.queryGraphQL("", query.getRoomMessage(widget.roomID));
 
-   var listMessage = GroupMessages.fromJson(result.data['getPrivateChat']).groupMessages;
+   var listMessage = GroupMessages.fromJson(result.data).groupMessages;
 
     listMessage.forEach((e) {
       groupchatProvider.onAddNewMessage(GroupChatMessage(
@@ -89,7 +89,7 @@ class _MessagesState extends State<GroupMessage>
         sender: {"id": e.sender, "profile_url":""},
         animationController: animationController,
         text: e.text,
-        sendDate: e.createAt,
+        sendDate: e.createAt
       ));
       animationController.forward();
       animateToBottom();
@@ -350,6 +350,7 @@ class _MessagesState extends State<GroupMessage>
 
               Flexible(
                   child: ListView.builder(
+                    addAutomaticKeepAlives: true,
                       padding: EdgeInsets.only(left: 8, right: 8, bottom: 12, top: 12),
                       itemCount: groupchatProvider.messages.length,
                       controller: scrollController,
