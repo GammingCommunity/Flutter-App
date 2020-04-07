@@ -77,11 +77,11 @@ class _MessagesState extends State<GroupMessage>
     // TODO current profile current null for maintain reason
     //TODO add emoji
     // TODO add add picture, video , etc
-    /*var result = await MainRepo.queryGraphQL("", query.getRoomMessage(widget.roomID));
+    //var result = await MainRepo.queryGraphQL("", query.getRoomMessage(widget.roomID));
 
-    var listMessage = GroupMessages.fromJson(result.data['getPrivateChat']).groupMessages;
+   // var listMessage = GroupMessages.fromJson(result.data['getPrivateChat']).groupMessages;
 
-    listMessage.forEach((e) {
+   /* listMessage.forEach((e) {
       groupchatProvider.onAddNewMessage(GroupChatMessage(
         currentID: widget.currentID,
         sender: {"id": e.sender, "profile_url":""},
@@ -120,16 +120,16 @@ class _MessagesState extends State<GroupMessage>
     animateToBottom();
   }
 
-  void onSendMesasgeMedia(
-      String path, String imageUrl, String type, http.StreamedResponse stream, bool fromLocal) {
-    //print(widget.profileUrl);
+  void onSendMesasgeMedia(String path, String type, bool fromLocal) async{
+    print("Rôm"+widget.roomID);
 
     var animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
 
     var groupMessage = GroupChatMessage(
-      fromLocal: fromLocal,
-      progress: stream,
+      socket:groupchatProvider.socket,
+      fromStorage: fromLocal,
+      roomID:widget.roomID,
       currentID: widget.currentID,
       sender: {"id": widget.currentID, "profile_url": ""},
       animationController: animationController,
@@ -137,7 +137,9 @@ class _MessagesState extends State<GroupMessage>
       type: "media",
       sendDate: DateTime.now(),
     );
-    sendMessageToSocket(type, imageUrl);
+    
+
+    //sendMessageToSocket(type);
 
     groupMessage.animationController.forward();
 
@@ -194,6 +196,7 @@ class _MessagesState extends State<GroupMessage>
 
       var animationController =
           AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+          
       var chatMessage = GroupChatMessage(
           sender: {"id": data[1]['id'], "profile_url": ""},
           text: data[1]['text'],
@@ -219,14 +222,16 @@ class _MessagesState extends State<GroupMessage>
   }
 
   void chatImage(String roomID, String path) async {
-    var upload = await ImageService.chatImage(widget.roomID, path);
 
-    var result = await upload.stream.bytesToString();
-    var url = json.decode(result);
-    print(url[0]);
-
+    onSendMesasgeMedia(path, "media", true);
+ 
+    if (_mediaOverlayEntry != null) {
+      _mediaOverlayEntry.remove();
+      _mediaOverlayEntry = null;
+    }
+    else return;
     // get url and push image to other client
-    onSendMesasgeMedia(path, url[0], "media", upload, true);
+   
   }
 
   //display choose image and video on chat bar
@@ -264,13 +269,10 @@ class _MessagesState extends State<GroupMessage>
                       else
                         chatImage(widget.roomID, image.path);
 
-                      //print(upload);
-
                       print('Image');
                     } catch (e) {
                       return;
                     }
-                    this._mediaOverlayEntry.remove();
                   },
                 ),
                 IconButton(
@@ -326,16 +328,16 @@ class _MessagesState extends State<GroupMessage>
       // pass chat id here
       // endDrawer: ListUserDrawer(chatID: widget.chatID),
       body: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+        behavior: HitTestBehavior.translucent,
         onTap: () {
           // tap to close keyboard
           FocusScope.of(context).requestFocus(new FocusNode());
           // hide choose image/video if click outside
-          if (this._mediaOverlayEntry == null) {
-            return;
-          } else {
+          if (this._mediaOverlayEntry != null) {
             this._mediaOverlayEntry.remove();
             isTap = false;
+          } else {
+            return;
           }
         },
         child: Container(
@@ -388,7 +390,6 @@ class _MessagesState extends State<GroupMessage>
                               });
                             },
                             controller: chatController,
-                           
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: 'Text here',
@@ -421,7 +422,7 @@ class _MessagesState extends State<GroupMessage>
                                 isTap = false;
                                 print(isTap);
                               }*/
-                              if (isTap) {
+                              if (isTap && _mediaOverlayEntry != null) {
                                 _mediaOverlayEntry.remove();
                               } else {
                                 this._mediaOverlayEntry = this._createOverlayEntry();

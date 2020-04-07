@@ -18,11 +18,10 @@ class ImageService{
     String userToken =ref.getStringList("userToken")[2];
     var httpLink ="http://image-service.glitch.me/chat-image/$groupID";
     
-    var request = http.MultipartRequest('POST', Uri.parse(httpLink))
+    var request = http.MultipartRequest('POST', Uri.parse(httpLink),)
         ..files.add(await http.MultipartFile.fromPath("image", imagePath));
+
     var res = await request.send();
     return res;
-
-    
   }
 }

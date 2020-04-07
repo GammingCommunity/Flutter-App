@@ -1,17 +1,24 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:gamming_community/repository/upload_image.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/display_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:page_transition/page_transition.dart';
+import 'package:palette_generator/palette_generator.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class GroupChatMessage extends StatefulWidget {
-  final bool fromLocal;
-
-  final http.StreamedResponse progress;
+  final bool fromStorage;
+  final IO.Socket socket;
   final String type;
   final String currentID;
+  final String roomID;
   final Map<String, dynamic> sender;
   final String text;
   final String imageUrl;
@@ -25,43 +32,100 @@ class GroupChatMessage extends StatefulWidget {
       this.animationController,
       this.sender,
       this.sendDate,
-      this.progress,
-      this.fromLocal});
+      this.roomID,
+      this.socket,
+      this.fromStorage});
 
   @override
   _GroupChatMessageState createState() => _GroupChatMessageState();
 }
 
-class _GroupChatMessageState extends State<GroupChatMessage> {
-  int total = 0, _received = 0;
+class _GroupChatMessageState extends State<GroupChatMessage> with TickerProviderStateMixin{
+  int _total = 0, _received = 0;
   bool uploadComplete = false;
+  List<int> _bytes = [];
+  int byteCount = 0;
+  AnimationController controller;
+  Animation animation;
+
   Future showProgress() async {
-    widget.progress.stream.listen((value) {
-      print(value);
+    print("roomID ${widget.roomID}");
+    http.StreamedResponse upload = await ImageService.chatImage(widget.roomID, widget.imageUrl);
+    // upload complete and send to other client
+    _total = upload.contentLength;
+
+    upload.stream.listen((value) {
       setState(() {
-        _received += value.length;
+        _bytes.addAll(value);
+        
       });
-      print(_received);
-    }).onDone(() {
+
+    }).onDone(() async{
+      
       setState(() {
         uploadComplete = true;
+        controller.forward();
+        Future.delayed(const Duration(milliseconds: 1000)).then((value) => controller.reverse());
+        
       });
-    });
+
+      var convertByte = utf8.decode(_bytes);
+      var result = json.decode(convertByte);
+      print(result[0]['url']);
+      widget.socket.emit('chat-group', [
+        [
+          {
+            "groupID": widget.roomID,
+          },
+          {
+            "type": "media",
+            "id": widget.currentID,
+            "text": {
+              "content":result[0]['url'],
+              "height":result[0]['height'],
+              "width":result[0]['width']
+            },
+          }
+        ]
+      ]);
+      });
+   
+  }
+
+  Future _generatePalete(BuildContext context, String imagePath, bool fromStorage) async {
+    PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(
+        fromStorage == true ? AssetImage(imagePath) : CachedNetworkImage(imageUrl: imagePath),
+        size: Size(110, 150),
+        maximumColorCount: 20);
+    Navigator.of(context).push(PageTransition(
+        child: DisplayImage(
+            imageUrl: widget.imageUrl, fromStorage: fromStorage, palate: paletteGenerator),
+        type: PageTransitionType.scale,
+        curve: Curves.fastLinearToSlowEaseIn,
+        alignment: Alignment.center,
+        duration: Duration(milliseconds: 500)));
   }
 
   @override
   void initState() {
     super.initState();
     showProgress();
+    controller= AnimationController(vsync: this,duration: Duration(milliseconds: 200));
+    animation=  Tween(begin:0,end: 1).animate(controller);
+
+  }
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+    
   }
 
   @override
   Widget build(BuildContext context) {
-    //ThemeModel themeModel = Injector.get(context: context);
-    // bool isMe = themeModel.sender == sender;
-    //print(sender['id']);
     bool isMe = widget.currentID == widget.sender['id'];
-    bool fromLocal = widget.fromLocal;
+    bool fromStorage = widget.fromStorage;
+    var imageUrl = widget.imageUrl;
     print("type here ${widget.type}");
     return SizeTransition(
         sizeFactor:
@@ -102,53 +166,54 @@ class _GroupChatMessageState extends State<GroupChatMessage> {
                 ),
               if (widget.type == "media")
                 Flexible(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.deferToChild,
+                    onTap: () {
+                      _generatePalete(context, imageUrl, fromStorage);
+                    },
                     child: Container(
-                  color: Colors.grey,
-                  margin: EdgeInsets.only(left: 10),
-                  height: 100,
-                  width: 200,
-                  child: Stack(
-                    children: <Widget>[
-                      fromLocal == true
-                          ? Align(
-                              alignment: Alignment.center,
-                              child: Image.file(
-                                File(widget.imageUrl),
-                                height: 100,
-                                width: 200,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : InkWell(
-                            onTap: (){
-                              print("image click ${widget.imageUrl}");
-                              //Navigator.of(context).push(PageTransition(child: DisplayImage(imageUrl: widget.imageUrl,), type: PageTransitionType.scale));
-                            },
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Image.network(
-                                  widget.imageUrl,
-                                  height: 100,
-                                  width: 200,
-                                  fit: BoxFit.cover,
+                      color: Colors.grey,
+                      margin: EdgeInsets.only(left: 10),
+                      height: 100,
+                      width: 200,
+                      child: Stack(
+                        children: <Widget>[
+                          fromStorage == true
+                              ? Align(
+                                  alignment: Alignment.center,
+                                  child: Image.file(
+                                    File(widget.imageUrl),
+                                    height: 100,
+                                    width: 200,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : Align(
+                                  alignment: Alignment.center,
+                                  child: Image.network(
+                                    widget.imageUrl,
+                                    height: 100,
+                                    width: 200,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                              ),
-                            ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: uploadComplete
-                            ? Container()
-                            : CircularProgressIndicator(
-                                backgroundColor: Colors.amber,
-                                value: _received.toDouble(),
-                              ),
-                      )
-                    ],
+                          Align(
+                            alignment: Alignment.center,
+                            child: uploadComplete ? FadeTransition(opacity: controller,child:Icon(Icons.check,color:Colors.indigo,size: 40,)) : Container(),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
-                ))
+                )
             ],
           ),
         ) //new
         );
   }
 }
+// CircularProgressIndicator(
+//                                     value: 0,
+//                                     backgroundColor: Colors.white,
+//                                     valueColor: AlwaysStoppedAnimation<Color>(Colors.amber),
+//                                   )
