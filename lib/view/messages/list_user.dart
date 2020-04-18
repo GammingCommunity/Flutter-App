@@ -54,7 +54,7 @@ class _ListUserDrawerState extends State<ListUserDrawer> with AutomaticKeepAlive
                     if (result.loading) {
                       return Container(
                         alignment: Alignment.center,
-                        child: AppConstraint.spinKitCubeGrid,
+                        child: AppConstraint.spinKitCubeGrid(context),
                       );
                     }
                     if (result.hasException) {

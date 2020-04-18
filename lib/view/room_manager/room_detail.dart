@@ -204,7 +204,7 @@ class _RoomDetailState extends State<RoomDetail> with TickerProviderStateMixin {
                     padding: EdgeInsets.all(10),
                     child: TabBarView(controller: tabController, children: <Widget>[
                       // tab 1 : message group
-                      GroupMessage(
+                      GroupMessageWidget(
                         silverBarHeight: silverAppBarHeight,
                         roomID: widget.room.id,
                         member: widget.room.memberID,

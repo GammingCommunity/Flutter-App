@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
-import 'package:shimmer/shimmer.dart';
 
 class OnDemandItem extends StatelessWidget {
   @override
@@ -16,13 +15,7 @@ class OnDemandItem extends StatelessWidget {
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.circular(15),
-              child: Shimmer.fromColors(
-                  enabled: true,
-                  child: Container(
-                    height: 10,
-                  ),
-                  baseColor: Colors.grey[300],
-                  highlightColor: Colors.grey[100]),
+              child: Container()
             ),
             Positioned(
                 left: 30,

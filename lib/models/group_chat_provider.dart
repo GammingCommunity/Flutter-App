@@ -1,16 +1,34 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:gamming_community/class/GroupMessage.dart';
+import 'package:gamming_community/view/messages/group_messages/SharedPref.dart';
 import 'package:gamming_community/view/messages/group_messages/group_chat_message.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class GroupChatProvider extends StatesRebuilder{
   String socketID;
   IO.Socket socket;
+  SharedPref ref= SharedPref();
   List<GroupChatMessage> messages = [];
-
+  List<GroupMessage> groupMessage = [];
   void onAddNewMessage(GroupChatMessage groupchatMessage) {
     
     this.messages.add(groupchatMessage);
     rebuildStates();
+  }
+  void onAddNewMessage2(GroupMessage message){
+    this.groupMessage.add(message);
+  }
+
+  void saveToCache(){
+    
+    ref.saveToCache(groupMessage);
+  }
+  void clearCache(){
+    ref.clear();
   }
 
   void initSocket() async {

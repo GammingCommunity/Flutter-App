@@ -33,7 +33,8 @@ class ListUser {
   ListUser({this.listUser});
   factory ListUser.fromJson(List json) {
     var _list = <User>[];
-    json.forEach((element) {
+    try {
+      json.forEach((element) {
       _list.add(User(
           email: element['account']['email'] ??= '',
           birthday: '',
@@ -42,6 +43,9 @@ class ListUser {
           describe: element['account']['describe'],
           profileUrl: element['account']['avatar_url']));
     });
+    } catch (e) {
+      return ListUser(listUser: []);
+    }
     return ListUser(listUser: _list);
   }
 }

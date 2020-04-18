@@ -1,4 +1,5 @@
 import 'package:gamming_community/view/room_manager/getUser.dart';
+
 class Room {
   String id;
   String roomName;
@@ -21,14 +22,16 @@ class Room {
       this.createAt});
 }
 
-class ListRoom {
- 
-  static Future<List<Room>> getList(List json) async{
-    var _listRoom= <Room>[];
+class Rooms {
+  
+  List<Room> rooms;
+  Rooms({this.rooms});
+  factory Rooms.fromJson(List json) {
+    var _listRoom = <Room>[];
     try {
       for (var item in json) {
-        var listInt = List<int>.from(item['member'].map((e)=>int.parse(e)).toList());
-        var listUser = await getUser(listInt);
+        // var listInt = List<int>.from(item['member'].map((e)=>int.parse(e)).toList());
+        // var listUser = await getUser(listInt);
         _listRoom.add(Room(
             id: item['_id'],
             hostID: item['hostID'],
@@ -36,16 +39,12 @@ class ListRoom {
             gameInfo: item['game'] ??= item['game'],
             isPrivate: item['isPrivate'],
             maxOfMember: item['maxOfMember'],
-            memberID: listUser,
+            memberID: item['member'],
             createAt: item['createAt']));
       }
-      
     } catch (e) {
       print(e);
-      return [];
     }
-      return _listRoom;
+    return Rooms(rooms: _listRoom);
   }
-  List<Room> listRoom;
-  ListRoom({this.listRoom});
 }

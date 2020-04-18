@@ -1,12 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/profile/edit_profile.dart';
 import 'package:gamming_community/view/profile/row_account_setting.dart';
+import 'package:gamming_community/view/profile/settingProvider.dart';
 import 'package:open_iconic_flutter/open_iconic_flutter.dart';
+import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
 
 class Profile extends StatefulWidget {
   final String userID, userProfile, userName;
@@ -18,12 +23,11 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
   final username = "NOTHING", nickName = "@ callMyName";
   final backgroundColor = Color(0xff322E2E);
-  final usernameStyle = TextStyle(fontSize: 15, fontWeight: FontWeight.w500);
+  final usernameStyle = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
   final nickNameStyle = TextStyle(fontWeight: FontWeight.w200);
-
   final borderRadius = BorderRadius.circular(15);
   bool changeTheme = false;
-  // List<bool> _isSelected = List.generate(3, (_) => false);
+  SettingProvider settingProvider;
 
   Future getInfo() async {
     SharedPreferences refs = await SharedPreferences.getInstance();
@@ -41,26 +45,22 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
+    settingProvider = Injector.get(context: context);
     super.build(context);
-    final screenSize = MediaQuery.of(context).size;
     return Scaffold(
-      body: Container(
-          width: screenSize.width,
-          color: AppColors.BACKGROUND_COLOR,
+      body: ContainerResponsive(
+          width: ScreenUtil.screenWidth,
           child: FutureBuilder(
             future: getInfo(),
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Align(
                   alignment: Alignment.center,
-                  child: SpinKitCubeGrid(
-                    color: Colors.white,
-                    size: 20,
-                  ),
+                  child: AppConstraint.spinKitCubeGrid(context)
                 );
               } else
                 return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                 
                   children: <Widget>[
                     //Edit button
                     Expanded(
@@ -68,59 +68,64 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                         child: Stack(
                           alignment: Alignment.bottomCenter,
                           children: <Widget>[
-                            Positioned(
-                                width: MediaQuery.of(context).size.width,
-                                left: 0,
-                                top: 0,
+                            Positioned.fill(
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: <Widget>[
-                                      Align(alignment: Alignment.topLeft,child: IconButton(icon: Icon(Icons.chevron_left), onPressed: (){Navigator.pop(context);}),),
-                                      Align(
-                                        alignment: Alignment.topRight,
-                                        child: RaisedButton.icon(
-                                            onPressed: () {
-                                              Navigator.of(context).push(PageRouteBuilder(
-                                                  pageBuilder: (context, a1, a2) => EditProfile(
-                                                      token: snapshot.data[2],
-                                                      userID: widget.userID,
-                                                      currentProfile: widget.userProfile),
-                                                  transitionsBuilder: (context, anim, a2, child) {
-                                                    // slide from bottom to top
-                                                    var begin = Offset(0.0, 1.0);
-                                                    var end = Offset.zero;
-                                                    var curve = Curves.ease;
-                                                    var tween = Tween(begin: begin, end: end)
-                                                        .chain(CurveTween(curve: curve));
-                                                    return SlideTransition(
-                                                        child: child, position: anim.drive(tween));
-                                                  }));
-                                            },
-                                            shape:
-                                                RoundedRectangleBorder(borderRadius: borderRadius),
-                                            icon: Icon(Icons.wb_iridescent),
-                                            label: Text("Edit")),
-                                      )
-                                    ],
-                                  ),
-                                )),
+                              padding: EdgeInsetsResponsive.all(0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Align(
+                                      alignment: Alignment.topLeft,
+                                      child: CircleIcon(
+                                        icon: FeatherIcons.chevronLeft,
+                                        iconSize: 25,
+                                        onTap: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      )),
+                                  Align(
+                                    alignment: Alignment.topRight,
+                                    child: Padding(
+                                      padding: EdgeInsetsResponsive.only(right:10),
+                                      child: RaisedButton.icon(
+                                          onPressed: () {
+                                            Navigator.of(context).push(PageRouteBuilder(
+                                                pageBuilder: (context, a1, a2) => EditProfile(
+                                                    token: snapshot.data[2],
+                                                    userID: widget.userID,
+                                                    currentProfile: widget.userProfile),
+                                                transitionsBuilder: (context, anim, a2, child) {
+                                                  // slide from bottom to top
+                                                  var begin = Offset(0.0, 1.0);
+                                                  var end = Offset.zero;
+                                                  var curve = Curves.ease;
+                                                  var tween = Tween(begin: begin, end: end)
+                                                      .chain(CurveTween(curve: curve));
+                                                  return SlideTransition(
+                                                      child: child, position: anim.drive(tween));
+                                                }));
+                                          },
+                                          shape: RoundedRectangleBorder(borderRadius: borderRadius),
+                                          icon: Icon(Icons.wb_iridescent),
+                                          label: Text("Edit")),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )),
                             // profile image
-                            Positioned(
+                            Positioned.fill(
+                              top: 50.h,
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
-                                  SizedBox(
-                                    height: 50,
-                                  ),
                                   CachedNetworkImage(
                                     fadeInCurve: Curves.easeIn,
-                                    fadeInDuration: Duration(seconds: 2),
-                                    imageBuilder: (context, imageProvider) => Container(
-                                      height: 100,
-                                      width: 100,
+                                    fadeInDuration: Duration(seconds: 1),
+                                    imageBuilder: (context, imageProvider) => ContainerResponsive(
+                                      height: 80.h ,
+                                      width: 80.w,
                                       decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(1000),
                                           image: DecorationImage(
@@ -129,55 +134,41 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                     imageUrl: widget.userProfile == null
                                         ? AppConstraint.sample_proifle_url
                                         : widget.userProfile,
-                                    placeholder: (context, url) => Container(
-                                      height: 100,
-                                      width: 100,
+                                    placeholder: (context, url) => ContainerResponsive(
+                                      height: 100.h,
+                                      width: 100.w,
                                       decoration: BoxDecoration(
                                           color: Colors.grey,
                                           borderRadius: BorderRadius.circular(1000)),
                                     ),
                                     errorWidget: (context, url, error) => Icon(Icons.error),
                                   ),
-                                  SizedBox(
-                                    height: 10,
+                                  SizedBoxResponsive(
+                                    height: 20,
                                   ),
-                                  Text(
+                                  TextResponsive(
                                     widget.userName ?? username,
                                     style: usernameStyle,
                                   ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
+                                  
+                                  TextResponsive(
                                     nickName,
                                     style: nickNameStyle,
                                   ),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
-                                      Material(
-                                        color: Colors.transparent,
-                                        clipBehavior: Clip.antiAlias,
-                                        type: MaterialType.circle,
-                                        child: IconButton(
-                                            padding: EdgeInsets.all(0),
-                                            icon: Icon(
-                                              Icons.person_add,
-                                              size: 25,
-                                            ),
-                                            onPressed: () {}),
+                                      
+                                      CircleIcon(
+                                        icon: FeatherIcons.userPlus,
+                                        iconSize: 25,
+                                        onTap: (){},
                                       ),
-                                      Material(
-                                        color: Colors.transparent,
-                                        clipBehavior: Clip.antiAlias,
-                                        type: MaterialType.circle,
-                                        child: IconButton(
-                                            icon: Icon(
-                                              Icons.message,
-                                              size: 25,
-                                            ),
-                                            onPressed: () {}),
-                                      )
+                                      CircleIcon(
+                                        icon: FeatherIcons.messageCircle,
+                                        iconSize: 25,
+                                        onTap: (){},
+                                      ),
                                     ],
                                   ),
                                 ],
@@ -186,12 +177,11 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                           ],
                         )),
                     // Setting blablabla....
+                    
                     Expanded(
                       flex: 3,
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Padding(
-                            padding: const EdgeInsets.all(10.0),
+                      child:  Padding(
+                            padding: EdgeInsetsResponsive.symmetric(horizontal: 10,vertical: 10),
                             child: Wrap(
                               spacing: 20,
                               runSpacing: 20,
@@ -202,7 +192,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: <Widget>[
                                         Padding(
-                                          padding: const EdgeInsets.only(left: 30),
+                                          padding: EdgeInsetsResponsive.only(left: 30),
                                           child: Row(
                                             children: <Widget>[
                                               Icon(
@@ -212,7 +202,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                               SizedBox(
                                                 width: 20,
                                               ),
-                                              Text(
+                                              TextResponsive(
                                                 "Dark mode",
                                                 style: settingFont,
                                               ),
@@ -222,56 +212,46 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                         Switch(
                                             value: changeTheme,
                                             onChanged: (e) {
+                                              settingProvider.setTheme();
                                               setState(() {
                                                 changeTheme = e;
                                               });
                                             })
                                       ],
                                     ),
-                                    /* ToggleButtons(children: [
-                                  FlatButton(
-                                      onPressed: () {},
-                                      child: Text("Use system preference")),
-                                  FlatButton(
-                                      onPressed: () {},
-                                      child: Text("Dark Mode")),
-                                  FlatButton(
-                                      onPressed: () {},
-                                      child: Text("Light Mode")),
-                                ], isSelected: _isSelected)*/
                                   ],
                                 ),
-                                InkWell(
+                                RowProfileSetting(
                                     onTap: () {},
-                                    child: rowAccountSetting(
-                                        Icon(Icons.language, size: 30, color: Colors.amber),
-                                        "Language")),
-                                rowAccountSetting(
-                                    Icon(Icons.leak_add, size: 30, color: Colors.blueGrey),
-                                    "Follows"),
-                                rowAccountSetting(
-                                    Icon(Icons.favorite, size: 30, color: Colors.pink),
-                                    "Following"),
-                                rowAccountSetting(
-                                    Icon(
+                                    icon: Icon(Icons.language, size: 30, color: Colors.amber),
+                                    text: "Language"),
+                                RowProfileSetting(
+                                    onTap: () {},
+                                    icon: Icon(Icons.leak_add, size: 30, color: Colors.blueGrey),
+                                    text: "Follows"),
+                                RowProfileSetting(
+                                    onTap: () {},
+                                    icon: Icon(Icons.favorite, size: 30, color: Colors.pink),
+                                    text: "Following"),
+                                RowProfileSetting(
+                                    onTap: () {},
+                                    icon: Icon(
                                       Icons.feedback,
                                       size: 30,
                                     ),
-                                    "Feedback"),
-                                rowAccountSetting(
-                                    Icon(Icons.leak_remove, size: 30, color: Colors.red[300]),
-                                    "Restrict users"),
-                                InkWell(
-                                    onTap: () {
-                                      loggout(context);
-                                    },
-                                    child: rowAccountSetting(
-                                        Icon(Icons.power_settings_new,
-                                            size: 30, color: Colors.red[300]),
-                                        "Log out"))
+                                    text: "Feedback"),
+                                RowProfileSetting(
+                                    onTap: () {},
+                                    icon: Icon(Icons.leak_remove, size: 30, color: Colors.red[300]),
+                                    text: "Restrict users"),
+                                RowProfileSetting(
+                                    onTap: () {},
+                                    icon: Icon(Icons.power_settings_new,
+                                        size: 30, color: Colors.red[300]),
+                                    text: "Log out")
                               ],
                             )),
-                      ),
+                     
                     )
                   ],
                 );

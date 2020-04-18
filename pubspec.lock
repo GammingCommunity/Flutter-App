@@ -43,13 +43,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.1"
-  bottom_navy_bar:
-    dependency: "direct main"
-    description:
-      name: bottom_navy_bar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.3.2"
   built_collection:
     dependency: transitive
     description:
@@ -141,6 +134,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.1"
+  feather_icons_flutter:
+    dependency: "direct main"
+    description:
+      name: feather_icons_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.7.4"
   fixnum:
     dependency: transitive
     description:
@@ -167,6 +167,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.3"
+  flutter_image_compress:
+    dependency: transitive
+    description:
+      name: flutter_image_compress
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.5+1"
   flutter_launcher_icons:
     dependency: "direct main"
     description:
@@ -195,6 +202,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.6"
+  flutter_screenutil:
+    dependency: transitive
+    description:
+      name: flutter_screenutil
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   flutter_spinkit:
     dependency: "direct main"
     description:
@@ -225,7 +239,7 @@ packages:
       name: flutter_webrtc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.2"
+    version: "0.2.7"
   google_nav_bar:
     dependency: "direct main"
     description:
@@ -339,12 +353,19 @@ packages:
     source: hosted
     version: "0.0.4"
   open_iconic_flutter:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: open_iconic_flutter
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.0"
+  optimized_cached_image:
+    dependency: "direct main"
+    description:
+      name: optimized_cached_image
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.7"
   page_transition:
     dependency: "direct main"
     description:
@@ -386,7 +407,21 @@ packages:
       name: path_provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.5.1"
+    version: "1.6.5"
+  path_provider_macos:
+    dependency: transitive
+    description:
+      name: path_provider_macos
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.4"
+  path_provider_platform_interface:
+    dependency: transitive
+    description:
+      name: path_provider_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   pedantic:
     dependency: transitive
     description:
@@ -443,6 +478,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.3"
+  responsive_widgets:
+    dependency: "direct main"
+    description:
+      name: responsive_widgets
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   rxdart:
     dependency: "direct main"
     description:
@@ -478,13 +520,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.2+3"
-  shimmer:
-    dependency: "direct main"
-    description:
-      name: shimmer
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -652,5 +687,5 @@ packages:
     source: hosted
     version: "2.2.0"
 sdks:
-  dart: ">=2.6.0 <3.0.0"
+  dart: ">=2.6.2 <3.0.0"
   flutter: ">=1.12.13+hotfix.5 <2.0.0"

@@ -1,13 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/Game.dart';
 import 'package:gamming_community/class/Room.dart';
+import 'package:gamming_community/customWidget/circleIcon.dart';
+import 'package:gamming_community/models/group_chat_provider.dart';
 import 'package:gamming_community/repository/main_repo.dart';
-import 'package:gamming_community/resources/values/app_colors.dart';
+import 'package:gamming_community/view/messages/group_messages/SharedPref.dart';
 import 'package:gamming_community/view/messages/group_messages/group_message.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:responsive_widgets/responsive_widgets.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
 
 class RoomDetailV2 extends StatefulWidget {
   final String itemTag;
@@ -21,6 +23,7 @@ class _RoomDetailState extends State<RoomDetailV2> with TickerProviderStateMixin
   GraphQLQuery query = GraphQLQuery();
   ScrollController scrollController;
   AnimationController animationController;
+  GroupChatProvider groupChatProvider;
   Animation animation;
   TabController tabController;
   double silverAppBarHeight = 200;
@@ -28,6 +31,7 @@ class _RoomDetailState extends State<RoomDetailV2> with TickerProviderStateMixin
   bool hideGroupMember = true;
   bool hideDetail = true;
   double currentOffset = 0.0;
+  SharedPref ref = SharedPref();
   @override
   void initState() {
     tabController = TabController(length: 2, vsync: this);
@@ -71,6 +75,7 @@ class _RoomDetailState extends State<RoomDetailV2> with TickerProviderStateMixin
   void dispose() {
     //scrollController.dispose();
     animationController.dispose();
+    groupChatProvider.dispose();
     super.dispose();
   }
 
@@ -78,57 +83,82 @@ class _RoomDetailState extends State<RoomDetailV2> with TickerProviderStateMixin
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     var room = widget.room;
+    groupChatProvider = Injector.get(context: context);
+    return Hero(
+      tag: widget.itemTag,
+      child: DefaultTabController(
+          length: 2,
+          child: Scaffold(
+              appBar: PreferredSize(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Material(
+                        color: Colors.transparent,
+                        type: MaterialType.circle,
+                        clipBehavior: Clip.antiAlias,
+                        child: IconButton(
+                            icon: Icon(Icons.chevron_left),
+                            onPressed: () async {
+                              groupChatProvider.clearCache();
+                              await ref.checkDataExist("listMessage") ??
+                                  groupChatProvider.saveToCache();
 
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-          appBar: PreferredSize(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Material(
-                    color: Colors.transparent,
-                    type: MaterialType.circle,
-                    clipBehavior: Clip.antiAlias,
-                    child: IconButton(
-                        icon: Icon(Icons.chevron_left),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        }),
+                              Navigator.of(context).pop();
+                            }),
+                      ),
+                      TextResponsive(
+                        room.roomName,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Spacer(),
+                      Material(
+                        clipBehavior: Clip.antiAlias,
+                        type: MaterialType.circle,
+                        color: Colors.transparent,
+                        child: IconButton(
+                            icon: Icon(Icons.call),
+                            onPressed: () {
+                              // call audio
+                            }),
+                      ),
+                      CircleIcon(
+                        icon: Icons.info,
+                        iconSize: 30,
+                        onTap: (){
+                          // show member
+                        },
+                      )
+                      /*Container(
+                      height: 40,
+                      width: 100,
+                        child: ListView.builder(
+                      
+                      reverse: true,
+                      itemCount: room.memberID.length,
+                      scrollDirection: Axis.horizontal,
+                    
+                      itemBuilder: (context, index) => CachedNetworkImage(
+                           
+                            imageBuilder: (context, imageProvider) => Container(
+                                  height: 30,
+                                  width: 40,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: DecorationImage(image: imageProvider, fit: BoxFit.cover)),
+                                ),
+                            imageUrl: room.memberID[index].profileUrl as String),
+                      ),
+                    )*/
+                    ],
                   ),
-                  Text(
-                    room.roomName,
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  Spacer(),
-                  Flexible(
-                      child: ListView.builder(
-                    padding: EdgeInsets.all(10),
-                    reverse: true,
-                    itemCount: room.memberID.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) => CachedNetworkImage(
-                       
-                        imageBuilder: (context, imageProvider) => Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover)),
-                            ),
-                        imageUrl: room.memberID[index].profileUrl as String),
-                  ))
-                ],
-              ),
-              preferredSize: Size.fromHeight(40)),
-          body: Hero(
-              tag: widget.itemTag,
-              child: Container(
+                  preferredSize: Size.fromHeight(40)),
+              body: Container(
                   height: screenSize.height,
                   padding: EdgeInsets.symmetric(horizontal: 10),
                   child: TabBarView(controller: tabController, children: <Widget>[
                     // tab 1 : message group
-                    GroupMessage(
+                    GroupMessageWidget(
                       silverBarHeight: silverAppBarHeight,
                       roomID: widget.room.id,
                       member: widget.room.memberID,
@@ -164,7 +194,7 @@ class _RoomDetailState extends State<RoomDetailV2> with TickerProviderStateMixin
     // ])));
   }
 }
-
+/*
 class GameLogoWidget extends StatefulWidget {
   final String gameName;
   GameLogoWidget({this.gameName});
@@ -204,4 +234,4 @@ class _GameWidgetState extends State<GameLogoWidget> {
       },
     );
   }
-}
+}*/

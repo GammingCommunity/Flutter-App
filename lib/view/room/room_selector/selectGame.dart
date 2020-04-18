@@ -1,18 +1,22 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/Game.dart';
+import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/provider/search_game.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
+import 'package:gamming_community/utils/brighness_query.dart';
 import 'package:gamming_community/view/room/room_selector/select_num_member.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:open_iconic_flutter/open_iconic_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:tuple/tuple.dart';
 
 final _animateList = GlobalKey<AnimatedListState>();
-class SelectGame extends StatefulWidget {
 
+class SelectGame extends StatefulWidget {
   @override
   _SelectGameState createState() => _SelectGameState();
 }
@@ -30,7 +34,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    controller = AnimationController(vsync: this, duration: Duration(milliseconds: 1000));
+    controller = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
   }
 
   @override
@@ -48,7 +52,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
     var screenSize = MediaQuery.of(context).size;
     var searchGame = Provider.of<SearchGame>(context);
     return GraphQLProvider(
-      // TODO: provider get token from sharedprefrence
+        // TODO: provider get token from sharedprefrence
         client: customClient(""),
         child: CacheProvider(
             child: Selector<SearchGame, Tuple5<bool, bool, int, int, List<Game>>>(
@@ -57,11 +61,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
           builder: (context, value, child) {
             return Scaffold(
               floatingActionButton: FloatingActionButton(
-                  heroTag: "selectGame",
-                  onPressed: () {
-                    
-                  },
-                  child: Icon(Icons.chevron_right)),
+                  heroTag: "nextpage", onPressed: () {}, child: Icon(Icons.chevron_right)),
               body: GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: () {
@@ -73,31 +73,36 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                   });
                 },
                 child: SingleChildScrollView(
-                  child: Container(
-                    padding: EdgeInsets.all(20),
-                    height: screenSize.height,
-                    width: screenSize.width,
+                  child: ContainerResponsive(
+                    padding: EdgeInsetsResponsive.all(20),
+                    height: ScreenUtil().uiHeightPx,
+                    width: ScreenUtil().uiWidthPx,
                     child: Column(
                       children: <Widget>[
-                        Container(
-                          height: 60,
+                        ContainerResponsive(
+                          height: 60.h,
                           alignment: Alignment.centerLeft,
-                          child: Text("CHOOSE YOUR GAME",
+                          child: TextResponsive("CHOOSE YOUR GAME",
                               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
                         ),
-                        SizedBox(
-                          height: 20,
+                        SizedBoxResponsive(
+                          height: 20.h,
                         ),
                         Stack(
                           children: <Widget>[
                             AnimatedContainer(
                               // Use the properties stored in the State class.
                               height: value.item2
+                              ///{
+                              /// item 3 has result -> change height else default 50
+                              ///}
                                   ? (value.item3 != 0 ? changeHeight(value.item3) : 50)
                                   : height,
                               width: screenSize.width,
                               decoration: BoxDecoration(
-                                color: Color(AppConstraint.searchBackground),
+                                color: checkBrightness(context)
+                                    ? Color(AppConstraint.searchBackground)
+                                    : Colors.grey,
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               duration: Duration(milliseconds: 400),
@@ -115,14 +120,15 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                                     print("hummm ${value.item4}");
                                     return value.item4 < 0
                                         ? Container(
-                                            color: Colors.red,
                                             alignment: Alignment.center,
                                             height: 50,
                                             width: screenSize.width - 40,
                                             margin: EdgeInsets.only(top: 10),
                                             child: Text("No values"))
                                         : Material(
-                                            color: Color(AppConstraint.searchBackground),
+                                            color: checkBrightness(context)
+                                                ? Color(AppConstraint.searchBackground)
+                                                : Colors.grey,
                                             child: InkWell(
                                               onTap: () {
                                                 searchGame.selectGame(index);
@@ -174,9 +180,9 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                                 ),
                               ),
                             ),
-                            Container(
-                              width: screenSize.width - 40,
-                              padding: EdgeInsets.only(left: 10, right: 10),
+                            ContainerResponsive(
+                              width: ScreenUtil().uiWidthPx - 40,
+                              padding: EdgeInsetsResponsive.only(left: 10, right: 10),
                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
                               child: TextField(
                                 onTap: () {
@@ -189,7 +195,6 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                                   } else
                                     searchGame.requestGetGame(value);
                                   // expaned
-
                                   searchGame.expand();
                                 },
                                 onChanged: (value) {
@@ -208,11 +213,13 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                                       minHeight: 32,
                                       minWidth: 32,
                                     ),
-                                    contentPadding: EdgeInsets.only(top: 12),
-                                    icon: Icon(Icons.search, color: Colors.white),
+                                    contentPadding: EdgeInsets.only(top: 14.h),
+                                    icon: Icon(Icons.search, color: Colors.indigo),
                                     border: InputBorder.none,
                                     hintText: "Search your game here",
-                                    fillColor: Color(AppConstraint.searchBackground),
+                                    fillColor: checkBrightness(context)
+                                        ? Color(AppConstraint.searchBackground)
+                                        : Colors.grey,
                                     filled: true,
                                     suffixIcon: Padding(
                                         padding: EdgeInsets.all(0.0),
@@ -220,9 +227,9 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                                           fit: StackFit.loose,
                                           alignment: Alignment.center,
                                           children: <Widget>[
-                                            SizedBox(
-                                                height: 20,
-                                                width: 20,
+                                            SizedBoxResponsive(
+                                                height: 20.h,
+                                                width: 20.w,
                                                 child: Visibility(
                                                   visible: value.item1,
                                                   child: CircularProgressIndicator(
@@ -231,27 +238,19 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                                                 )),
                                             // clear button
                                             Visibility(
-                                              visible: clearText,
-                                              child: Material(
-                                                  clipBehavior: Clip.antiAlias,
-                                                  color: Colors.transparent,
-                                                  type: MaterialType.circle,
-                                                  child: IconButton(
-                                                    icon: Icon(
-                                                      Icons.clear,
-                                                      size: 15,
-                                                      color: Colors.white,
-                                                    ),
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        clearText = false;
-                                                      });
-                                                      searchGameController.clear();
-                                                      searchGame.clearListSearch();
-                                                      searchGame.hideSearchResult(true);
-                                                    },
-                                                  )),
-                                            )
+                                                visible: clearText,
+                                                child: CircleIcon(
+                                                  iconSize: 15,
+                                                  icon: FeatherIcons.x,
+                                                  onTap: () {
+                                                    setState(() {
+                                                      clearText = false;
+                                                    });
+                                                    searchGameController.clear();
+                                                    searchGame.clearListSearch();
+                                                    searchGame.hideSearchResult(true);
+                                                  },
+                                                ))
                                           ],
                                         ))),
                                 controller: searchGameController,
@@ -263,9 +262,9 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                           height: 20,
                         ),
                         // show game in list here
-                        Container(
-                          height: 300,
-                          width: screenSize.width,
+                        ContainerResponsive(
+                          height: 250.h,
+                          width: ScreenUtil().uiWidthPx,
                           alignment: Alignment.center,
                           child: value.item5.length <= 0
                               ? Text("Please choose one games")
@@ -276,7 +275,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                                   itemBuilder: (context, index) {
                                     return Container(
                                         //color:Colors.amber,
-                                        width: screenSize.width - 40,
+                                        width: ScreenUtil().uiWidthPx - 40,
                                         alignment: Alignment.center,
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -296,15 +295,12 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                                                 Positioned(
                                                     top: -10,
                                                     right: -10,
-                                                    child: Material(
-                                                      type: MaterialType.circle,
-                                                      clipBehavior: Clip.antiAlias,
-                                                      color: Colors.transparent,
-                                                      child: IconButton(
-                                                          icon: Icon(OpenIconicIcons.circleX),
-                                                          onPressed: () {
-                                                            searchGame.removeGame();
-                                                          }),
+                                                    child: CircleIcon(
+                                                      icon: FeatherIcons.xCircle,
+                                                      iconSize: 30,
+                                                      onTap: () {
+                                                        searchGame.removeGame();
+                                                      },
                                                     ))
                                               ],
                                             ),
@@ -322,16 +318,16 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                                 ),
                         ),
                         // number of member
-
+                        SizedBox(height: 20,),
                         Align(
                           alignment: Alignment.topLeft,
                           child: Column(
                             children: <Widget>[
-                              Text("Select your number of member :",
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                              Container(
+                              TextResponsive("Select your number of member :",
+                                  style: TextStyle(fontSize: ScreenUtil().setSp(20), fontWeight: FontWeight.bold)),
+                              ContainerResponsive(
                                   alignment: Alignment.topLeft,
-                                  height: 100,
+                                  height: 100.h,
                                   width: screenSize.width - 40,
                                   child: SelectNumOfMember(
                                     defaultPosition: currentIndex,
@@ -351,11 +347,11 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                         ),
                         Text("Or type here"),
                         SizedBox(height: 10),
-                        Container(
-                          height: 50,
-                          width: 70,
+                        ContainerResponsive(
+                          height: 50.h,
+                          width: 70.w,
                           decoration: BoxDecoration(
-                              color: Color(AppConstraint.searchBackground),
+                              color: checkBrightness(context) ? Color(AppConstraint.searchBackground) : Colors.grey,
                               borderRadius: BorderRadius.circular(15)),
                           child: TextField(
                             textAlign: TextAlign.center,

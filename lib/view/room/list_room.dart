@@ -23,32 +23,23 @@ class RoomList extends StatefulWidget {
   _RoomState createState() => _RoomState();
 }
 
-class _RoomState extends State<RoomList>
-    with AutomaticKeepAliveClientMixin<RoomList> {
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: true);
+class _RoomState extends State<RoomList> with AutomaticKeepAliveClientMixin<RoomList> {
+  RefreshController _refreshController = RefreshController(initialRefresh: true);
   bool isJoin = false;
   GraphQLQuery query = GraphQLQuery();
   List<Room> room = [];
   int page = 1;
   int limit = 5;
-  @override
-  void initState() {
-    super.initState();
-  }
 
   void _onRefresh() async {
-    //Provider.of<FetchMoreValue>(context,listen: false).clearData();
     page = 1;
-    //List<String> res = refs.getStringList("userToken");
-    
 
     try {
-      var variables ={"page": page, "limit": limit};
-      var result = await MainRepo.queryWithVariable(widget.token, query.getAllRoom(),variables);
-     
-      var v = await ListRoom.getList(result.data);
-      Provider.of(context, listen: false).firstLoad(v);
+      var variables = {"page": page, "limit": limit};
+      var result = await MainRepo.queryWithVariable(widget.token, query.getAllRoom(), variables);
+
+      //var v = await ListRoom.getList(result.data);
+      //  Provider.of(context, listen: false).firstLoad(v);
 
       if (mounted) {}
 
@@ -63,11 +54,11 @@ class _RoomState extends State<RoomList>
     int previousPage = page;
     int nextPage = previousPage + 1;
     print(nextPage);
-    var variables ={"page": page, "limit": limit};
-      var result = await MainRepo.queryWithVariable(widget.token, query.getAllRoom(),variables);
-    
-    var v = await ListRoom.getList(result.data);
-    Provider.of<FetchMoreValue>(context, listen: false).setMoreValue(v);
+    var variables = {"page": page, "limit": limit};
+    var result = await MainRepo.queryWithVariable(widget.token, query.getAllRoom(), variables);
+
+    //  var v = await ListRoom.getList(result.data);
+    //   Provider.of<FetchMoreValue>(context, listen: false).setMoreValue(v);
     if (mounted)
       setState(() {
         page += 1;
@@ -90,9 +81,7 @@ class _RoomState extends State<RoomList>
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     super.build(context);
-    return InheritedProvider<FetchMoreValue>(
-      create: (context) => FetchMoreValue(),
-      child: Scaffold(
+    return Scaffold(
         floatingActionButton: FloatingActionButton(
             backgroundColor: AppColors.PRIMARY_COLOR,
             child: Icon(Icons.add),
@@ -115,8 +104,7 @@ class _RoomState extends State<RoomList>
                   options: QueryOptions(
                       variables: {"page": page, "limit": limit},
                       documentNode: gql(query.getAllRoom())),
-                  builder: (QueryResult result,
-                      {VoidCallback refetch, FetchMore fetchMore}) {
+                  builder: (QueryResult result, {VoidCallback refetch, FetchMore fetchMore}) {
                     if (result.loading) {
                       return Align(
                         alignment: Alignment.topCenter,
@@ -125,21 +113,19 @@ class _RoomState extends State<RoomList>
                           size: 20,
                         ),
                       );
-                    }if(result.hasException){
-                      return Align(
-                        alignment: Alignment.topCenter,
-                        child: SvgPicture.asset('assets/icons/empty_logo/svg')
-                      );
                     }
-                    
-                     else {
+                    if (result.hasException) {
+                      return Align(
+                          alignment: Alignment.topCenter,
+                          child: SvgPicture.asset('assets/icons/empty_logo/svg'));
+                    } else {
                       //var v = await ListRoom.getList(result.data);
-                     // room = v.listRoom;
+                      // room = v.listRoom;
                       return Consumer<FetchMoreValue>(
                           builder: (context, model, child) => SmartRefresher(
                                 enablePullUp: true,
-                                footer: CustomFooter(builder:
-                                    (BuildContext context, LoadStatus mode) {
+                                footer:
+                                    CustomFooter(builder: (BuildContext context, LoadStatus mode) {
                                   Widget body;
                                   if (mode == LoadStatus.idle) {
                                     body = Text("pull up load");
@@ -149,7 +135,7 @@ class _RoomState extends State<RoomList>
                                       size: 15,
                                     );
                                   } else if (mode == LoadStatus.failed) {
-                                    body = Text("Load Failed!Click retry!");
+                                    body = Text("Load Failed! Click retry!");
                                   } else if (mode == LoadStatus.canLoading) {
                                     body = Text("Release to load more");
                                   } else {
@@ -174,8 +160,7 @@ class _RoomState extends State<RoomList>
                                 onRefresh: () => _onRefresh(),
                                 controller: _refreshController,
                                 child: ListView.separated(
-                                    separatorBuilder: (context, index) =>
-                                        Column(
+                                    separatorBuilder: (context, index) => Column(
                                           children: <Widget>[
                                             Divider(thickness: 1),
                                             SizedBox(height: 10)
@@ -184,8 +169,7 @@ class _RoomState extends State<RoomList>
                                     itemCount: room.length,
                                     itemBuilder: (context, index) {
                                       var v = DateTime.now().difference(
-                                          DateTime.tryParse(room[index].createAt)
-                                              .toLocal());
+                                          DateTime.tryParse(room[index].createAt).toLocal());
 
                                       return Material(
                                         color: Colors.transparent,
@@ -194,54 +178,38 @@ class _RoomState extends State<RoomList>
                                         child: InkWell(
                                           onTap: () {},
                                           child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 10, horizontal: 10),
+                                            padding:
+                                                EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                                             decoration: BoxDecoration(
-                                                borderRadius: BorderRadius
-                                                    .circular(AppConstraint
-                                                        .container_border_radius)),
+                                                borderRadius: BorderRadius.circular(
+                                                    AppConstraint.container_border_radius)),
                                             width: screenSize.width,
                                             height: 120,
                                             child: Stack(
                                               children: <Widget>[
                                                 Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      horizontal: 10),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(horizontal: 10),
                                                   child: Stack(
                                                     children: <Widget>[
                                                       Positioned(
                                                         child: InkWell(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(15),
+                                                          borderRadius: BorderRadius.circular(15),
                                                           onTap: () {},
                                                           child: ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        15),
-                                                            child:
-                                                                CachedNetworkImage(
+                                                            borderRadius: BorderRadius.circular(15),
+                                                            child: CachedNetworkImage(
                                                               fit: BoxFit.cover,
                                                               height: 150,
                                                               width: 60,
-                                                              fadeInCurve:
-                                                                  Curves.easeIn,
-                                                              fadeInDuration:
-                                                                  Duration(
-                                                                      seconds:
-                                                                          2),
+                                                              fadeInCurve: Curves.easeIn,
+                                                              fadeInDuration: Duration(seconds: 2),
                                                               imageUrl:
                                                                   "https://via.placeholder.com/150",
-                                                              placeholder: (context,
-                                                                      url) =>
+                                                              placeholder: (context, url) =>
                                                                   CircularProgressIndicator(),
-                                                              errorWidget: (context,
-                                                                      url,
-                                                                      error) =>
-                                                                  Icon(Icons
-                                                                      .error),
+                                                              errorWidget: (context, url, error) =>
+                                                                  Icon(Icons.error),
                                                             ),
                                                           ),
                                                         ),
@@ -250,64 +218,53 @@ class _RoomState extends State<RoomList>
                                                         left: 80,
                                                         child: Row(
                                                           mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
+                                                              MainAxisAlignment.center,
                                                           crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
+                                                              CrossAxisAlignment.start,
                                                           children: <Widget>[
                                                             Wrap(
                                                               direction: Axis.vertical,
                                                               spacing: 10,
                                                               runAlignment: WrapAlignment.start,
-                                                              children: <
-                                                                  Widget>[
+                                                              children: <Widget>[
                                                                 Text(
-                                                                  room[index]
-                                                                          .roomName ??
+                                                                  room[index].roomName ??
                                                                       "Room name",
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          18),
+                                                                  style: TextStyle(fontSize: 18),
                                                                 ),
-                                                                
                                                                 Align(
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .centerLeft,
+                                                                    alignment: Alignment.centerLeft,
                                                                     child: Text(
                                                                         "${v.inMinutes} minuties ago")),
                                                                 Row(
                                                                   children: <Widget>[
-                                                                    for (var item in room[index].memberID) 
-                                                                    Container(
-                                                                      height: 40,
-                                                                      width: 40,
-                                                                      alignment: Alignment.center,
-                                                                      decoration: BoxDecoration(
-                                                                        color: Colors.grey[400],
-                                                                        borderRadius: BorderRadius.circular(100)
-                                                                      ),
-                                                                      child: Text(item),
-                                                                    )
+                                                                    for (var item
+                                                                        in room[index].memberID)
+                                                                      Container(
+                                                                        height: 40,
+                                                                        width: 40,
+                                                                        alignment: Alignment.center,
+                                                                        decoration: BoxDecoration(
+                                                                            color: Colors.grey[400],
+                                                                            borderRadius:
+                                                                                BorderRadius
+                                                                                    .circular(100)),
+                                                                        child: Text(item),
+                                                                      )
                                                                   ],
                                                                 )
-                                                                  
-                                                                
                                                               ],
                                                             ),
                                                             SizedBox(
                                                               width: 10,
                                                             ),
                                                             Row(
-                                                              children: <
-                                                                  Widget>[
-                                                                Text(
-                                                                    "post on "),
+                                                              children: <Widget>[
+                                                                Text("post on "),
                                                                 InkWell(
-                                                                    onTap:
-                                                                        () {},
-                                                                    child: Text(room[index].gameInfo !=
+                                                                    onTap: () {},
+                                                                    child: Text(room[index]
+                                                                                .gameInfo !=
                                                                             null
                                                                         ? "${room[index].gameInfo["gameName"]}"
                                                                         : "null")),
@@ -317,20 +274,15 @@ class _RoomState extends State<RoomList>
                                                         ),
                                                       ),
                                                       Align(
-                                                        alignment:
-                                                            Alignment.topRight,
+                                                        alignment: Alignment.topRight,
                                                         child: Container(
                                                             height: 30,
-                                                            alignment: Alignment
-                                                                .center,
+                                                            alignment: Alignment.center,
                                                             width: 50,
                                                             decoration: BoxDecoration(
-                                                                color: AppColors
-                                                                    .PRIMARY_COLOR,
+                                                                color: AppColors.PRIMARY_COLOR,
                                                                 borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            15)),
+                                                                    BorderRadius.circular(15)),
                                                             child: Text(
                                                                 "${room[index].memberID.length}/ ${room[index].maxOfMember}")),
                                                       )
@@ -341,44 +293,32 @@ class _RoomState extends State<RoomList>
                                                   top: 50,
                                                   child: Container(
                                                       height: 50,
-                                                      width:
-                                                          screenSize.width - 40,
+                                                      width: screenSize.width - 40,
                                                       child: Stack(
                                                         children: <Widget>[
                                                           Positioned(
                                                             bottom: 0,
                                                             right: 0,
                                                             child: Align(
-                                                              alignment: Alignment
-                                                                  .bottomRight,
+                                                              alignment: Alignment.bottomRight,
                                                               child: Row(
-                                                                children: <
-                                                                    Widget>[
+                                                                children: <Widget>[
                                                                   Material(
-                                                                    clipBehavior:
-                                                                        Clip.antiAlias,
-                                                                    type: MaterialType
-                                                                        .circle,
-                                                                    color: Colors
-                                                                        .transparent,
+                                                                    clipBehavior: Clip.antiAlias,
+                                                                    type: MaterialType.circle,
+                                                                    color: Colors.transparent,
                                                                     child: IconButton(
-                                                                        icon: Icon(Icons
-                                                                            .message),
-                                                                        onPressed:
-                                                                            () {}),
+                                                                        icon: Icon(Icons.message),
+                                                                        onPressed: () {}),
                                                                   ),
                                                                   Material(
-                                                                    type: MaterialType
-                                                                        .circle,
-                                                                    color: Colors
-                                                                        .transparent,
-                                                                    clipBehavior:
-                                                                        Clip.antiAlias,
+                                                                    type: MaterialType.circle,
+                                                                    color: Colors.transparent,
+                                                                    clipBehavior: Clip.antiAlias,
                                                                     child: IconButton(
                                                                         icon: Icon(Icons.add_box),
                                                                         onPressed: () {
-                                                                          print(
-                                                                              "ASD  ");
+                                                                          print("ASD  ");
                                                                         }),
                                                                   )
                                                                 ],
@@ -401,7 +341,7 @@ class _RoomState extends State<RoomList>
                 )),
           ),
         ),
-      ),
+      
     );
   }
 

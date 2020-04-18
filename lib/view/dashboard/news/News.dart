@@ -5,8 +5,8 @@ import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/News.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:gamming_community/utils/skeleton_template.dart';
+import 'package:responsive_widgets/responsive_widgets.dart';
 
 class News extends StatefulWidget {
   @override
@@ -14,7 +14,7 @@ class News extends StatefulWidget {
 }
 
 class _NewsState extends State<News> {
-  GraphQLQuery query = GraphQLQuery();
+  var query = GraphQLQuery();
 
   @override
   Widget build(BuildContext context) {
@@ -22,55 +22,13 @@ class _NewsState extends State<News> {
     return GraphQLProvider(
       client: customClient(""),
       child: CacheProvider(
-          child: Container(
-        height: screenSize.height,
+          child: ContainerResponsive(
         child: Query(
           options: QueryOptions(
               variables: {"page": 1, "limit": 5}, documentNode: gql(query.getNews("pcgamer"))),
           builder: (result, {fetchMore, refetch}) {
             if (result.loading) {
-              return Container(
-                margin: EdgeInsets.only(top: 10),
-                width: screenSize.width,
-                child: Column(
-                  children: <Widget>[
-                    SkeletonTemplate.image(200, screenSize.width, 0, Colors.grey),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              // logo article
-                              SkeletonTemplate.image(50, 50, 15, Colors.grey),
-                              SizedBox(width: 10),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  // title
-                                  Container(
-                                      width: screenSize.width - 80,
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          Flexible(
-                                              child: SkeletonTemplate.text(
-                                                  20, screenSize.width, 15, Colors.grey))
-                                        ],
-                                      )),
-                                  SizedBox(height: 10),
-                                  // time
-                                  SkeletonTemplate.text(20, 40, 15, Colors.grey)
-                                ],
-                              )
-                            ],
-                          )),
-                    )
-                  ],
-                ),
-              );
+              return loadingHolder();
             }
             if (result.hasException) {
               return Align(alignment: Alignment.center, child: Text("No news"));
@@ -80,54 +38,55 @@ class _NewsState extends State<News> {
                 alignment: Alignment.topCenter,
                 child: CarouselSlider.builder(
                     viewportFraction: 1.2,
-                    height: 300,
+                    height: 250.h,
                     itemCount: listNews.length,
                     itemBuilder: (context, i) {
-                      return Container(
+                      return ContainerResponsive(
                         padding: EdgeInsets.all(10),
                         width: screenSize.width,
                         child: Column(
                           children: <Widget>[
-                            CachedNetworkImage(
-                                height: 200,
-                                width: screenSize.width,
-                                fit: BoxFit.cover,
-                                imageUrl: listNews[i].imageUrl,
-                                errorWidget: (context, url, error) =>
-                                    Image.asset('assets/images/no_image.png', fit: BoxFit.cover)),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: CachedNetworkImage(
+                                  height: 150.h,
+                                  width: screenSize.width,
+                                  fit: BoxFit.cover,
+                                  imageUrl: listNews[i].imageUrl,
+                                  errorWidget: (context, url, error) =>
+                                      Image.asset('assets/images/no_image.png', fit: BoxFit.cover)),
+                            ),
+                            Spacer(),
                             Padding(
-                              padding: EdgeInsets.symmetric(vertical: 10),
+                              padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
                               child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
                                       ClipRRect(
-                                        borderRadius: BorderRadius.circular(15),
+                                        borderRadius: BorderRadius.circular(10),
                                         child: Image.asset(
                                           'assets/icons/article_logo/pc_gamer.png',
-                                          height: 50,
-                                          width: 50,
+                                          height: 50.h,
+                                          width: 50.w,
                                         ),
                                       ),
-                                      SizedBox(width: 10),
+                                      SizedBoxResponsive(width: 10),
                                       Column(
                                         crossAxisAlignment: CrossAxisAlignment.end,
                                         children: <Widget>[
-                                          Container(
-                                              width: screenSize.width - 80,
-                                              child: Row(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                children: <Widget>[
-                                                  Flexible(
-                                                      child: Text(
-                                                    listNews[i].shortText,
-                                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                                  ))
-                                                ],
-                                              )),
-                                          Text("${listNews[1].time} days ago")
+                                          ContainerResponsive(
+                                            width: ScreenUtil().uiWidthPx - 100,
+                                            child: TextResponsive(
+                                              """${listNews[i].shortText}""",
+                                              textAlign: TextAlign.justify,
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                          SizedBoxResponsive(width: 10),
+                                          TextResponsive("${listNews[1].time} days ago")
                                         ],
                                       )
                                     ],
@@ -144,4 +103,39 @@ class _NewsState extends State<News> {
       )),
     );
   }
+}
+
+Widget loadingHolder() {
+  return ContainerResponsive(
+    margin: EdgeInsetsResponsive.only(top: 10),
+    width: ScreenUtil().uiWidthPx,
+    child: Column(
+      children: <Widget>[
+        SkeletonTemplate.image(150.h, ScreenUtil().uiWidthPx, 10, Colors.grey),
+        Padding(
+          padding: EdgeInsetsResponsive.symmetric(vertical: 10),
+          child: Align(
+              alignment: Alignment.centerLeft,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  // logo article
+                  SkeletonTemplate.image(50, 50, 15, Colors.grey),
+                  SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: <Widget>[
+                      // title
+                      SkeletonTemplate.text(20, ScreenUtil().uiWidthPx - 100, 15, Colors.grey),
+                      SizedBox(height: 10),
+                      // time
+                      SkeletonTemplate.text(20, 40, 15, Colors.grey)
+                    ],
+                  )
+                ],
+              )),
+        )
+      ],
+    ),
+  );
 }

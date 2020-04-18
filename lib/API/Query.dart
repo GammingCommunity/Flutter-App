@@ -161,8 +161,8 @@ class GraphQLQuery {
   """;
   String getCurrentUserInfo() => """
   query{
-    lookAccount {
-    account {
+    getThisAccount {
+    
       name
       describe
       email {
@@ -180,7 +180,7 @@ class GraphQLQuery {
       phone {
         phone
       }
-    }
+    
   }
   }
  """;

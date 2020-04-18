@@ -2,8 +2,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
-import 'package:gamming_community/view/dashboard/carousel.dart';
 import 'package:gamming_community/view/dashboard/categories/categories.dart';
+import 'package:gamming_community/view/dashboard/high_light_game.dart';
+import 'package:responsive_widgets/responsive_widgets.dart';
 import 'news/News.dart';
 
 class DashBoard extends StatefulWidget {
@@ -13,8 +14,7 @@ class DashBoard extends StatefulWidget {
   _DashBoardState createState() => _DashBoardState();
 }
 
-class _DashBoardState extends State<DashBoard>
-    with AutomaticKeepAliveClientMixin<DashBoard> {
+class _DashBoardState extends State<DashBoard> with AutomaticKeepAliveClientMixin<DashBoard> {
   @override
   void initState() {
     //print('init state');
@@ -25,45 +25,42 @@ class _DashBoardState extends State<DashBoard>
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     super.build(context);
-    return SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          children: <Widget>[
-            Container(
-                height: 200,
+    return ContainerResponsive(
+      padding: EdgeInsetsResponsive.all(10),
+      child: Column(
+        children: <Widget>[
+          Flexible(
+            flex: 2,
+            child: Container(
+                height: 200.h,
                 width: MediaQuery.of(context).size.width,
                 child: Carousel(widget.token)),
-            SizedBox(height: 10),
-            Align(
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text("Category",
-                        style: TextStyle(fontSize: AppConstraint.categoryText)),
-                    Material(
-                      clipBehavior: Clip.antiAlias,
-                      color: Colors.transparent,
-                      type: MaterialType.circle,
-                        child: IconButton(
-                            icon: Icon(Icons.expand_more), onPressed: () {}))
-                  ],
-                )),
-            SizedBox(height: 10),
-            Category(),
-            SizedBox(height: 20),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Text("News",
-                    style: TextStyle(fontSize: AppConstraint.categoryText)),
-                Divider(),
-              ],
-            ),
-            News(),
-          ],
-        ),
+          ),
+          SizedBox(height: 10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text("Category", style: TextStyle(fontSize: AppConstraint.categoryText)),
+              
+            ],
+          ),
+          SizedBox(height: 10),
+          Flexible(
+            flex: 2,
+            child: Category()),
+          SizedBox(height: 20),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Text("News", style: TextStyle(fontSize: AppConstraint.categoryText)),
+              Divider(),
+            ],
+          ),
+          Flexible(
+            flex: 4,
+            child: News()),
+        ],
       ),
     );
   }

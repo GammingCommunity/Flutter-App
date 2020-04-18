@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,20 +9,22 @@ import 'package:gamming_community/API/config/subAuth.dart';
 import 'package:gamming_community/class/Conservation.dart';
 import 'package:gamming_community/class/Friend.dart';
 import 'package:gamming_community/class/PrivateRoom.dart';
+import 'package:gamming_community/customWidget/circleIcon.dart';
+import 'package:gamming_community/view/messages/add_convervation.dart';
 import 'package:gamming_community/view/messages/friend_profile.dart';
 import 'package:gamming_community/view/messages/private_message_detail.dart';
 import 'package:gamming_community/view/messages/right_side_friends.dart';
-import 'package:gamming_community/view/messages/search_friends.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:responsive_widgets/responsive_widgets.dart';
 
 String formatDate(DateTime dateTime) {
-  var formatter = DateFormat('dd MMM');
+  var formatter = DateFormat('EEE,dd/MM/yyyy');
   return formatter.format(dateTime);
 }
 
 String formatDateTime(DateTime dateTime) {
-  var formatter = DateFormat('hh:mm');
+  var formatter = DateFormat('EEE  hh:mm');
   return formatter.format(dateTime);
 }
 
@@ -54,7 +57,6 @@ class _MessagesState extends State<Messages>
 
   @override
   void initState() {
-    
     super.initState();
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
@@ -85,133 +87,16 @@ class _MessagesState extends State<Messages>
               Navigator.of(context).push(MaterialPageRoute(
                   fullscreenDialog: true,
                   maintainState: true,
-                  builder: (context) => SearchFriends()));
+                  builder: (context) => AddConservation()));
             }),
         body: Container(
             padding: EdgeInsets.all(10),
             child: Column(
               children: <Widget>[
-                Expanded(
-                    flex: 1,
-                    child: Container(
-                        child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        // text header
-                        Expanded(
-                          flex: 1,
-                          child: Text(
-                            "Active friends",
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        //demo , friends example
-                        Expanded(
-                          flex: 2,
-                          child: GraphQLProvider(
-                            client: customSubClient(widget.token),
-                            child: CacheProvider(
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Query(
-                                  options: QueryOptions(
-                                      documentNode: gql(query.getAllFriend())),
-                                  builder: (result, {fetchMore, refetch}) {
-                                    if (result.loading) {
-                                      // skelon
-                                      return ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount: 3,
-                                          itemBuilder: (context, index) => ClipRRect(
-                                              borderRadius: BorderRadius.circular(10000),
-                                              child: Container(color: Colors.grey)));
-                                    }
-                                    if (result.hasException) {
-                                      return Row(
-                                        children: <Widget>[
-                                          IconButton(
-                                              icon: Icon(Icons.refresh),
-                                              onPressed: () {
-                                                //TODO: refesh friends list
-                                              }),
-                                          Text("Refresh")
-                                        ],
-                                      );
-                                    } else {
-                                      var listFriend =
-                                          ListFriends.fromJson(result.data['getFriends'])
-                                              .listFriend;
-                                      return listFriend.isEmpty
-                                          ? Material(
-                                            color: Colors.transparent,
-                                            clipBehavior: Clip.antiAlias,
-                                            type: MaterialType.circle,
-                                              child: IconButton(
-                                                icon: Icon(Icons.add),
-                                                onPressed: () {},
-                                              ),
-                                            )
-                                          : ListView.separated(
-                                              separatorBuilder: (context, index) => SizedBox(
-                                                    width: 20,
-                                                  ),
-                                              scrollDirection: Axis.horizontal,
-                                              itemCount: listFriend.length,
-                                              itemBuilder: (context, index) {
-                                                return InkWell(
-                                                  borderRadius: BorderRadius.circular(1000),
-                                                  onTap: () {
-                                                    // show friends profile
-                                                    showFriendProfile(context, widget.token,
-                                                        listFriend[index].id);
-                                                  },
-                                                  child: Stack(
-                                                    children: <Widget>[
-                                                      ClipRRect(
-                                                        borderRadius: BorderRadius.circular(10000),
-                                                        child: CachedNetworkImage(
-                                                          fadeInCurve: Curves.easeIn,
-                                                          fadeInDuration: Duration(seconds: 1),
-                                                          imageBuilder: (context, imageProvider) =>
-                                                              Container(
-                                                            height: 70,
-                                                            width: 70,
-                                                            decoration: BoxDecoration(
-                                                                color: Colors.red,
-                                                                borderRadius:
-                                                                    BorderRadius.circular(10000),
-                                                                image: DecorationImage(
-                                                                    fit: BoxFit.cover,
-                                                                    image: imageProvider)),
-                                                          ),
-                                                          imageUrl: listFriend[index].profileUrl,
-                                                          placeholder: (context, url) =>
-                                                              Container(color: Colors.grey),
-                                                          errorWidget: (context, url, error) =>
-                                                              Icon(Icons.error),
-                                                        ),
-                                                      ),
-                                                      Positioned(
-                                                          bottom: -2,
-                                                          right: -2,
-                                                          child: Icon(Icons.fiber_manual_record,
-                                                              color: Colors.amber))
-                                                    ],
-                                                  ),
-                                                );
-                                              });
-                                    }
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ))),
+                buildFriendsActive(widget.token),
                 // list message
                 Expanded(
-                    flex: 6,
+                    flex: 7,
                     child: Container(
                         alignment: Alignment.topLeft,
                         margin: EdgeInsets.only(top: 10),
@@ -380,4 +265,117 @@ class _MessagesState extends State<Messages>
 
   @override
   bool get wantKeepAlive => true;
+}
+
+Widget buildFriendsActive(String token) {
+  var query = GraphQLQuery();
+  return Flexible(
+      child: ContainerResponsive(
+          height: 150.h,
+          color: Colors.red,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              // text header
+              Text(
+                "Active friends",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+
+              //demo , friends example
+              Flexible(
+                child: GraphQLProvider(
+                  client: customSubClient(token),
+                  child: CacheProvider(
+                    child: Container(
+                      color: Colors.amber,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Query(
+                          options: QueryOptions(documentNode: gql(query.getAllFriend())),
+                          builder: (result, {fetchMore, refetch}) {
+                            if (result.loading) {
+                              // skelon
+                              return ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: 3,
+                                  itemBuilder: (context, index) => ClipRRect(
+                                      borderRadius: BorderRadius.circular(10000),
+                                      child: Container(color: Colors.grey)));
+                            }
+                            if (result.hasException) {
+                              return Row(
+                                children: <Widget>[
+                                  CircleIcon(
+                                    icon: Icons.refresh,
+                                    iconSize: 30,
+                                    onTap: () {},
+                                  ),
+                                  Text("Refresh")
+                                ],
+                              );
+                            } else {
+                              var listFriend =
+                                  ListFriends.fromJson(result.data['getFriends']).listFriend;
+                              return listFriend.isEmpty
+                                  ? CircleIcon(
+                                      icon: FeatherIcons.plusSquare,
+                                    )
+                                  : ListView.separated(
+                                      separatorBuilder: (context, index) => SizedBoxResponsive(
+                                            width: 20,
+                                          ),
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: listFriend.length,
+                                      itemBuilder: (context, index) {
+                                        return InkWell(
+                                          borderRadius: BorderRadius.circular(1000),
+                                          onTap: () {
+                                            // show friends profile
+                                            showFriendProfile(context, token, listFriend[index].id);
+                                          },
+                                          child: Stack(
+                                            children: <Widget>[
+                                              ClipRRect(
+                                                borderRadius: BorderRadius.circular(10000),
+                                                child: CachedNetworkImage(
+                                                  fadeInCurve: Curves.easeIn,
+                                                  fadeInDuration: Duration(seconds: 1),
+                                                  imageBuilder: (context, imageProvider) =>
+                                                      Container(
+                                                    height: 70,
+                                                    width: 70,
+                                                    decoration: BoxDecoration(
+                                                        color: Colors.red,
+                                                        borderRadius: BorderRadius.circular(10000),
+                                                        image: DecorationImage(
+                                                            fit: BoxFit.cover,
+                                                            image: imageProvider)),
+                                                  ),
+                                                  imageUrl: listFriend[index].profileUrl,
+                                                  placeholder: (context, url) =>
+                                                      Container(color: Colors.grey),
+                                                  errorWidget: (context, url, error) =>
+                                                      Icon(Icons.error),
+                                                ),
+                                              ),
+                                              Positioned(
+                                                  bottom: -2,
+                                                  right: -2,
+                                                  child: Icon(Icons.fiber_manual_record,
+                                                      color: Colors.amber))
+                                            ],
+                                          ),
+                                        );
+                                      });
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )));
 }

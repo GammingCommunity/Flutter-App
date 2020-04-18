@@ -12,8 +12,8 @@ class AppConstraint {
   static const String sample_proifle_url = "https://via.placeholder.com/150";
   static const String default_profile="https://droncoma.sirv.com/Profile/default_profile.png";
   static Image noImage= Image.asset('assets/images/no_image.png');
-  static SpinKitCubeGrid spinKitCubeGrid =
-      SpinKitCubeGrid(color: Colors.white, size: 20);
+  static Widget spinKitCubeGrid(context) =>
+      SpinKitCubeGrid(color: Theme.of(context).iconTheme.color, size: 20);
   static SvgPicture emptyIcon = SvgPicture.asset('assets/icons/empty_logo.svg');
   static const double roomTitleSize = 20;
   static ChewieProgressColors chewieProgressColors = ChewieProgressColors(

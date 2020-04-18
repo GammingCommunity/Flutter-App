@@ -8,11 +8,13 @@ import 'package:gamming_community/provider/fetchMore.dart';
 import 'package:gamming_community/provider/search_bar.dart';
 import 'package:gamming_community/provider/search_game.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
+import 'package:gamming_community/resources/values/app_theme.dart';
 import 'package:gamming_community/view/forgot_password/forgotPassword.dart';
 import 'package:gamming_community/view/home/home.dart';
 import 'package:gamming_community/view/login/bloc/bloc/login_bloc.dart';
 import 'package:gamming_community/view/login/login.dart';
 import 'package:gamming_community/view/profile/profile.dart';
+import 'package:gamming_community/view/profile/settingProvider.dart';
 import 'package:gamming_community/view/room/create_room.dart';
 import 'package:gamming_community/view/room/provider/navigateNextPage.dart';
 import 'package:gamming_community/view/room_manager/bloc/room_manager_bloc.dart';
@@ -26,8 +28,7 @@ import 'package:gamming_community/provider/notficationModel.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  
+
   // check login from logout
   Widget defaultHome = Login();
   SharedPreferences ref = await SharedPreferences.getInstance();
@@ -40,22 +41,27 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  
   final Widget home;
   MyApp({this.home});
 
   @override
   Widget build(BuildContext context) {
+    SettingProvider settingProvider ;
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<FetchMoreValue>(create: (context) => FetchMoreValue()),
-        ChangeNotifierProvider<ChangeProfile>(create: (context) => ChangeProfile()),
-        ChangeNotifierProvider<Search>(create: (context) => Search()),
-        ChangeNotifierProvider<NotificationModel>(create: (context) => NotificationModel()),
-        ChangeNotifierProvider<SearchGame>(create: (context) => SearchGame(),),
-        ChangeNotifierProvider<NavigateNextPage>(create: (context) => NavigateNextPage(),)
-
-      ],
-      child: MultiBlocProvider(
+        providers: [
+          ChangeNotifierProvider<FetchMoreValue>(create: (context) => FetchMoreValue()),
+          ChangeNotifierProvider<ChangeProfile>(create: (context) => ChangeProfile()),
+          ChangeNotifierProvider<Search>(create: (context) => Search()),
+          ChangeNotifierProvider<NotificationModel>(create: (context) => NotificationModel()),
+          ChangeNotifierProvider<SearchGame>(
+            create: (context) => SearchGame(),
+          ),
+          ChangeNotifierProvider<NavigateNextPage>(
+            create: (context) => NavigateNextPage(),
+          )
+        ],
+        child: MultiBlocProvider(
           providers: [
             BlocProvider<LoginBloc>(
               create: (BuildContext context) => LoginBloc(),
@@ -72,48 +78,21 @@ class MyApp extends StatelessWidget {
           ],
           child: Injector(
             inject: [
-              Inject(() => ChatProvider()),
-              Inject(()=>GroupChatProvider())
-            ],
+              Inject(() => ChatProvider()), 
+              Inject(() => GroupChatProvider()),
+              Inject(()=> SettingProvider())
+              
+              ],
             builder: (context) {
+              settingProvider = Injector.get(context: context);
               return StateBuilder(
                   models: [],
                   builder: (context, _) => MaterialApp(
                         debugShowCheckedModeBanner: false,
-                        themeMode: ThemeMode.dark,
+                        themeMode: settingProvider.darkTheme ? ThemeMode.dark : ThemeMode.light,
                         title: 'Gamming Community',
-                        darkTheme: ThemeData(
-                            scaffoldBackgroundColor: Color(0xff322E2E),
-                            brightness: Brightness.dark,
-                            fontFamily: "GoogleSans-Regular",
-                            primarySwatch: Colors.indigo,
-                            accentColor: Colors.indigo,
-                            cursorColor: Colors.amber,
-                            toggleableActiveColor: Colors.amber, //color cho switch, cac kieu
-                            appBarTheme: AppBarTheme(color: Color(0xff322E2E)),
-                            indicatorColor: AppColors.PRIMARY_COLOR,
-                            inputDecorationTheme: InputDecorationTheme(
-                                labelStyle: TextStyle(
-                                  color: Colors.white,
-                                ),
-                                focusedBorder: InputBorder.none),
-                            bottomAppBarTheme: BottomAppBarTheme(
-                              color: Color(0xff6A45E7),
-                            ),
-                            textTheme: TextTheme(bodyText2: TextStyle(color: Colors.white)).apply(
-                              bodyColor: Colors.white,
-                              displayColor: Colors.blue,
-                            ),
-                            accentIconTheme: IconThemeData(color: Colors.white)),
-                        theme: ThemeData(
-                            brightness: Brightness.light,
-                            fontFamily: "GoogleSans-Regular",
-                            primarySwatch: Colors.indigo,
-                            appBarTheme: AppBarTheme(color: Color(0xff322E2E)),
-                            iconTheme: IconThemeData(color: Colors.white),
-                            textTheme: TextTheme(
-                              bodyText2: TextStyle(color: Colors.white),
-                            )),
+                        darkTheme: AppTheme.darkTheme,
+                        theme: AppTheme.lightTheme,
                         //initialRoute: '/',
                         onGenerateRoute: (RouteSettings settings) {
                           List<String> pathElements = settings.name.split("/");
@@ -147,16 +126,16 @@ class MyApp extends StatelessWidget {
                           }
                         },
                         /*routes: <String, WidgetBuilder>{
-              '/login': (context) => Login(),
-              '/signup': (context) => SignUp(),
-              '/forgot': (context) => ForgotPassword(),
-              '/homepage': (context) => HomePage(),
-              '/profile': (context) => Profile()
-            },*/
+                '/login': (context) => Login(),
+                '/signup': (context) => SignUp(),
+                '/forgot': (context) => ForgotPassword(),
+                '/homepage': (context) => HomePage(),
+                '/profile': (context) => Profile()
+              },*/
                         home: home,
                       ));
             },
-          )),
-    );
+          ),
+        ));
   }
 }

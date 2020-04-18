@@ -1,14 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/Game.dart';
+import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
+import 'package:gamming_community/utils/brighness_query.dart';
 import 'package:gamming_community/view/dashboard/categories_detail/categories_detail.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:responsive_widgets/responsive_widgets.dart';
 
 class GameGenre extends StatefulWidget {
   final String genre;
@@ -50,14 +54,13 @@ class _GameGenreState extends State<GameGenre> {
               children: <Widget>[
                 Row(
                   children: <Widget>[
-                    Material(
-                        clipBehavior: Clip.antiAlias,
-                        borderRadius: BorderRadius.circular(20),
-                        child: IconButton(
-                            icon: Icon(Icons.arrow_back),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            })),
+                    CircleIcon(
+                      icon: FeatherIcons.arrowLeft,
+                      iconSize: 20,
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
                     SizedBox(width: 10),
                     Text(
                       widget.genre,
@@ -83,10 +86,7 @@ class _GameGenreState extends State<GameGenre> {
                     if (result.loading) {
                       return Align(
                         alignment: Alignment.center,
-                        child: SpinKitCubeGrid(
-                          color: Colors.white,
-                          size: 20,
-                        ),
+                        child: AppConstraint.spinKitCubeGrid(context)
                       );
                     }
                     if (result.hasException || result.data == null) {
@@ -108,6 +108,7 @@ class _GameGenreState extends State<GameGenre> {
                               color: Colors.transparent,
                               borderRadius:
                                   BorderRadius.circular(AppConstraint.container_border_radius),
+                              elevation: 2,
                               child: InkWell(
                                 onTap: () {
                                   Navigator.push(
@@ -119,8 +120,8 @@ class _GameGenreState extends State<GameGenre> {
                                             gameDetail: listGame[index],
                                           )));
                                 },
-                                child: Container(
-                                    height: 100,
+                                child: ContainerResponsive(
+                                    height: 100.h,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(
                                           AppConstraint.container_border_radius),
@@ -142,10 +143,10 @@ class _GameGenreState extends State<GameGenre> {
                                               return Container(color: Colors.blueGrey);
                                             },
                                             imageBuilder: (context, url) {
-                                              return Container(
+                                              return ContainerResponsive(
                                                 alignment: Alignment.center,
-                                                height: 100,
-                                                width: 80,
+                                                height: 100.h,
+                                                width: 80.w,
                                                 decoration: BoxDecoration(
                                                     borderRadius: BorderRadius.circular(10),
                                                     image: DecorationImage(
@@ -165,10 +166,10 @@ class _GameGenreState extends State<GameGenre> {
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: <Widget>[
-                                              Text(
+                                              TextResponsive(
                                                 listGame[index].name,
                                                 style: TextStyle(
-                                                    fontWeight: FontWeight.bold, fontSize: 18),
+                                                    fontWeight: FontWeight.bold, fontSize: 18,color: checkBrightness(context)? Colors.black :Colors.white  ),
                                               ),
                                               SizedBox(
                                                 height: 10,

@@ -10,6 +10,7 @@ import 'package:gamming_community/class/Game.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/room/create_room_v2.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:video_player/video_player.dart';
 
 class CategoriesDetail extends StatefulWidget {
@@ -57,43 +58,60 @@ class _CategoriesDetailState extends State<CategoriesDetail> with TickerProvider
           children: <Widget>[
             Align(
               alignment: Alignment.center,
-              child: Visibility(
-                visible: !playButton,
-                child: IconButton(
-                    icon: Icon(
-                      Icons.play_circle_filled,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _chewieController.play();
-                        playButton = !playButton;
-                      });
-                    }),
-              ),
-            ),
-            Align(
-              alignment: Alignment.topLeft,
-              child: Material(
-                color: Colors.transparent,
-                clipBehavior: Clip.antiAlias,
-                type: MaterialType.circle,
-                child: IconButton(
-                  color: Colors.white,
-                  icon: Icon(Icons.chevron_left),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    playButton = !playButton;
+                  });
+                },
+                child: Visibility(
+                  visible: playButton,
+                  child: IconButton(
+                      icon: Icon(
+                        Icons.play_circle_filled,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          if (!playButton) {
+                            print(playButton);
+                            _chewieController.pause();
+                          } else {
+                            print(playButton);
+                            _chewieController.play();
+                            playButton = !playButton;
+                          }
+                        });
+                      }),
                 ),
               ),
             ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: IconButton(
-                  icon: Icon(Icons.volume_up),
-                  onPressed: () {
-                    _chewieController.setVolume(0);
-                  }),
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Material(
+                  color: Colors.transparent,
+                  clipBehavior: Clip.antiAlias,
+                  type: MaterialType.circle,
+                  child: IconButton(
+                    color: Colors.white,
+                    icon: Icon(Icons.chevron_left),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: IconButton(
+                    icon: Icon(Icons.volume_up),
+                    onPressed: () {
+                      _chewieController.setVolume(0);
+                    }),
+              ),
             )
           ],
         ),
@@ -158,13 +176,13 @@ class _CategoriesDetailState extends State<CategoriesDetail> with TickerProvider
                 flexibleSpace: FlexibleSpaceBar(
                   collapseMode: CollapseMode.parallax,
                   background: GestureDetector(
-                    onTap: ()async  {
+                    onTap: () async {
                       _chewieController.play();
                     },
                     child: Container(
                       height: 260,
                       width: screenSize.width,
-                      color: Colors.grey,
+                      
                       child: Chewie(
                         controller: _chewieController,
                       ),
@@ -243,6 +261,8 @@ class _CategoriesDetailState extends State<CategoriesDetail> with TickerProvider
                     child: TabBar(
                         indicatorSize: TabBarIndicatorSize.label,
                         controller: tabController,
+                        labelColor: Theme.of(context).appBarTheme.color,
+                        isScrollable: false,
                         tabs: [
                           Tab(
                             text: 'Summary',
@@ -262,6 +282,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> with TickerProvider
                       padding: EdgeInsets.all(10),
                       child: TabBarView(
                         controller: tabController,
+                        physics: NeverScrollableScrollPhysics(),
                         children: <Widget>[
                           // Tab 1: Summary info
                           Column(
@@ -327,31 +348,38 @@ class _CategoriesDetailState extends State<CategoriesDetail> with TickerProvider
                                 height: 10,
                               ),
                               // game summary
-                              Column(
-                                children: <Widget>[
-                                  Text(
-                                    game.summary,
-                                    textAlign: TextAlign.justify,
-                                    overflow: TextOverflow.fade,
-                                    maxLines: descTextShowFlag ? 20 : 8,
-                                  ),
-                                  Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            descTextShowFlag = !descTextShowFlag;
-                                          });
-                                        },
-                                        child: descTextShowFlag
-                                            ? Text("Show less")
-                                            : Text("Show more"),
-                                      ),
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: Theme.of(context).buttonColor,
+                                ),
+                                child: Column(
+                                  children: <Widget>[
+                                    Text(
+                                      game.summary,
+                                      textAlign: TextAlign.justify,
+                                      overflow: TextOverflow.fade,
+                                      maxLines: descTextShowFlag ? 20 : 8,
                                     ),
-                                  )
-                                ],
+                                    Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: Padding(
+                                        padding: EdgeInsetsResponsive.symmetric(vertical: 10),
+                                        child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              descTextShowFlag = !descTextShowFlag;
+                                            });
+                                          },
+                                          child: descTextShowFlag
+                                              ? Text("Show less")
+                                              : Text("Show more"),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
                               SizedBox(
                                 height: 10,
@@ -363,8 +391,8 @@ class _CategoriesDetailState extends State<CategoriesDetail> with TickerProvider
                               CarouselSlider.builder(
                                 itemCount: game.images.length,
                                 itemBuilder: (context, index) {
-                                  return Container(
-                                    width: screenSize.width,
+                                  return ContainerResponsive(
+                                    width: ScreenUtil().uiWidthPx,
                                     decoration:
                                         BoxDecoration(borderRadius: BorderRadius.circular(10)),
                                     child: CachedNetworkImage(
@@ -384,7 +412,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> with TickerProvider
                                     ),
                                   );
                                 },
-                                height: 200,
+                                height: 200.h,
                                 realPage: game.images.length,
                               )
                             ],

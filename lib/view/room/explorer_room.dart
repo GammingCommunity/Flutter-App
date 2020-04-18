@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/CountRoom.dart';
@@ -9,9 +8,8 @@ import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/specify_room_game/room_by_game.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:gamming_community/utils/skeleton_items.dart';
-import 'package:video_player/video_player.dart';
+import 'package:responsive_widgets/responsive_widgets.dart';
+import 'package:flutter/src/widgets/framework.dart';
 
 class Explorer extends StatefulWidget {
   final String token;
@@ -49,8 +47,8 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
     final screenSize = MediaQuery.of(context).size;
     var search = Provider.of<Search>(context);
     return Scaffold(
-          body: Container(
-          padding: EdgeInsets.all(10),
+      body: ContainerResponsive(
+          padding: EdgeInsetsResponsive.all(10),
           height: screenSize.height,
           width: screenSize.width,
           child: GraphQLProvider(
@@ -60,29 +58,22 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
                 options: QueryOptions(documentNode: gql(query.countRoomOnEachGame('ASC'))),
                 builder: (result, {fetchMore, refetch}) {
                   if (result.loading) {
-                    return itemLoading(screenSize.width);
+                    return Center(
+                        child: AppConstraint.spinKitCubeGrid(context)); //itemLoading(screenSize.width);
                   }
                   if (result.hasException ||
                       result.data['countRoomOnEachGame'] as List<dynamic> == []) {
                     print(result.exception);
-                    return Align(
-                        alignment: Alignment.center,
-                        child: Column(
-                          children: <Widget>[
-                            IconButton(icon: Icon(Icons.refresh), onPressed: () {}),
-                            Text("Error during fetch, try again")
-                          ],
-                        ));
+                    return buildException(context);
                   } else {
-                    var listRoom = ListNumberOfRoom.json(result.data['countRoomOnEachGame']).listRoom;
-                    print(listRoom.length);
-                    return Container(
-                      width: screenSize.width,
-                      height: screenSize.height,
+                    var rooms = ListNumberOfRoom.json(result.data['countRoomOnEachGame']).listRoom;
+
+                    return ContainerResponsive(
+                      width: ScreenUtil().uiWidthPx,
+                      height: ScreenUtil().uiHeightPx,
                       child: NotificationListener(
                         onNotification: (notification) {
-                          
-                         /* if (notification is ScrollUpdateNotification) {
+                          /* if (notification is ScrollUpdateNotification) {
                             search.setCurrentScrollOffset(scrollPosition);
                           }
                           /*print("current scroll position" + scrollPosition.toString());
@@ -101,69 +92,14 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
                         },
                         child: ListView.separated(
                           //controller: scrollController,
-                          cacheExtent: 10,
+
                           addAutomaticKeepAlives: true,
                           separatorBuilder: (context, index) => SizedBox(
                             height: 20,
                           ),
-                          itemCount: listRoom.length,
+                          itemCount: rooms.length,
                           itemBuilder: (context, index) {
-                            return Material(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(15),
-                              elevation: 4,
-                              clipBehavior: Clip.antiAlias,
-                              type: MaterialType.button,
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              RoomByGame(gameID: listRoom[index].id)));
-                                },
-                                child: Container(
-                                  width: screenSize.width,
-                                  child: Stack(
-                                    children: <Widget>[
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(15),
-                                        child: CachedNetworkImage(
-                                          imageUrl: listRoom[index].background,
-                                          placeholder: (context, url) => Shimmer.fromColors(
-                                              enabled: true,
-                                              child: Container(),
-                                              baseColor: Colors.grey[300],
-                                              highlightColor: Colors.grey[100]),
-                                        ),
-                                      ),
-                                      Positioned(
-                                          left: 30,
-                                          top: 40,
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Text(
-                                                "${listRoom[index].gameName}",
-                                                style: TextStyle(shadows: [
-                                                  Shadow(
-                                                      blurRadius: 6,
-                                                      color: Colors.black,
-                                                      offset: Offset(2, 3))
-                                                ], fontSize: AppConstraint.roomTitleSize),
-                                              ),
-                                              Text(
-                                                "${listRoom[index].count} room",
-                                                style:
-                                                    TextStyle(fontSize: AppConstraint.roomTitleSize),
-                                              ),
-                                            ],
-                                          ))
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
+                            return buildItem(context, rooms, index);
                           },
                         ),
                       ),
@@ -176,6 +112,70 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
 
   @override
   bool get wantKeepAlive => true;
+}
+
+Widget buildException(BuildContext context) {
+  return Align(
+      alignment: Alignment.center,
+      child: Column(
+        children: <Widget>[
+          IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () {
+                (context as Element).reassemble();
+              }),
+          Text("Error during fetch, try again")
+        ],
+      ));
+}
+
+Widget buildItem(BuildContext context, List<Room> rooms, int index) {
+  return Material(
+    borderRadius: BorderRadius.circular(15),
+    elevation: 4,
+    clipBehavior: Clip.antiAlias,
+    child: InkWell(
+      onTap: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => RoomByGame(gameID: rooms[index].id)));
+      },
+      child: ContainerResponsive(
+        width: ScreenUtil().uiWidthPx,
+        child: Stack(
+          children: <Widget>[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: CachedNetworkImage(
+                imageUrl: rooms[index].background,
+                placeholder: (context, url) => Container(),
+              ),
+            ),
+            Positioned(
+                left: 30,
+                top: 35,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    TextResponsive(
+                      "${rooms[index].gameName}",
+                      style: TextStyle(
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(blurRadius: 6, color: Colors.black, offset: Offset(2, 3))
+                          ],
+                          fontSize: AppConstraint.roomTitleSize),
+                    ),
+                    TextResponsive(
+                      "${rooms[index].count} room",
+                      style: TextStyle(color: Colors.white, fontSize: AppConstraint.roomTitleSize),
+                    ),
+                  ],
+                ))
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 Widget itemLoading(double width) {

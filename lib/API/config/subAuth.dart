@@ -4,7 +4,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 
 GraphQLClient subAPI(String token) {
   HttpLink httpLink = HttpLink(
-      uri: "https://derogative-percenta.000webhostapp.com/graphql",
+      uri: "http://hutech-tech.preview-domain.com/graphql",
       headers: {"token": token});
 
   //GraphQLClient client = GraphQLClient(link: httpLink, cache: InMemoryCache());
@@ -16,7 +16,7 @@ GraphQLClient subAPI(String token) {
 }
  ValueNotifier<GraphQLClient> customSubClient(String token) {
     HttpLink httpLink = HttpLink(
-      uri: "https://derogative-percenta.000webhostapp.com/graphql",
+      uri: "http://hutech-tech.preview-domain.com/graphql",
       headers: {"token": token});
     var client = ValueNotifier(GraphQLClient(
       cache: OptimisticCache(dataIdFromObject: typenameDataIdFromObject), link: httpLink));

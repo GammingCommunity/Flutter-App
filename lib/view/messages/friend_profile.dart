@@ -5,7 +5,6 @@ import 'package:gamming_community/API/config/subAuth.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/sent_request_friend.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:shimmer/shimmer.dart';
 
 Future showFriendProfile(BuildContext context, String token, int userID) {
   GraphQLQuery query = GraphQLQuery();

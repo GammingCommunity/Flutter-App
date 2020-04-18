@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gamming_community/utils/brighness_query.dart';
 
 class SelectNumOfMember extends StatelessWidget {
   final int defaultPosition;
@@ -18,7 +19,7 @@ class SelectNumOfMember extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-
+    Color color = checkBrightness(context) ? Colors.black : Colors.white;
     return Container(
       alignment: Alignment.center,
       width: screenSize.width - 40,
