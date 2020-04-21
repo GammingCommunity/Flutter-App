@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gamming_community/view/game_genre/game_genre.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 
 class Category extends StatefulWidget {

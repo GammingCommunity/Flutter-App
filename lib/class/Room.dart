@@ -1,5 +1,3 @@
-import 'package:gamming_community/view/room_manager/getUser.dart';
-
 class Room {
   String id;
   String roomName;

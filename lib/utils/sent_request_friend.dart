@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Mutation.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SentRequestFriend extends StatefulWidget {
   final int requestID;

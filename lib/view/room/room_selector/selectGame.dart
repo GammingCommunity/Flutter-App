@@ -8,15 +8,19 @@ import 'package:gamming_community/provider/search_game.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/brighness_query.dart';
 import 'package:gamming_community/view/room/room_selector/select_num_member.dart';
+import 'package:gamming_community/view/room_manager/room_create_provider.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:open_iconic_flutter/open_iconic_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
 import 'package:tuple/tuple.dart';
 
 final _animateList = GlobalKey<AnimatedListState>();
 
 class SelectGame extends StatefulWidget {
+  final PageController pageController;
+  const SelectGame({this.pageController});
+  
   @override
   _SelectGameState createState() => _SelectGameState();
 }
@@ -26,6 +30,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
   var searchGameController = TextEditingController();
   var searchGameFocus = FocusNode();
   AnimationController controller;
+  RoomCreateProvider roomCreateProvider;
   bool clearText = false;
   int numofMember = 2;
   int currentIndex = 0;
@@ -51,6 +56,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     var searchGame = Provider.of<SearchGame>(context);
+    roomCreateProvider = Injector.get(context: context);
     return GraphQLProvider(
         // TODO: provider get token from sharedprefrence
         client: customClient(""),
@@ -61,7 +67,11 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
           builder: (context, value, child) {
             return Scaffold(
               floatingActionButton: FloatingActionButton(
-                  heroTag: "nextpage", onPressed: () {}, child: Icon(Icons.chevron_right)),
+                  heroTag: "nextpage", onPressed: () {
+                    
+                    widget.pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.fastLinearToSlowEaseIn);
+
+                  }, child: Icon(Icons.chevron_right)),
               body: GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: () {
@@ -214,7 +224,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                                       minWidth: 32,
                                     ),
                                     contentPadding: EdgeInsets.only(top: 14.h),
-                                    icon: Icon(Icons.search, color: Colors.indigo),
+                                    icon: Icon(Icons.search),
                                     border: InputBorder.none,
                                     hintText: "Search your game here",
                                     fillColor: checkBrightness(context)

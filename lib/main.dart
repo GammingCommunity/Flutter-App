@@ -7,17 +7,18 @@ import 'package:gamming_community/provider/changeProfile.dart';
 import 'package:gamming_community/provider/fetchMore.dart';
 import 'package:gamming_community/provider/search_bar.dart';
 import 'package:gamming_community/provider/search_game.dart';
-import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_theme.dart';
 import 'package:gamming_community/view/forgot_password/forgotPassword.dart';
 import 'package:gamming_community/view/home/home.dart';
 import 'package:gamming_community/view/login/bloc/bloc/login_bloc.dart';
 import 'package:gamming_community/view/login/login.dart';
+import 'package:gamming_community/view/notfications/notificationProvider.dart';
 import 'package:gamming_community/view/profile/profile.dart';
 import 'package:gamming_community/view/profile/settingProvider.dart';
 import 'package:gamming_community/view/room/create_room.dart';
 import 'package:gamming_community/view/room/provider/navigateNextPage.dart';
 import 'package:gamming_community/view/room_manager/bloc/room_manager_bloc.dart';
+import 'package:gamming_community/view/room_manager/room_create_provider.dart';
 import 'package:gamming_community/view/room_manager/room_manager.dart';
 import 'package:gamming_community/view/sign_up/bloc/bloc/signup_bloc.dart';
 import 'package:gamming_community/view/sign_up/sign_up.dart';
@@ -52,7 +53,7 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider<FetchMoreValue>(create: (context) => FetchMoreValue()),
           ChangeNotifierProvider<ChangeProfile>(create: (context) => ChangeProfile()),
-          ChangeNotifierProvider<Search>(create: (context) => Search()),
+          ChangeNotifierProvider<SearchProvider>(create: (context) => SearchProvider()),
           ChangeNotifierProvider<NotificationModel>(create: (context) => NotificationModel()),
           ChangeNotifierProvider<SearchGame>(
             create: (context) => SearchGame(),
@@ -80,12 +81,14 @@ class MyApp extends StatelessWidget {
             inject: [
               Inject(() => ChatProvider()), 
               Inject(() => GroupChatProvider()),
-              Inject(()=> SettingProvider())
-              
+              Inject(()=> SettingProvider()),
+              Inject(()=> NotificationProvider()),
+              Inject(()=>RoomCreateProvider()),
               ],
             builder: (context) {
               settingProvider = Injector.get(context: context);
               return StateBuilder(
+                
                   models: [],
                   builder: (context, _) => MaterialApp(
                         debugShowCheckedModeBanner: false,

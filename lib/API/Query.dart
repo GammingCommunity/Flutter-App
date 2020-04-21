@@ -162,26 +162,15 @@ class GraphQLQuery {
   String getCurrentUserInfo() => """
   query{
     getThisAccount {
-    
+       id
       name
+      avatar_url
+      email
+      phone
+      birthmonth
+      birthyear
       describe
-      email {
-        email
-      }
-      phone {
-        phone
-      }
-      birth_month {
-        month
-      }
-      birth_year {
-        year
-      }
-      phone {
-        phone
-      }
-    
-  }
+   }
   }
  """;
   String getUserInfo(List<int> ids) {
@@ -329,13 +318,15 @@ class GraphQLQuery {
       }
     """;
   String getFriendRequest() => """
-    getFriendRequests{
+    query{
+      getFriendRequests{
       sender{
         id
         name
         avatar_url
       }
       updated_at
+    }
     }
   """;
   String getRoomMessage(String roomID) => """

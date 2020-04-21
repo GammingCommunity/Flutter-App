@@ -1,27 +1,19 @@
 /*Fecth Room which user is Host, host user will able to modify , such as edit, remove, kick mem, add mem, ... */
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/Room.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
-import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
-import 'package:gamming_community/utils/brighness_query.dart';
 import 'package:gamming_community/utils/jwt_decode.dart';
-import 'package:gamming_community/view/home/home.dart';
 import 'package:gamming_community/view/room/create_room.dart';
 import 'package:gamming_community/view/room/create_room_v2.dart';
-import 'package:gamming_community/view/room/explorer_room.dart';
 import 'package:gamming_community/view/room_manager/bloc/room_manager_bloc.dart';
 import 'package:gamming_community/view/room_manager/display_member.dart';
 import 'package:gamming_community/view/room_manager/logo_room.dart';
-import 'package:gamming_community/view/room_manager/room_detail.dart';
 import 'package:gamming_community/view/room_manager/room_detail_v2.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:page_transition/page_transition.dart';
@@ -108,12 +100,14 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                 child: Scaffold(
                     floatingActionButton: FloatingActionButton(
                         heroTag: "addNewGroup",
-                        child: Icon(Icons.add),
+                        child: Icon(FeatherIcons.plus),
                         onPressed: () {
                           Navigator.push(context,
                               PageTransition(child: CreateRoomV2(), type: PageTransitionType.fade));
                         }),
                     body: ContainerResponsive(
+                      height: screenSize.height,
+                      width: screenSize.width,
                         margin: EdgeInsetsResponsive.only(top: 10),
                         alignment: Alignment.center,
                         child: Query(
@@ -129,10 +123,8 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                               } else {
                                 var rooms = Rooms.fromJson(result.data['roomManage']).rooms;
                                 return ContainerResponsive(
-                                  height: ScreenUtil().uiHeightPx,
-                                  width: ScreenUtil().uiWidthPx,
-                                  padding: EdgeInsets.symmetric(horizontal: 20),
                                   child: GridView.builder(
+                                    padding: EdgeInsetsResponsive.symmetric(horizontal: 20),
                                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisSpacing: 30.w,
                                         crossAxisCount: 2,
@@ -141,7 +133,7 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                                     itemCount: rooms.length,
                                     itemBuilder: (context, index) {
                                       return Material(
-                                        color:  Theme.of(context).dialogTheme.backgroundColor ,
+                                        color:  Theme.of(context).backgroundColor ,
                                         clipBehavior: Clip.antiAlias,
                                         borderRadius: BorderRadius.circular(15),
                                         elevation: 2,
@@ -200,7 +192,7 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                                                             overflow: TextOverflow.ellipsis,
                                                           ),
                                                         ),
-                                                        Text(
+                                                        TextResponsive(
                                                             "${rooms[index].memberID.length} member"),
                                                         // display some member in room
                                                         Padding(

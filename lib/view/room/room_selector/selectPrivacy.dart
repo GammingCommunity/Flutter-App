@@ -8,12 +8,14 @@ import 'package:gamming_community/utils/brighness_query.dart';
 import 'package:gamming_community/view/room/admin_tradio.dart';
 import 'package:gamming_community/view/room/privacy_radio.dart';
 import 'package:gamming_community/view/room/provider/setRoomBackground.dart';
+import 'package:gamming_community/view/room_manager/room_create_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
 
 class SelectRoomPrivacy extends StatefulWidget {
-  final PageController controller;
-  SelectRoomPrivacy({this.controller});
+  final PageController pageController;
+  SelectRoomPrivacy({this.pageController});
 
   @override
   _SelectPrivacyState createState() => _SelectPrivacyState();
@@ -28,7 +30,8 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
   var groupNameController = TextEditingController();
   var groupNameFocus = FocusNode();
   ScrollController scrollController;
-
+  RoomCreateProvider roomCreateProvider;
+  
   @override
   void initState() {
     super.initState();
@@ -47,6 +50,7 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     Color color = checkBrightness(context) ? Colors.black : Colors.white;
+    roomCreateProvider = Injector.get(context: context);
     return ChangeNotifierProvider(
       create: (context) => SetRoomBackground(),
       child: Consumer<SetRoomBackground>(builder: (context, value, child) {
@@ -83,7 +87,7 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
                     icon: FeatherIcons.chevronLeft,
                     iconSize: 20,
                     onTap: () {
-                      Navigator.of(context).pop();
+                      widget.pageController.animateToPage(0, duration: Duration(milliseconds: 500), curve: Curves.fastLinearToSlowEaseIn);
                     },
                   )
                 ],

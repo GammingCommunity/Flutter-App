@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -9,7 +7,6 @@ import 'package:gamming_community/class/GroupMessage.dart';
 import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:gamming_community/models/group_chat_provider.dart';
 import 'package:gamming_community/repository/main_repo.dart';
-import 'package:gamming_community/repository/upload_image.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/checkHasConnection.dart';
@@ -20,7 +17,6 @@ import 'package:gamming_community/view/messages/messages.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
-import 'package:http/http.dart' as http;
 
 class GroupMessageWidget extends StatefulWidget {
   final String roomID, currentID;

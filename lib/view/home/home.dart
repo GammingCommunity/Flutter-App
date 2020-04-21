@@ -3,23 +3,27 @@ import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:gamming_community/API/Subscription.dart';
+import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
+import 'package:gamming_community/customWidget/faslideAnimation.dart';
 import 'package:gamming_community/provider/notficationModel.dart';
 import 'package:gamming_community/provider/search_bar.dart';
-import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
+import 'package:gamming_community/utils/notfication_initailization.dart';
 import 'package:gamming_community/view/dashboard/dashboard.dart';
 import 'package:gamming_community/view/messages/messages.dart';
+import 'package:gamming_community/view/notfications/model/join_room_model.dart';
 import 'package:gamming_community/view/notfications/notfications.dart';
 import 'package:gamming_community/view/profile/profile.dart';
 import 'package:gamming_community/view/room_manager/room_manager.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:open_iconic_flutter/open_iconic_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gamming_community/view/room/explorer_room.dart';
 import 'package:tuple/tuple.dart';
@@ -36,21 +40,14 @@ class _HomeState extends State<HomePage>
   String userProfile, userName, token;
   var searchController = TextEditingController();
   AnimationController controller;
+  Animation<Offset> animation;
   PageController _pageController;
   List<Widget> _listWidget = [];
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
-// Streams are created so that app can respond to notification-related events since the plugin is initialised in the `main` function
-  final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
-      BehaviorSubject<ReceivedNotification>();
-
-  final BehaviorSubject<String> selectNotificationSubject = BehaviorSubject<String>();
+  var subscription = GqlSubscription();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   @override
   void initState() {
-    //print(userID);
-
     super.initState();
 
     getUserInfo().then((value) => {
@@ -67,34 +64,15 @@ class _HomeState extends State<HomePage>
             //Profile(userID: userID, userName: userName, userProfile: userProfile)
           ]
         });
-
-    _pageController = PageController();
-  }
-
-  Future initNotfication() async {
-    NotificationAppLaunchDetails notificationAppLaunchDetails;
-    notificationAppLaunchDetails =
-        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-
-    var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
-    // Note: permissions aren't requested here just to demonstrate that can be done later using the `requestPermissions()` method
-    // of the `IOSFlutterLocalNotificationsPlugin` class
-
-    var initializationSettings = InitializationSettings(initializationSettingsAndroid, null);
-
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: (String payload) async {
-      if (payload != null) {
-        debugPrint('notification payload: ' + payload);
-      }
-      selectNotificationSubject.add(payload);
-    });
+    /*controller = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    animation = Tween(begin: Offset(0, 1), end: Offset.zero)
+        .animate(CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn));*/
+    _pageController = PageController();//(viewportFraction: 0.999);
   }
 
   Future getUserInfo() async {
+    flutterLocalNotificationsPlugin = await initNotfication();
     SharedPreferences ref = await SharedPreferences.getInstance();
-    //List<String> res = ref.getStringList("userToken");
-
     setState(() {
       token = ref.getStringList("userToken")[2];
       userID = ref.getString("userID");
@@ -117,100 +95,142 @@ class _HomeState extends State<HomePage>
     var screenSize = MediaQuery.of(context).size;
     var notification = Provider.of<NotificationModel>(context);
     super.build(context);
+
     ResponsiveWidgets.init(context,
         allowFontScaling: true, height: screenSize.height, width: screenSize.width);
+        
     return ResponsiveWidgets.builder(
       allowFontScaling: true,
       height: screenSize.height,
       width: screenSize.width,
-      child: Selector2<Search, NotificationModel, Tuple2<bool, bool>>(
-          selector: (_, search, notify) => Tuple2(search.isHideSearch, notify.isSeen),
+      child: Selector2<SearchProvider, NotificationModel, Tuple2<String, bool>>(
+          selector: (_, search, notify) =>
+              Tuple2(search.changeContent(_currentIndex), notify.isSeen),
           builder: (context, value, child) => Scaffold(
                 appBar: PreferredSize(
                   preferredSize: Size.fromHeight(40),
-                  child: Visibility(
-                    maintainAnimation: true,
-                    maintainState: true,
-                    visible: value.item1,
-                    child: ContainerResponsive(
-                        width: screenSize.width,
-                        height: 50,
-                        padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: <Widget>[
-                            Expanded(
+                  child: ContainerResponsive(
+                      width: screenSize.width,
+                      height: 40,
+                      padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          Expanded(
+                            child: FaSlideAnimation(
+                              show: true,
                               child: TextField(
+                                onSubmitted: (String value) {
+                                  print(_pageController.page);
+                                },
                                 controller: searchController,
-                                decoration: InputDecoration.collapsed(hintText: "Search here ..."),
+                                decoration: InputDecoration.collapsed(hintText: value.item1),
                               ),
                             ),
-                            Stack(
-                              children: <Widget>[
-                                CircleIcon(
-                                  icon: FeatherIcons.bell,
-                                  iconSize: 20,
-                                  onTap: () {
-                                    Navigator.of(context).push(MaterialPageRoute(
-                                        maintainState: true, builder: (context) => Notfications()));
-                                    notification.seen(true);
-                                  },
-                                ),
-                                //TODO: fetch notifcation
-                                Positioned(
-                                    top: 5,
-                                    right: 5,
-                                    child: ContainerResponsive(
-                                        height: 20.h,
-                                        width: 20.w,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.indigo,
+                          ),
+                          Stack(
+                            children: <Widget>[
+                              CircleIcon(
+                                icon: FeatherIcons.bell,
+                                iconSize: 20,
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      maintainState: true, builder: (context) => Notfications()));
+                                  notification.seen(true);
+                                },
+                              ),
+                              //TODO: fetch notification
+
+                              Positioned(
+                                  top: 5,
+                                  right: 5,
+                                  child: GraphQLProvider(
+                                      client: subscriptionClient(token),
+                                      child: CacheProvider(
+                                        child: Subscription(
+                                          "onJoinRoom",
+                                          subscription.onJoinRoom(userID),
+                                          builder: ({error, loading, payload}) {
+                                            if (loading == true) {
+                                              return Container();
+                                            }
+                                            if (error != null) {
+                                              print(error);
+                                              return Text(error.toString());
+                                            } else {
+                                              // print(payload.toString());
+                                              var result = JoinRoom.fromJson(payload['onJoinRoom']);
+                                              // print(result);
+                                              WidgetsBinding.instance
+                                                  .addPostFrameCallback((timeStamp) async {
+                                                await flutterLocalNotificationsPlugin.show(
+                                                    1,
+                                                    "Join room",
+                                                    "${result.userID} want to join ${result.roomName}",
+                                                    platformSpecific("channelID", "channelName",
+                                                        "channelDescription"));
+                                              });
+
+                                              return ContainerResponsive(
+                                                  height: 20.h,
+                                                  width: 20.w,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.indigo,
+                                                  ),
+                                                  alignment: Alignment.center,
+                                                  child: TextResponsive(
+                                                    "99",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Theme.of(context)
+                                                            .primaryTextTheme
+                                                            .bodyText1
+                                                            .color),
+                                                  ));
+                                            }
+                                          },
                                         ),
-                                        alignment: Alignment.center,
-                                        child: TextResponsive(
-                                          "99",
-                                          style: TextStyle(fontWeight: FontWeight.bold,color: Theme.of(context).primaryTextTheme.bodyText1.color),
-                                        )
-                                    )
-                                )
-                              ],
-                            ),
-                            InkWell(
-                              borderRadius: BorderRadius.circular(1000),
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        child: Profile(
-                                            userID: userID,
-                                            userName: userName,
-                                            userProfile: userProfile),
-                                        type: PageTransitionType.fade,
-                                        alignment: Alignment.center));
-                              },
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10000),
-                                clipBehavior: Clip.antiAlias,
-                                child: CachedNetworkImage(
+                                      )))
+                            ],
+                          ),
+                          // profile image
+                          InkWell(
+                            borderRadius: BorderRadius.circular(1000),
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  PageTransition(
+                                      child: Profile(
+                                          userID: userID,
+                                          userName: userName,
+                                          userProfile: userProfile),
+                                      type: PageTransitionType.fade,
+                                      alignment: Alignment.center));
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10000),
+                              clipBehavior: Clip.antiAlias,
+                              child: CachedNetworkImage(
+                                height: 30,
+                                width: 30,
+                                imageUrl: userProfile ?? AppConstraint.default_profile,
+                                placeholder: (context, url) => Container(
                                   height: 30,
                                   width: 30,
-                                  imageUrl: userProfile ?? AppConstraint.default_profile,
-                                  placeholder: (context, url) => Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10000),
-                                        color: Colors.grey[400]),
-                                  ),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10000),
+                                      color: Colors.grey[400]),
                                 ),
                               ),
-                            )
-                          ],
-                        )),
-                  ),
+                            ),
+                          )
+                        ],
+                      )),
                 ),
                 bottomNavigationBar: ContainerResponsive(
-                    height: 50,
+                    height: 49,
                     child: Stack(
                       children: <Widget>[
                         GNav(
@@ -220,7 +240,7 @@ class _HomeState extends State<HomePage>
                           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                           duration: Duration(milliseconds: 500),
                           tabBackgroundColor: Colors.indigo,
-                          tabMargin: EdgeInsets.only(bottom: 5),
+                          tabMargin: EdgeInsets.only(bottom: 0),
                           tabs: [
                             GButton(
                               text: "Dashboard",
@@ -285,19 +305,20 @@ class _HomeState extends State<HomePage>
                   ],
                 )*/
                 ,
-                body: Container(
-                  height: screenSize.height,
-                  child: PageView(
-                    onPageChanged: (index) {
-                      setState(() {
-                        _currentIndex = index;
-                      });
-                    },
-                    controller: _pageController,
-                    children: _listWidget,
+                body: ContainerResponsive(
+                    height: screenSize.height,
+                    child: PageView(
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentIndex = index;
+                        });
+                      },
+                      controller: _pageController,
+                      children: _listWidget,
+                    ),
                   ),
                 ),
-              )),
+              ),
     );
   }
 

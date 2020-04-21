@@ -1,11 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/class/Game.dart';
 import 'package:gamming_community/class/Room.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/models/group_chat_provider.dart';
-import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/view/messages/group_messages/SharedPref.dart';
 import 'package:gamming_community/view/messages/group_messages/group_message.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';

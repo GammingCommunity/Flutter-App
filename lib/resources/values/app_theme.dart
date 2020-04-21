@@ -31,7 +31,7 @@ class AppTheme {
 
   );
   static ThemeData lightTheme = ThemeData(
-      
+      backgroundColor: Colors.white,
       fontFamily: "GoogleSans-Regular",
       brightness: Brightness.light,
       primarySwatch: Colors.indigo,

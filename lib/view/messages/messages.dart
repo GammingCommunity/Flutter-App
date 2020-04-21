@@ -320,6 +320,10 @@ Widget buildFriendsActive(String token) {
                               return listFriend.isEmpty
                                   ? CircleIcon(
                                       icon: FeatherIcons.plusSquare,
+                                      iconSize: 25,
+                                      onTap: (){
+                                        
+                                      },
                                     )
                                   : ListView.separated(
                                       separatorBuilder: (context, index) => SizedBoxResponsive(

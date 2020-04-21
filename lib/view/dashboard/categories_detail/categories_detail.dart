@@ -348,7 +348,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> with TickerProvider
                                 height: 10,
                               ),
                               // game summary
-                              Container(
+                              ContainerResponsive(
                                 padding: EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15),

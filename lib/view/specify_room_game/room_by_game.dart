@@ -37,7 +37,7 @@ class _RoomByGameState extends State<RoomByGame> {
                           if (result.hasException) {
                             return AppConstraint.emptyIcon;
                           } else {
-                            var room = Rooms.fromJson(result.data).rooms;
+                            var room = Rooms.fromJson(result.data['getRoomByGame']).rooms;
 
                             return ListView.separated(
                                 separatorBuilder: (context, index) => Column(

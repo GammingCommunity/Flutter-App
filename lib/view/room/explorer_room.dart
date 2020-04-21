@@ -9,7 +9,6 @@ import 'package:gamming_community/view/specify_room_game/room_by_game.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class Explorer extends StatefulWidget {
   final String token;
@@ -43,70 +42,72 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
 
   @override
   Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size;
     super.build(context);
-    final screenSize = MediaQuery.of(context).size;
-    var search = Provider.of<Search>(context);
+    var search = Provider.of<SearchProvider>(context);
     return Scaffold(
       body: ContainerResponsive(
-          padding: EdgeInsetsResponsive.all(10),
-          height: screenSize.height,
-          width: screenSize.width,
-          child: GraphQLProvider(
-              client: customClient(widget.token),
-              child: CacheProvider(
-                  child: Query(
-                options: QueryOptions(documentNode: gql(query.countRoomOnEachGame('ASC'))),
-                builder: (result, {fetchMore, refetch}) {
-                  if (result.loading) {
-                    return Center(
-                        child: AppConstraint.spinKitCubeGrid(context)); //itemLoading(screenSize.width);
-                  }
-                  if (result.hasException ||
-                      result.data['countRoomOnEachGame'] as List<dynamic> == []) {
-                    print(result.exception);
-                    return buildException(context);
-                  } else {
-                    var rooms = ListNumberOfRoom.json(result.data['countRoomOnEachGame']).listRoom;
+            padding: EdgeInsetsResponsive.all(10),
+            height: screenSize.height,
+            width: screenSize.width,
+            child: GraphQLProvider(
+                client: customClient(widget.token),
+                child: CacheProvider(
+                    child: Query(
+                  options: QueryOptions(documentNode: gql(query.countRoomOnEachGame('ASC'))),
+                  builder: (result, {fetchMore, refetch}) {
+                    if (result.loading) {
+                      return Center(
+                          child: AppConstraint.spinKitCubeGrid(
+                              context)); //itemLoading(screenSize.width);
+                    }
+                    if (result.hasException ||
+                        result.data['countRoomOnEachGame'] as List<dynamic> == []) {
+                      print(result.exception);
+                      return buildException(context);
+                    } else {
+                      var rooms =
+                          ListNumberOfRoom.json(result.data['countRoomOnEachGame']).listRoom;
 
-                    return ContainerResponsive(
-                      width: ScreenUtil().uiWidthPx,
-                      height: ScreenUtil().uiHeightPx,
-                      child: NotificationListener(
-                        onNotification: (notification) {
-                          /* if (notification is ScrollUpdateNotification) {
-                            search.setCurrentScrollOffset(scrollPosition);
-                          }
-                          /*print("current scroll position" + scrollPosition.toString());
-                            print(search.currentOffset);*/
+                      return ContainerResponsive(
+                        
+                        child: NotificationListener(
+                          onNotification: (notification) {
+                            /* if (notification is ScrollUpdateNotification) {
+                              search.setCurrentScrollOffset(scrollPosition);
+                            }
+                            /*print("current scroll position" + scrollPosition.toString());
+                              print(search.currentOffset);*/
 
-                          if (scrollPosition == 0.0 && scrollPosition < 100) {
-                            SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-                              search.setHideSearchBar(true);
-                            });
-                          }
-                          if (search.currentOffset > 100) {
-                            SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-                              search.setHideSearchBar(false);
-                            });
-                          }*/
-                        },
-                        child: ListView.separated(
-                          //controller: scrollController,
-
-                          addAutomaticKeepAlives: true,
-                          separatorBuilder: (context, index) => SizedBox(
-                            height: 20,
-                          ),
-                          itemCount: rooms.length,
-                          itemBuilder: (context, index) {
-                            return buildItem(context, rooms, index);
+                            if (scrollPosition == 0.0 && scrollPosition < 100) {
+                              SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+                                search.setHideSearchBar(true);
+                              });
+                            }
+                            if (search.currentOffset > 100) {
+                              SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+                                search.setHideSearchBar(false);
+                              });
+                            }*/
                           },
+                          child: ListView.separated(
+                            //controller: scrollController,
+                            
+                            addAutomaticKeepAlives: true,
+                            separatorBuilder: (context, index) => SizedBox(
+                              height: 20,
+                            ),
+                            itemCount: rooms.length,
+                            itemBuilder: (context, index) {
+                              return buildItem(context, rooms, index);
+                            },
+                          ),
                         ),
-                      ),
-                    );
-                  }
-                },
-              )))),
+                      );
+                    }
+                  },
+                ))),
+      ),
     );
   }
 

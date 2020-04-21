@@ -1,9 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
-import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/profile/edit_profile.dart';
 import 'package:gamming_community/view/profile/row_account_setting.dart';
@@ -245,7 +243,10 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                     icon: Icon(Icons.leak_remove, size: 30, color: Colors.red[300]),
                                     text: "Restrict users"),
                                 RowProfileSetting(
-                                    onTap: () {},
+                                    onTap: () async {
+                                      print("log out");
+                                      loggout(context);
+                                    },
                                     icon: Icon(Icons.power_settings_new,
                                         size: 30, color: Colors.red[300]),
                                     text: "Log out")
