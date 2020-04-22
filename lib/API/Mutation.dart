@@ -1,20 +1,20 @@
 class GraphQLMutation {
-  String addRoom(String hostName, String roomName, bool isPrivate,
+  String addRoom(String hostID, String roomName, bool isPrivate,
           int numofMember, String gameID, String gameName) =>
       """
-        mutation(\$userID:String!){
-            createRoom(userID:\$userID,roomInput:{
+        mutation{
+            createRoom(userID:$hostID,roomInput:{
               roomName:"$roomName"
               isPrivate:$isPrivate,
-              hostID:\$userID
-              member:[\$userID]
+              hostID:$hostID
+              member:[$hostID]
               maxOfMember:$numofMember
               game:{
                 gameID:"$gameID"
                 gameName:"$gameName"
               }
             },roomChatInput:{
-                member:[\$userID]
+                member:[$hostID]
                 messages:[]
             }){
               status

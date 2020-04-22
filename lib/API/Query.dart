@@ -273,6 +273,7 @@ class GraphQLQuery {
   String searchGame(String query) => """
     query{
       searchGame(name:"$query"){
+        _id
         name
         logo{
           imageUrl

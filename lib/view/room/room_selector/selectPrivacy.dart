@@ -27,6 +27,7 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
   bool uploadPhoto = true;
   bool isRadioSelected = false;
   bool adminType = false;
+  bool roomType = false; // false => public or true => private 
   var groupNameController = TextEditingController();
   var groupNameFocus = FocusNode();
   ScrollController scrollController;
@@ -67,7 +68,23 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
                       clipBehavior: Clip.antiAlias,
                       color: Colors.indigo,
                       child: InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          // submit info to server
+                          print("admin type : $adminType , roomtype : $roomType , roomname: ${groupNameController.text} ");
+                          roomCreateProvider.setRoomPrivacy(roomType);
+                          roomCreateProvider.setRoomName(groupNameController.text);
+                          roomCreateProvider.submit();
+                          // after submit , show progress, 
+                          roomCreateProvider.isLoading ?? _openLoadingDialog;
+                          // navigator.pop 
+
+                          // add new room to room manager
+
+
+
+                          //then open chat room. or sth else. 
+
+                        },
                         child: Container(
                           decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
                           alignment: Alignment.center,
@@ -87,6 +104,7 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
                     icon: FeatherIcons.chevronLeft,
                     iconSize: 20,
                     onTap: () {
+                      // go to previous page
                       widget.pageController.animateToPage(0, duration: Duration(milliseconds: 500), curve: Curves.fastLinearToSlowEaseIn);
                     },
                   )
@@ -199,7 +217,7 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
                           height: 40,
                         ),
                         Text(
-                          "ADD GROUP PICTURE",
+                          "ADD GROUP TYPE",
                           style: TextStyle(fontSize: setTextSize(20), fontWeight: FontWeight.bold),
                         ),
                         SizedBoxResponsive(
@@ -237,11 +255,13 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
                                   groupValue: isRadioSelected,
                                   onChangeType: (bool val) {
                                     setState(() {
+                                      roomType = val;
                                       isRadioSelected = val;
                                     });
                                   },
                                   onChanged: (bool val) {
                                     setState(() {
+                                      roomType = val;
                                       isRadioSelected = val;
                                     });
                                   },
@@ -307,4 +327,16 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
       }),
     );
   }
+}
+
+void _openLoadingDialog(BuildContext context) {
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: CircularProgressIndicator(),
+      );
+    },
+  );
 }

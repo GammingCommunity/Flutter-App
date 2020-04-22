@@ -68,6 +68,8 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
             return Scaffold(
               floatingActionButton: FloatingActionButton(
                   heroTag: "nextpage", onPressed: () {
+                    // hide keyboard after type number
+                    roomCreateProvider.setGameInfo(value.item5[0].id, value.item5[0].name);
                     
                     widget.pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.fastLinearToSlowEaseIn);
 
@@ -348,7 +350,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                                     },
                                     listWidget: 3,
                                     selectedValue: (int value) {
-                                      print(value);
+                                      roomCreateProvider.setNumOfMember(value);
                                     },
                                     values: ["2", "4", "6"],
                                   ))
@@ -365,6 +367,9 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                               borderRadius: BorderRadius.circular(15)),
                           child: TextField(
                             textAlign: TextAlign.center,
+                            onSubmitted: (value){
+                              roomCreateProvider.setNumOfMember(int.parse(value));
+                            },
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true, signed: false),
                             decoration: InputDecoration.collapsed(
