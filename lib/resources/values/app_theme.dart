@@ -27,8 +27,10 @@ class AppTheme {
       accentIconTheme: IconThemeData(color: Colors.white),
       tabBarTheme: TabBarTheme(
         labelColor: Colors.white
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: ColorScheme.light().background
       )
-
   );
   static ThemeData lightTheme = ThemeData(
       backgroundColor: Colors.white,
@@ -43,7 +45,11 @@ class AppTheme {
       tabBarTheme: TabBarTheme(
         labelColor: Colors.black,
         
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: ColorScheme.dark().background
       )
+
       
       );
 }

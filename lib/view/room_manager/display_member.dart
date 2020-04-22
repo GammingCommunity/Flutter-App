@@ -21,13 +21,18 @@ class _DisplayMemberState extends State<DisplayMember> {
     return FutureBuilder<List<User>>(
       future: Future(() async {
         SharedPreferences ref = await SharedPreferences.getInstance();
+        print("list member ${widget.ids}");
+        // convert to list int
         var listInt = List<int>.from(widget.ids.map((e) => int.parse(e)).toList());
+
         var result = await SubRepo.queryGraphQL(
             ref.getStringList("userToken")[2], query.getUserInfo(listInt));
         var getUsers = <User>[];
         try {
           getUsers = ListUser.fromJson(result.data['lookAccount']).listUser;
-        } catch (e) {}
+        } catch (e) {
+          return [];
+        }
         return getUsers;
       }),
       builder: (context, snapshot) {

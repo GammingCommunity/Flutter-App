@@ -16,22 +16,23 @@ class _CreateRoomV2State extends State<CreateRoomV2> {
   @override
   void initState() {
     super.initState();
-    _pageController =PageController();
+    _pageController = PageController();
   }
 
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-    return Selector<NavigateNextPage, PageController>(
-        selector: (_, value) => value.controller,
-        builder: (context, value, child) => Container(
-              width: screenSize.width,
-              child: PageView(
-                controller: _pageController,
-                physics: NeverScrollableScrollPhysics(),
-                onPageChanged: (value) => currentPage = value,
-                children: <Widget>[SelectGame(pageController: _pageController), SelectRoomPrivacy(pageController: _pageController)],
-              ),
-            ));
+    return Container(
+      width: screenSize.width,
+      child: PageView(
+        controller: _pageController,
+        physics: NeverScrollableScrollPhysics(),
+        onPageChanged: (value) => currentPage = value,
+        children: <Widget>[
+          SelectGame(pageController: _pageController),
+          SelectRoomPrivacy(pageController: _pageController)
+        ],
+      ),
+    );
   }
 }

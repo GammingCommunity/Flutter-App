@@ -38,7 +38,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-
+    roomCreateProvider.setNumOfMember(2); // default
     controller = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
   }
 
@@ -350,7 +350,8 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                                     },
                                     listWidget: 3,
                                     selectedValue: (int value) {
-                                      roomCreateProvider.setNumOfMember(value);
+                                      print(value);
+                                      roomCreateProvider.setNumOfMember(value ?? 2);
                                     },
                                     values: ["2", "4", "6"],
                                   ))

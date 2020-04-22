@@ -3,24 +3,26 @@ class GraphQLMutation {
           int numofMember, String gameID, String gameName) =>
       """
         mutation{
-            createRoom(userID:$hostID,roomInput:{
-              roomName:"$roomName"
-              isPrivate:$isPrivate,
-              hostID:$hostID
-              member:[$hostID]
-              maxOfMember:$numofMember
-              game:{
-                gameID:"$gameID"
-                gameName:"$gameName"
-              }
-            },roomChatInput:{
-                member:[$hostID]
-                messages:[]
-            }){
-              status
-              success
-              message
+            createRoom(userID:"$hostID",roomInput:{
+            roomName:"$roomName"
+            isPrivate:$isPrivate,
+            hostID:"$hostID"
+            member:["$hostID"]
+            maxOfMember:$numofMember
+            game:{
+              gameID:"$gameID"
+              gameName:"$gameName"
             }
+          },roomChatInput:{
+              roomID:""
+              member:["$hostID"]
+              messages:[]
+          }){
+            status
+            success
+            message
+            payload
+          }
       }
   """;
 

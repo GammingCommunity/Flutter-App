@@ -1,6 +1,7 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/faslideAnimation.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
@@ -8,6 +9,7 @@ import 'package:gamming_community/utils/brighness_query.dart';
 import 'package:gamming_community/view/room/admin_tradio.dart';
 import 'package:gamming_community/view/room/privacy_radio.dart';
 import 'package:gamming_community/view/room/provider/setRoomBackground.dart';
+import 'package:gamming_community/view/room_manager/bloc/room_manager_bloc.dart';
 import 'package:gamming_community/view/room_manager/room_create_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
@@ -27,12 +29,12 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
   bool uploadPhoto = true;
   bool isRadioSelected = false;
   bool adminType = false;
-  bool roomType = false; // false => public or true => private 
+  bool roomType = false; // false => public or true => private
   var groupNameController = TextEditingController();
   var groupNameFocus = FocusNode();
   ScrollController scrollController;
   RoomCreateProvider roomCreateProvider;
-  
+
   @override
   void initState() {
     super.initState();
@@ -44,14 +46,18 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
     scrollController.dispose();
     super.dispose();
   }
-  double setTextSize (double size){
+
+  double setTextSize(double size) {
     return ScreenUtil().setSp(size);
   }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     Color color = checkBrightness(context) ? Colors.black : Colors.white;
     roomCreateProvider = Injector.get(context: context);
+    RoomManagerBloc roomManagerBloc = BlocProvider.of<RoomManagerBloc>(context);
+
     return ChangeNotifierProvider(
       create: (context) => SetRoomBackground(),
       child: Consumer<SetRoomBackground>(builder: (context, value, child) {
@@ -70,20 +76,26 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
                       child: InkWell(
                         onTap: () {
                           // submit info to server
-                          print("admin type : $adminType , roomtype : $roomType , roomname: ${groupNameController.text} ");
-                          roomCreateProvider.setRoomPrivacy(roomType);
-                          roomCreateProvider.setRoomName(groupNameController.text);
-                          roomCreateProvider.submit();
-                          // after submit , show progress, 
-                          roomCreateProvider.isLoading ?? _openLoadingDialog;
-                          // navigator.pop 
+                          //print("admin type : $adminType , roomtype : $roomType , roomname: ${groupNameController.text} ");
+                          //roomCreateProvider.setRoomPrivacy(roomType);
+                          //.setRoomName(groupNameController.text);
+                          //roomCreateProvider.submit();
+                          // after submit , show progress,
+                          //roomCreateProvider.isLoading ?? _openLoadingDialog;
+                          // navigator.pop
 
                           // add new room to room manager
 
+                          roomManagerBloc.add(AddRoom(
+                              adminType: adminType,
+                              gameID: roomCreateProvider.gameID,
+                              gameName: roomCreateProvider.gameName,
+                              hostID: roomCreateProvider.hostID,
+                              isPrivate: roomCreateProvider.isPrivate,
+                              numofMember: roomCreateProvider.numofMember,
+                              roomName: groupNameController.text)); 
 
-
-                          //then open chat room. or sth else. 
-
+                          //then open chat room. or sth else.
                         },
                         child: Container(
                           decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
@@ -105,7 +117,9 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
                     iconSize: 20,
                     onTap: () {
                       // go to previous page
-                      widget.pageController.animateToPage(0, duration: Duration(milliseconds: 500), curve: Curves.fastLinearToSlowEaseIn);
+                      widget.pageController.animateToPage(0,
+                          duration: Duration(milliseconds: 500),
+                          curve: Curves.fastLinearToSlowEaseIn);
                     },
                   )
                 ],
@@ -170,7 +184,8 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
                         ),
                         TextResponsive(
                           "ADD GROUP PICTURE",
-                          style: TextStyle(fontSize: ScreenUtil().setSp(20), fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: ScreenUtil().setSp(20), fontWeight: FontWeight.bold),
                         ),
                         SizedBoxResponsive(
                           height: 40,
@@ -225,7 +240,7 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
                         ),
                         // select room privacy type
                         ContainerResponsive(
-                          alignment: Alignment.center,
+                            alignment: Alignment.center,
                             height: 100.h,
                             child: Row(
                               children: <Widget>[
@@ -329,14 +344,3 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
   }
 }
 
-void _openLoadingDialog(BuildContext context) {
-  showDialog(
-    barrierDismissible: false,
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: CircularProgressIndicator(),
-      );
-    },
-  );
-}

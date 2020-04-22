@@ -35,19 +35,7 @@ class RoomCreateProvider extends StatesRebuilder{
     void setAdminPermission(bool permission){
       this.adminType = permission;
     }
+    
 
-    void submit() async{
-      var info = await getUserInfo();
-      //print("info : ${info['userID']}, $roomName, $isPrivate, $numofMember, $gameID, $gameName");
-      /*var result = await MainRepo.mutationGraphQL(await getToken(),mutation.addRoom(hostID, roomName, isPrivate, numofMember, gameID, gameName));*/
-      //TODO: implement add room here
-      setLoading(true);
-      /*Timer(Duration(seconds: 5), (){
-        setLoading(false);
-      });*/
-    }
-    void setLoading(bool val){
-      this.isLoading = val;
-      rebuildStates();
-    }
+   
 }

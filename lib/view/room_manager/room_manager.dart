@@ -1,24 +1,22 @@
 /*Fecth Room which user is Host, host user will able to modify , such as edit, remove, kick mem, add mem, ... */
 
+import 'dart:async';
+
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config/mainAuth.dart';
-import 'package:gamming_community/class/Room.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
+import 'package:gamming_community/customWidget/faslideAnimation.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/jwt_decode.dart';
-import 'package:gamming_community/view/room/create_room.dart';
 import 'package:gamming_community/view/room/create_room_v2.dart';
 import 'package:gamming_community/view/room_manager/bloc/room_manager_bloc.dart';
 import 'package:gamming_community/view/room_manager/display_member.dart';
 import 'package:gamming_community/view/room_manager/logo_room.dart';
 import 'package:gamming_community/view/room_manager/room_detail_v2.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class RoomManager extends StatefulWidget {
   final String token;
@@ -30,43 +28,45 @@ class RoomManager extends StatefulWidget {
 class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClientMixin {
   RoomManagerBloc roomManagerBloc;
   GraphQLQuery query = GraphQLQuery();
-  List<String> userInfo = [];
-  List<String> sampleUser = [
-    "https://api.adorable.io/avatars/90/abott@adorable.io.png",
-    "https://api.adorable.io/avatars/90/magic.png",
-    "https://api.adorable.io/avatars/90/closer.png"
-  ];
-  var _count = 0;
+  var _value = 0;
   var _tapPosition;
-  Future getInfo() async {
-    SharedPreferences refs = await SharedPreferences.getInstance();
-    List<String> res = refs.getStringList("userToken");
-    //TODO: print("$res here");
-    userInfo = res;
+  Completer<void> _refreshCompleter;
 
-    return res;
-  }
-
-  void _showCustomMenu() async {
+  void _showCustomMenu(int roomIndex) async {
     final RenderBox overlay = Overlay.of(context).context.findRenderObject();
 
     showMenu(
             context: context,
             items: <PopupMenuEntry<int>>[
-              PopupMenuItem(child: Text("Edit")),
-              PopupMenuItem(child: Text("Remove"))
+              PopupMenuItem(
+                value: 1,
+                child: Text("Edit"),
+              ),
+              PopupMenuItem(value: 2, child: Text("Remove"))
             ],
             position: RelativeRect.fromRect(
                 _tapPosition & Size(40, 40), // smaller rect, the touch area
                 Offset.zero & overlay.size // Bigger rect, the entire screen
                 ))
-        .then<void>((int delta) {
-      if (delta == null) return;
+        .then<void>((int position) {
+      if (position == null) return;
 
       setState(() {
-        _count = _count + delta;
+        doWork(position, roomIndex);
       });
     });
+  }
+
+  void doWork(int type, int roomIndex) {
+    switch (type) {
+      case 1:
+        roomManagerBloc.add(EditRoom());
+        break;
+      case 2:
+        roomManagerBloc.add(RemoveRoom(index: roomIndex));
+        break;
+      default:
+    }
   }
 
   void _storePosition(TapDownDetails details) {
@@ -75,7 +75,9 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
 
   @override
   void initState() {
+    _refreshCompleter = Completer<void>();
     roomManagerBloc = BlocProvider.of<RoomManagerBloc>(context);
+    roomManagerBloc.add(InitLoading());
     super.initState();
   }
 
@@ -86,149 +88,178 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
     final double itemHeight = (ScreenUtil().uiHeightPx - kToolbarHeight - 24) / 2.5.h;
     final double itemWidth = ScreenUtil().uiWidthPx / 2.w;
     var brightness = MediaQuery.of(context).platformBrightness;
-
+    var rooms = roomManagerBloc.room;
     super.build(context);
     return BlocListener<RoomManagerBloc, RoomManagerState>(
+      condition: (previous, current) {
+        if (previous is AddRoomLoading) {
+          Navigator.pop(context);
+        }
+        return true;
+      },
       listener: (context, state) {
-        if (state is CreateRoom) {}
-        if (state is RemoveRoom) {}
+        if (state is AddRoomLoading) {
+          openLoadingDialog(context, "");
+        }
+        if (state is AddRoomFail) {
+          Navigator.pop(context);
+          openLoadingDialog(context, "create fail.");
+        }
+
+        if (state is RefreshSuccess) {
+          _refreshCompleter?.complete();
+          _refreshCompleter = Completer();
+        }
+
+        if (state is AddRoomSuccess) {
+          Navigator.pop(context);
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Create success"),
+          ));
+        }
+        if (state is RemoveRoomSuccess) {
+           Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Remove success")
+
+          ));
+        }
+        if (state is RemoveRoomFailed) {
+           Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Can not delete, try again.")
+            
+          ));
+        }
       },
       child: BlocBuilder<RoomManagerBloc, RoomManagerState>(builder: (context, state) {
-        return GraphQLProvider(
-            client: customClient(widget.token),
-            child: CacheProvider(
-                child: Scaffold(
-                    floatingActionButton: FloatingActionButton(
-                        heroTag: "addNewGroup",
-                        child: Icon(FeatherIcons.plus),
-                        onPressed: () {
-                          Navigator.push(context,
-                              PageTransition(child: CreateRoomV2(), type: PageTransitionType.fade));
-                        }),
-                    body: ContainerResponsive(
-                      height: screenSize.height,
-                      width: screenSize.width,
-                        margin: EdgeInsetsResponsive.only(top: 10),
-                        alignment: Alignment.center,
-                        child: Query(
-                            options:
-                                QueryOptions(documentNode: gql(query.getRoomCurrentUser(userID))),
-                            builder: (QueryResult result,
-                                {VoidCallback refetch, FetchMore fetchMore}) {
-                              if (result.loading) {
-                                return AppConstraint.spinKitCubeGrid(context);
-                              }
-                              if (result.hasException) {
-                                return buildException(context);
-                              } else {
-                                var rooms = Rooms.fromJson(result.data['roomManage']).rooms;
-                                return ContainerResponsive(
-                                  child: GridView.builder(
-                                    padding: EdgeInsetsResponsive.symmetric(horizontal: 20),
-                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisSpacing: 30.w,
-                                        crossAxisCount: 2,
-                                        mainAxisSpacing: 30.h,
-                                        childAspectRatio: itemWidth / itemHeight),
-                                    itemCount: rooms.length,
-                                    itemBuilder: (context, index) {
-                                      return Material(
-                                        color:  Theme.of(context).backgroundColor ,
-                                        clipBehavior: Clip.antiAlias,
-                                        borderRadius: BorderRadius.circular(15),
-                                        elevation: 2,
-                                        child: InkWell(
-                                          onTap: () {
-                                            print(index);
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) => RoomDetailV2(
-                                                          room: rooms[index],
-                                                          itemTag: rooms[index].id,
-                                                        )));
-                                          },
-                                          // long press on each room
-                                          onLongPress: () {
-                                            _showCustomMenu();
-                                          },
-                                          onTapDown: _storePosition,
-                                          child: ContainerResponsive(
-                                            height: 150.h,
-                                            width: 100.w,
-                                            alignment: Alignment.center,
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(15)),
-                                            child: Stack(
-                                              children: <Widget>[
-                                                Column(
-                                                  children: <Widget>[
-                                                    //background room (default, if spectify, display here)
-                                                    ContainerResponsive(
-                                                      alignment: Alignment.center,
-                                                      height: 100.h,
-                                                      decoration: BoxDecoration(
-                                                          image: DecorationImage(
-                                                              fit: BoxFit.cover,
-                                                              image: AssetImage(
-                                                                  AppConstraint.noImageAsset)),
-                                                          borderRadius: BorderRadius.only(
-                                                              topLeft: Radius.circular(15),
-                                                              topRight: Radius.circular(15))),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 30,
-                                                    ),
-                                                    Column(
-                                                      children: <Widget>[
-                                                        Padding(
-                                                          padding: EdgeInsetsResponsive.symmetric(
-                                                              horizontal: 10, vertical: 5),
-                                                          child: Text(
-                                                            rooms[index].roomName,
-                                                            style: TextStyle(
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 20),
-                                                            overflow: TextOverflow.ellipsis,
-                                                          ),
-                                                        ),
-                                                        TextResponsive(
-                                                            "${rooms[index].memberID.length} member"),
-                                                        // display some member in room
-                                                        Padding(
-                                                          padding: EdgeInsetsResponsive.all(5),
-                                                          child: DisplayMember(
-                                                              ids: rooms[index].memberID),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                                Positioned(
-                                                    top: 0,
-                                                    right: 0,
-                                                    child: CircleIcon(
-                                                      icon: FeatherIcons.moreVertical,
-                                                      iconSize: 20,
-                                                      onTap: () {},
-                                                    )),
-                                                Positioned(
-                                                    top: 70.h,
-                                                    left: 20.w,
-                                                    child: //logo room
-                                                        LogoRoom(
-                                                            url:
-                                                                "https://via.placeholder.com/150")),
-                                              ],
-                                            ),
-                                          ),
+        if (state is RoomManagerInitial) {
+          return AppConstraint.spinKitCubeGrid(context);
+        }
+        if (state is InitFail) {
+          return buildException(context);
+        }
+
+        return Scaffold(
+            floatingActionButton: FloatingActionButton(
+                heroTag: "addNewGroup",
+                child: Icon(FeatherIcons.plus),
+                onPressed: () {
+                  Navigator.push(context,
+                      PageTransition(child: CreateRoomV2(), type: PageTransitionType.fade));
+                }),
+            body: RefreshIndicator(
+              onRefresh: () {
+                roomManagerBloc.add(RefreshRooms());
+                return _refreshCompleter.future;
+              },
+              child: ContainerResponsive(
+                  height: screenSize.height,
+                  width: screenSize.width,
+                  margin: EdgeInsetsResponsive.only(top: 10),
+                  alignment: Alignment.center,
+                  child: ContainerResponsive(
+                    child: GridView.builder(
+                      padding: EdgeInsetsResponsive.symmetric(horizontal: 20),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisSpacing: 30.w,
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 30.h,
+                          childAspectRatio: itemWidth / itemHeight),
+                      itemCount: rooms.length,
+                      itemBuilder: (context, index) {
+                        return FaSlideAnimation(
+                          show: true,
+                          child: Material(
+                            color: Theme.of(context).backgroundColor,
+                            clipBehavior: Clip.antiAlias,
+                            borderRadius: BorderRadius.circular(15),
+                            elevation: 2,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => RoomDetailV2(
+                                              room: rooms[index],
+                                              itemTag: rooms[index].id,
+                                            )));
+                              },
+                              // long press on each room
+                              onLongPress: () {
+                                _showCustomMenu(index);
+                              },
+                              onTapDown: _storePosition,
+                              child: ContainerResponsive(
+                                height: 150.h,
+                                width: 100.w,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
+                                child: Stack(
+                                  children: <Widget>[
+                                    Column(
+                                      children: <Widget>[
+                                        //background room (default, if spectify, display here)
+                                        ContainerResponsive(
+                                          alignment: Alignment.center,
+                                          height: 100.h,
+                                          decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: AssetImage(AppConstraint.noImageAsset)),
+                                              borderRadius: BorderRadius.only(
+                                                  topLeft: Radius.circular(15),
+                                                  topRight: Radius.circular(15))),
                                         ),
-                                      );
-                                    },
-                                  ),
-                                );
-                              }
-                            })))));
+                                        SizedBox(
+                                          height: 30,
+                                        ),
+                                        Column(
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: EdgeInsetsResponsive.symmetric(
+                                                  horizontal: 10, vertical: 5),
+                                              child: Text(
+                                                rooms[index].roomName,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold, fontSize: 20),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            TextResponsive(
+                                                "${rooms[index].memberID.length} member"),
+                                            // display some member in room
+                                            Padding(
+                                              padding: EdgeInsetsResponsive.all(5),
+                                              child: DisplayMember(ids: rooms[index].memberID),
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    Positioned(
+                                        top: 0,
+                                        right: 0,
+                                        child: CircleIcon(
+                                          icon: FeatherIcons.moreVertical,
+                                          iconSize: 20,
+                                          onTap: () {
+                                            // show menu here
+                                          },
+                                        )),
+                                    Positioned(
+                                        top: 70.h,
+                                        left: 20.w,
+                                        child: //logo room
+                                            LogoRoom(url: "https://via.placeholder.com/150")),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  )),
+            ));
       }),
     );
   }
@@ -251,5 +282,41 @@ Widget buildException(BuildContext context) {
           icon: Icon(Icons.refresh),
           label: Text("Refresh"))
     ],
+  );
+}
+
+Future openLoadingDialog(BuildContext context, String message) {
+  return showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: message == ""
+            ? Container(height: 50, width: 50, child: CircularProgressIndicator())
+            : Text(message),
+      );
+    },
+  );
+}
+
+Widget showOptionMenu() {
+  return PopupMenuButton<int>(
+    tooltip: "Menu",
+    itemBuilder: (context) => [
+      PopupMenuItem(
+        child: Text("Edit room"),
+        value: 1,
+      ),
+      PopupMenuDivider(
+        height: 10,
+      ),
+      PopupMenuItem(
+        child: Text("Remove room"),
+        value: 2,
+      )
+    ],
+    onSelected: (value) {
+      print("value:$value");
+    },
   );
 }

@@ -5,6 +5,7 @@ import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/Room.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
+import 'package:gamming_community/view/room_manager/display_member.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 class RoomByGame extends StatefulWidget {
@@ -110,7 +111,10 @@ class _RoomByGameState extends State<RoomByGame> {
                                                             mainAxisAlignment:
                                                                 MainAxisAlignment.spaceBetween,
                                                             children: <Widget>[
-                                                              for (var user in room[index].memberID)
+                                                              DisplayMember(
+                                                                  ids: room[index].memberID,
+                                                                )
+                                                              /*for (var user in room[index].memberID)
                                                                 ClipRRect(
                                                                   borderRadius:
                                                                       BorderRadius.circular(1000),
@@ -121,8 +125,9 @@ class _RoomByGameState extends State<RoomByGame> {
                                                                           Container(
                                                                             color: Colors.grey[400],
                                                                           ),
-                                                                      imageUrl: user.profileUrl),
-                                                                ),
+                                                                      imageUrl: ),
+                                                                ),*/
+                                                                
                                                             ],
                                                           )
                                                         ],
