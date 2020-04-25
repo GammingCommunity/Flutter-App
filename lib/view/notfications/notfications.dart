@@ -2,11 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Subscription.dart';
-import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
-import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/view/notfications/notificationProvider.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:gamming_community/view/notfications/notifications_service.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
@@ -19,6 +17,7 @@ class _NotficationsState extends State<Notfications> with TickerProviderStateMix
   GqlSubscription subscription = GqlSubscription();
   TabController tabController;
   NotificationProvider notificationProvider;
+  NotificationServices notificationServices;
   @override
   void initState() {
     super.initState();
@@ -30,11 +29,10 @@ class _NotficationsState extends State<Notfications> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
     notificationProvider = Injector.get(context: context);
     var requests = notificationProvider.friendsRequest;
     var pendings = notificationProvider.pending;
-    var globalNotify =notificationProvider.globalNotification;
+    var globalNotify = notificationProvider.globalNotification;
     return DefaultTabController(
         length: 3,
         child: Scaffold(
@@ -109,41 +107,57 @@ class _NotficationsState extends State<Notfications> with TickerProviderStateMix
                         )),
                   ),
                   //Friends Request
-                  notificationProvider.friendsRequest.isEmpty
-                      ? Center(child: CircularProgressIndicator())
-                      : Container(
-                          child: RefreshIndicator(
-                              onRefresh: () {
-                                return notificationProvider.refresh(3);
-                              },
-                              child: ListView.separated(
-                                separatorBuilder: (context, index) => Divider(),
-                                itemCount: requests.length,
-                                itemBuilder: (context, index) {
-                                  return ContainerResponsive(
-                                    height: 100,
-                                    child: Column(
-                                      children: <Widget>[
-                                        Row(children: <Widget>[
-                                          ClipRRect(
-                                            borderRadius: BorderRadius.circular(10000),
-                                            child: CachedNetworkImage(imageUrl: requests[index].avatarUrl,height: 50,width: 50,)),
-                                          SizedBoxResponsive(width:10),
-                                          Text(requests[index].name)
-                                        ]),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.end,
+                   notificationProvider.hasValue
+                          ? Center(child: CircularProgressIndicator())
+                          : Container(
+                              child:  notificationProvider.checkFriendsRequest ?  Text("No friends request now.") : RefreshIndicator(
+                                  onRefresh: () {
+                                    return notificationProvider.refresh(3);
+                                  },
+                                  child: ListView.separated(
+                                    separatorBuilder: (context, index) => Divider(),
+                                    itemCount: requests.length,
+                                    itemBuilder: (context, index) {
+                                      return ContainerResponsive(
+                                        height: 100,
+                                        child: Column(
                                           children: <Widget>[
-                                          FlatButton(onPressed: (){}, child: Text("Accept")),
-                                          FlatButton(onPressed: (){}, child: Text("Dismiss"))
-                                        ],),
-
-                                      ],
-                                    ),
-                                  );
-                                },
-                              )),
-                        ),
+                                            Row(children: <Widget>[
+                                              ClipRRect(
+                                                  borderRadius: BorderRadius.circular(10000),
+                                                  child: CachedNetworkImage(
+                                                    imageUrl: requests[index].avatarUrl,
+                                                    height: 50,
+                                                    width: 50,
+                                                  )),
+                                              SizedBoxResponsive(width: 10),
+                                              Text(requests[index].name)
+                                            ]),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.end,
+                                              children: <Widget>[
+                                                FlatButton(
+                                                    onPressed: () {
+                                                      notificationServices.acceptRequest(
+                                                          int.parse(requests[index].senderID),
+                                                          true);
+                                                    },
+                                                    child: Text("Accept")),
+                                                FlatButton(
+                                                    onPressed: () {
+                                                      notificationServices.acceptRequest(
+                                                          int.parse(requests[index].senderID),
+                                                          false);
+                                                    },
+                                                    child: Text("Dismiss"))
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  )),
+                            ),
                 ]),
               ),
             )));

@@ -112,6 +112,8 @@ class _RoomByGameState extends State<RoomByGame> {
                                                                 MainAxisAlignment.spaceBetween,
                                                             children: <Widget>[
                                                               DisplayMember(
+                                                                borderRadius: 1000,
+                                                                size: 30,
                                                                   ids: room[index].memberID,
                                                                 )
                                                               /*for (var user in room[index].memberID)

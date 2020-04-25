@@ -1,13 +1,22 @@
 class GameImage {
-  String id, gameName, logo, coverImage, trailerUrl;
+  String id, gameName, trailerUrl;
+  GImage coverImage;
+  GImage gameLogo;
   List<dynamic> imageUrl;
-  GameImage({this.id, this.gameName, this.coverImage,this.logo, this.imageUrl,this.trailerUrl});
+  GameImage({this.id, this.gameName, this.coverImage,this.gameLogo, this.imageUrl,this.trailerUrl});
+  factory GameImage.fromJson(Map json){
+    return GameImage(gameLogo: GImage(imageUrl:json['logo']['imageUrl'] ));
+  }
+}
+class GImage{
+  String imageUrl;
+  GImage({this.imageUrl});
 }
 
-class ListGameImage {
+class GameImages {
   List<GameImage> listGameImage; 
-  ListGameImage({this.listGameImage});
-  factory ListGameImage.fromJson(List<dynamic> json) {
+  GameImages({this.listGameImage});
+  factory GameImages.fromJson(List<dynamic> json) {
     var _listgameImage = <GameImage>[];
     try {
        json.forEach((e) {
@@ -15,15 +24,16 @@ class ListGameImage {
           id: e['_id'],
           gameName: e['name'],
           imageUrl : e['images'],
-          logo: e['logo']['imageUrl'],
+          gameLogo: GImage(imageUrl: e['logo']['imageUrl']),
+          
           ));
     });
       
     } catch (e) {
       print(e);
-      return ListGameImage(listGameImage: []);
+      return GameImages(listGameImage: []);
     }
-    return ListGameImage(listGameImage: _listgameImage..shuffle());
+    return GameImages(listGameImage: _listgameImage..shuffle());
 
     
   }

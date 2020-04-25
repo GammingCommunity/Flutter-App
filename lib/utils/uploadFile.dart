@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 
 uploadFile(String userID, File imagePath) async {
-  print("image path"+ imagePath.path);
+  //print("image path"+ imagePath.path);
   var postUri = Uri.parse('https://profile-services.glitch.me/upload-avatar');
   var request = new http.MultipartRequest("POST", postUri);
   request.fields['profile_id'] = userID;
@@ -15,7 +15,6 @@ uploadFile(String userID, File imagePath) async {
     if (response.statusCode == 200) {
       var result = await response.stream.bytesToString();
       Map valueMap = json.decode(result);
-      print(valueMap);
       return valueMap['image_url'];
     }
     else return "";

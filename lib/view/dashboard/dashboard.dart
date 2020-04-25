@@ -23,7 +23,6 @@ class _DashBoardState extends State<DashBoard> with AutomaticKeepAliveClientMixi
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
     super.build(context);
     return ContainerResponsive(
       padding: EdgeInsetsResponsive.all(10),

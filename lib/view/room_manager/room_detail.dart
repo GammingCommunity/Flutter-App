@@ -233,7 +233,7 @@ class _GameWidgetState extends State<GameLogoWidget> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: (Future(() async {
-        var result = await MainRepo.queryGraphQL("", query.searchGame(widget.gameName));
+        var result = await MainRepo.queryGraphQL("", query.searchGame(widget.gameName,""));
         return Game.fromJson(result.data).logo;
       })),
       builder: (context, snapshot) {

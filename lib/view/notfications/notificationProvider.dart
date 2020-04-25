@@ -7,21 +7,31 @@ import 'model/friend_request_model.dart';
 import 'model/global_notification_model.dart';
 import 'model/pending_model.dart';
 
-class NotificationProvider extends StatesRebuilder{
+class NotificationProvider extends StatesRebuilder {
+  bool hasValue = true;
   var query = GraphQLQuery();
-  var globalNotification= <GlobalNotificaition>[];
+  var globalNotification = <GlobalNotificaition>[];
   var pending = <Pending>[];
-  var friendsRequest= <FriendRequest>[];
+  var friendsRequest = <FriendRequest>[];
 
-  Future loadFriendRequest() async{
-    
+  Future loadFriendRequest() async {
     var result = await SubRepo.queryGraphQL(await getToken(), query.getFriendRequest());
     var request = FriendsRequest.fromJson(result.data['getFriendRequests']).friendsRequest;
-    friendsRequest.addAll(request);
-    rebuildStates();
+    if (request.isEmpty) {
+      hasValue = false;
+      rebuildStates();
+    } else {
+      friendsRequest.addAll(request);
+      rebuildStates();
+    }
   }
 
-  Future refresh(int type)async{
+  bool get checkFriendsRequest {
+    if (friendsRequest.isEmpty) return true;
+    return false;
+  }
+
+  Future refresh(int type) async {
     return null;
   }
 }

@@ -53,7 +53,6 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
     Color color = checkBrightness(context) ? Colors.black : Colors.white;
     roomCreateProvider = Injector.get(context: context);
     RoomManagerBloc roomManagerBloc = BlocProvider.of<RoomManagerBloc>(context);
@@ -65,6 +64,7 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
           floatingActionButton: Visibility(
               visible: value.checkroomName,
               child: FaSlideAnimation(
+                delayed: 200,
                 show: value.checkroomName,
                 child: SizedBoxResponsive(
                     width: 60.w,

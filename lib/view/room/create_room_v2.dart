@@ -24,6 +24,7 @@ class _CreateRoomV2State extends State<CreateRoomV2> {
     var screenSize = MediaQuery.of(context).size;
     return Container(
       width: screenSize.width,
+      height: screenSize.height,
       child: PageView(
         controller: _pageController,
         physics: NeverScrollableScrollPhysics(),

@@ -7,8 +7,10 @@ class Room {
   List memberID;
   int maxOfMember;
   bool isPrivate;
-  Map gameInfo;
+  GameInfo gameInfo;
   String createAt;
+  String roomLogo;
+  String roomBackground;
   Room(
       {this.id,
       this.roomName,
@@ -17,11 +19,31 @@ class Room {
       this.gameInfo,
       this.maxOfMember,
       this.isPrivate,
+      this.roomLogo,
+      this.roomBackground,
       this.createAt});
+  factory Room.fromJson(Map json) {
+    return Room(
+        id: json['_id'],
+        hostID: json['hostID'],
+        roomName: json['roomName'],
+        gameInfo: GameInfo(gameID: json['game']['gameID'], gameName: json['game']['gameName']),
+        isPrivate: json['isPrivate'],
+        maxOfMember: json['maxOfMember'],
+        memberID: json['member'],
+        createAt: json['createAt'],
+        roomLogo: json['roomLogo'],
+        roomBackground: json['roomBackground']);
+  }
+}
+
+class GameInfo {
+  String gameID;
+  String gameName;
+  GameInfo({this.gameID, this.gameName});
 }
 
 class Rooms {
-  
   List<Room> rooms;
   Rooms({this.rooms});
   factory Rooms.fromJson(List json) {
@@ -34,11 +56,15 @@ class Rooms {
             id: item['_id'],
             hostID: item['hostID'],
             roomName: item['roomName'],
-            gameInfo: item['game'] ??= item['game'],
+            gameInfo: GameInfo(gameID: item['game']['gameID'], gameName: item['game']['gameName']),
+            //gameInfo: item['game'] ??= item['game'],
             isPrivate: item['isPrivate'],
             maxOfMember: item['maxOfMember'],
             memberID: item['member'],
-            createAt: item['createAt']));
+            createAt: item['createAt'],
+            roomBackground: item['roomBackground'],
+            roomLogo: item['roomLogo']
+            ));
       }
     } catch (e) {
       print(e);

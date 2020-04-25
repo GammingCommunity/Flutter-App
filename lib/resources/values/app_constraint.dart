@@ -10,8 +10,8 @@ class AppConstraint {
   static const double container_border_radius = 15;
   static const double button_radius = 15;
   static const String sample_proifle_url = "https://via.placeholder.com/150";
-  static const String default_profile="https://droncoma.sirv.com/Profile/default_profile.png";
-  static Image noImage= Image.asset('assets/images/no_image.png');
+  static const String default_profile = "https://droncoma.sirv.com/Profile/default_profile.png";
+  static Image noImage = Image.asset('assets/images/no_image.png');
   static Widget spinKitCubeGrid(context) =>
       SpinKitCubeGrid(color: Theme.of(context).iconTheme.color, size: 20);
   static SvgPicture emptyIcon = SvgPicture.asset('assets/icons/empty_logo.svg');
@@ -22,7 +22,8 @@ class AppConstraint {
     backgroundColor: Colors.grey,
     bufferedColor: Colors.blueGrey,
   );
-  static const double bottom_bar_height= 62;
-  static const int searchBackground =0xff5a5757;
-  static const String noImageAsset = "assets/images/no_image.png"; 
+  static const double bottom_bar_height = 62;
+  static const int searchBackground = 0xff5a5757;
+  static const String noImageAsset = "assets/images/no_image.png";
+  static const TextStyle textAppbar = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
 }

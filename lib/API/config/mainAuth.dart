@@ -19,20 +19,23 @@ ValueNotifier<GraphQLClient> customClient(String token) {
 }
 
 ValueNotifier<GraphQLClient> subscriptionClient(String token) {
- /* Link link = HttpLink(
+  /* Link link = HttpLink(
     uri: 'https://gmgraphql.glitch.me/graphql',
      headers: {"token": token}
     );*/
   WebSocketLink socketLink = WebSocketLink(
     url: 'ws://gmgraphql.glitch.me/graphql',
-    
     config: SocketClientConfig(
       autoReconnect: true,
       inactivityTimeout: Duration(seconds: 30),
-      
+      initPayload: () {
+        return {
+          "headers": {"token": ""}
+        };
+      },
     ),
   );
-  
+
   //var links = link.concat(socketLink);
   return ValueNotifier(
     GraphQLClient(

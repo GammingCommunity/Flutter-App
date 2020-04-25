@@ -90,7 +90,6 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                           onPressed: () {
                                             Navigator.of(context).push(PageRouteBuilder(
                                                 pageBuilder: (context, a1, a2) => EditProfile(
-                                                    token: snapshot.data[2],
                                                     userID: widget.userID,
                                                     currentProfile: widget.userProfile),
                                                 transitionsBuilder: (context, anim, a2, child) {

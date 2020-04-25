@@ -18,6 +18,7 @@ import 'package:gamming_community/view/profile/settingProvider.dart';
 import 'package:gamming_community/view/room/create_room.dart';
 import 'package:gamming_community/view/room/provider/navigateNextPage.dart';
 import 'package:gamming_community/view/room_manager/bloc/room_manager_bloc.dart';
+import 'package:gamming_community/view/room_manager/provider/edit_room_provider.dart';
 import 'package:gamming_community/view/room_manager/room_create_provider.dart';
 import 'package:gamming_community/view/room_manager/room_manager.dart';
 import 'package:gamming_community/view/sign_up/bloc/bloc/signup_bloc.dart';
@@ -42,13 +43,12 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  
   final Widget home;
   MyApp({this.home});
 
   @override
   Widget build(BuildContext context) {
-    SettingProvider settingProvider ;
+    SettingProvider settingProvider;
     return MultiProvider(
         providers: [
           ChangeNotifierProvider<FetchMoreValue>(create: (context) => FetchMoreValue()),
@@ -79,16 +79,16 @@ class MyApp extends StatelessWidget {
           ],
           child: Injector(
             inject: [
-              Inject(() => ChatProvider()), 
+              Inject(() => ChatProvider()),
               Inject(() => GroupChatProvider()),
-              Inject(()=> SettingProvider()),
-              Inject(()=> NotificationProvider()),
-              Inject(()=>RoomCreateProvider()),
-              ],
+              Inject(() => SettingProvider()),
+              Inject(() => NotificationProvider()),
+              Inject(() => RoomCreateProvider()),
+              Inject(() => EditRoomProvider()),
+            ],
             builder: (context) {
               settingProvider = Injector.get(context: context);
               return StateBuilder(
-                
                   models: [],
                   builder: (context, _) => MaterialApp(
                         debugShowCheckedModeBanner: false,

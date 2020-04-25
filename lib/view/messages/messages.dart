@@ -74,7 +74,6 @@ class _MessagesState extends State<Messages>
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
     super.build(context);
     return Scaffold(
         key: _scaffoldKey,
@@ -103,31 +102,28 @@ class _MessagesState extends State<Messages>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Expanded(
-                              flex: 1,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Text(
-                                    "Messages",
-                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Text(
+                                  "Messages",
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(width: 10),
+                                Container(
+                                  alignment: Alignment.center,
+                                  height: 20,
+                                  width: 20,
+                                  decoration: BoxDecoration(
+                                      color: Colors.indigo,
+                                      borderRadius: BorderRadius.circular(15)),
+                                  child: Text(
+                                    "10",
+                                    style: TextStyle(fontWeight: FontWeight.bold),
                                   ),
-                                  SizedBox(width: 10),
-                                  Container(
-                                    alignment: Alignment.center,
-                                    height: 20,
-                                    width: 20,
-                                    decoration: BoxDecoration(
-                                        color: Colors.indigo,
-                                        borderRadius: BorderRadius.circular(15)),
-                                    child: Text(
-                                      "10",
-                                      style: TextStyle(fontWeight: FontWeight.bold),
-                                    ),
-                                  )
-                                ],
-                              ),
+                                )
+                              ],
                             ),
                             Expanded(
                                 flex: 6,
@@ -271,8 +267,8 @@ Widget buildFriendsActive(String token) {
   var query = GraphQLQuery();
   return Flexible(
       child: ContainerResponsive(
-          height: 150.h,
-          color: Colors.red,
+          height: 200.h,
+          width: ScreenUtil().uiWidthPx,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -281,14 +277,13 @@ Widget buildFriendsActive(String token) {
                 "Active friends",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-
+              SizedBoxResponsive(height: 10,),
               //demo , friends example
               Flexible(
                 child: GraphQLProvider(
                   client: customSubClient(token),
                   child: CacheProvider(
                     child: Container(
-                      color: Colors.amber,
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Query(
@@ -296,12 +291,16 @@ Widget buildFriendsActive(String token) {
                           builder: (result, {fetchMore, refetch}) {
                             if (result.loading) {
                               // skelon
-                              return ListView.builder(
+                              return ListView.separated(
+                                separatorBuilder: (context, index) => SizedBoxResponsive(width: 10,),
                                   scrollDirection: Axis.horizontal,
-                                  itemCount: 3,
+                                  itemCount: 10,
                                   itemBuilder: (context, index) => ClipRRect(
                                       borderRadius: BorderRadius.circular(10000),
-                                      child: Container(color: Colors.grey)));
+                                      child: Container(
+                                        height: 50,
+                                        width: 50,
+                                        color: Colors.grey)));
                             }
                             if (result.hasException) {
                               return Row(
@@ -321,9 +320,7 @@ Widget buildFriendsActive(String token) {
                                   ? CircleIcon(
                                       icon: FeatherIcons.plusSquare,
                                       iconSize: 25,
-                                      onTap: (){
-                                        
-                                      },
+                                      onTap: () {},
                                     )
                                   : ListView.separated(
                                       separatorBuilder: (context, index) => SizedBoxResponsive(
@@ -347,8 +344,8 @@ Widget buildFriendsActive(String token) {
                                                   fadeInDuration: Duration(seconds: 1),
                                                   imageBuilder: (context, imageProvider) =>
                                                       Container(
-                                                    height: 70,
-                                                    width: 70,
+                                                    height: 50,
+                                                    width: 50,
                                                     decoration: BoxDecoration(
                                                         color: Colors.red,
                                                         borderRadius: BorderRadius.circular(10000),
@@ -364,7 +361,7 @@ Widget buildFriendsActive(String token) {
                                                 ),
                                               ),
                                               Positioned(
-                                                  bottom: -2,
+                                                  bottom: -4,
                                                   right: -2,
                                                   child: Icon(Icons.fiber_manual_record,
                                                       color: Colors.amber))

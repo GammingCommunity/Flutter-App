@@ -21,6 +21,7 @@ class _LogoRoomState extends State<LogoRoom> {
           decoration: BoxDecoration(
               border: Border.all(color: Colors.indigo, width: 2),
               shape: BoxShape.circle,
+              color: Colors.white,
               image: DecorationImage(
                 image: imageProvider,
                 fit: BoxFit.cover,

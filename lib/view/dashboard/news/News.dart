@@ -37,8 +37,10 @@ class _NewsState extends State<News> {
               return Align(
                 alignment: Alignment.topCenter,
                 child: CarouselSlider.builder(
-                    viewportFraction: 1.2,
-                    height: 250.h,
+                    options: CarouselOptions(
+                      viewportFraction: 1.2,
+                      height: 250.h,
+                    ),
                     itemCount: listNews.length,
                     itemBuilder: (context, i) {
                       return ContainerResponsive(

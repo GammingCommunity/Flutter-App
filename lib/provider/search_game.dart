@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/Game.dart';
 import 'package:gamming_community/repository/main_repo.dart';
+import 'package:gamming_community/utils/get_token.dart';
 
 class SearchGame with ChangeNotifier {
   var query = GraphQLQuery();
@@ -24,8 +25,7 @@ class SearchGame with ChangeNotifier {
     loadingResult();
     try {
         listQuery.clear();
-        // TODO: token search game
-        var result = await MainRepo.queryGraphQL("", query.searchGame(text));
+        var result = await MainRepo.queryGraphQL(await getToken(), query.searchGame(text,""));
         var data = Game.fromJson(result.data);
         data != null ? listQuery.add(data) : listQuery = [];
         requestSearch(false);

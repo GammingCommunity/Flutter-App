@@ -15,8 +15,6 @@ import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 import 'package:tuple/tuple.dart';
 
-final _animateList = GlobalKey<AnimatedListState>();
-
 class SelectGame extends StatefulWidget {
   final PageController pageController;
   const SelectGame({this.pageController});
@@ -58,7 +56,6 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
     var searchGame = Provider.of<SearchGame>(context);
     roomCreateProvider = Injector.get(context: context);
     return GraphQLProvider(
-        // TODO: provider get token from sharedprefrence
         client: customClient(""),
         child: CacheProvider(
             child: Selector<SearchGame, Tuple5<bool, bool, int, int, List<Game>>>(
@@ -70,7 +67,6 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                   heroTag: "nextpage", onPressed: () {
                     // hide keyboard after type number
                     roomCreateProvider.setGameInfo(value.item5[0].id, value.item5[0].name);
-                    
                     widget.pageController.animateToPage(1, duration: Duration(milliseconds: 500), curve: Curves.fastLinearToSlowEaseIn);
 
                   }, child: Icon(Icons.chevron_right)),
@@ -80,7 +76,6 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                   print("tap outside");
                   setState(() {
                     searchGame.hideSearchResult(false);
-
                     FocusScope.of(context).requestFocus(new FocusNode());
                   });
                 },

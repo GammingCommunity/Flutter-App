@@ -182,7 +182,6 @@ class _CategoriesDetailState extends State<CategoriesDetail> with TickerProvider
                     child: Container(
                       height: 260,
                       width: screenSize.width,
-                      
                       child: Chewie(
                         controller: _chewieController,
                       ),
@@ -261,7 +260,7 @@ class _CategoriesDetailState extends State<CategoriesDetail> with TickerProvider
                     child: TabBar(
                         indicatorSize: TabBarIndicatorSize.label,
                         controller: tabController,
-                        labelColor: Theme.of(context).appBarTheme.color,
+                        
                         isScrollable: false,
                         tabs: [
                           Tab(
@@ -327,14 +326,15 @@ class _CategoriesDetailState extends State<CategoriesDetail> with TickerProvider
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold, fontSize: 20),
                                           ),
-                                          //TODO: sample here, add soon
+                                          //TODO: add tag for each game
                                           Padding(
                                             padding: const EdgeInsets.only(top: 10.0),
                                             child: Wrap(
                                               spacing: 10,
                                               children: <Widget>[
-                                                for (var item in [1, 2, 3])
-                                                  Chip(label: Text("No Tag"))
+
+                                                for (var item in ["No Tag", "No Tag", "No Tag"])
+                                                  Chip(label: Text(item))
                                               ],
                                             ),
                                           )
@@ -389,6 +389,9 @@ class _CategoriesDetailState extends State<CategoriesDetail> with TickerProvider
                               ),
                               // this for screenshot slider
                               CarouselSlider.builder(
+                                options: CarouselOptions(
+                                  height: 200.h,
+                                ),
                                 itemCount: game.images.length,
                                 itemBuilder: (context, index) {
                                   return ContainerResponsive(
@@ -412,8 +415,6 @@ class _CategoriesDetailState extends State<CategoriesDetail> with TickerProvider
                                     ),
                                   );
                                 },
-                                height: 200.h,
-                                realPage: game.images.length,
                               )
                             ],
                           ),

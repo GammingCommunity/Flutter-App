@@ -5,6 +5,7 @@ import 'package:gamming_community/API/config/subAuth.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/sent_request_friend.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:responsive_widgets/responsive_widgets.dart';
 
 Future showFriendProfile(BuildContext context, String token, int userID) {
   GraphQLQuery query = GraphQLQuery();
@@ -17,9 +18,9 @@ Future showFriendProfile(BuildContext context, String token, int userID) {
     builder: (context) => Center(
       child: Material(
         borderRadius: BorderRadius.circular(15),
-        child: Container(
-            height: 200,
-            width: 400,
+        child: ContainerResponsive(
+            height: 200.h,
+            width: 350.w,
             decoration:
                 BoxDecoration(color: Color(0xff252525), borderRadius: BorderRadius.circular(15)),
             child: GraphQLProvider(
@@ -72,20 +73,17 @@ Future showFriendProfile(BuildContext context, String token, int userID) {
                                       width: 100,
                                       color: Colors.grey,
                                     ),
+                                    SizedBoxResponsive(height:20),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(25),
+                                          color: Colors.grey),
+                                      width: buttonWidth,
+                                      height: buttonHeight,
+                                    )
                                   ],
                                 ))),
-                        Positioned.fill(
-                          top: 70,
-                          left: 30,
-                          child: Align(
-                              alignment: Alignment.center,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(25), color: Colors.grey),
-                                width: buttonWidth,
-                                height: buttonHeight,
-                              )),
-                        )
+
                       ],
                     );
                   } else {

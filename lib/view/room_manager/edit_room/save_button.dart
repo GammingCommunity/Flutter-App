@@ -1,26 +1,29 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Mutation.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
+import 'package:gamming_community/utils/get_token.dart';
+import 'package:gamming_community/utils/uploadFile.dart';
+import 'package:gamming_community/view/room_manager/provider/edit_room_provider.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
 
-class SentRequestFriend extends StatefulWidget {
-  final int requestID;
-  final String content;
-  final double height;
-  final double width;
-  SentRequestFriend({this.requestID, this.content, this.height, this.width});
+class SaveButton extends StatefulWidget {
+  //TODO: error on update
+
+  SaveButton();
 
   @override
-  _SentRequestFriendState createState() => _SentRequestFriendState();
+  _SaveButtonState createState() => _SaveButtonState();
 }
 
-class _SentRequestFriendState extends State<SentRequestFriend> with TickerProviderStateMixin {
+class _SaveButtonState extends State<SaveButton> with TickerProviderStateMixin {
   int _state = 0;
   Animation _animation;
   AnimationController _controller;
   GlobalKey _globalKey = GlobalKey();
   GraphQLMutation mutation = GraphQLMutation();
-
+  EditRoomProvider provider;
   @override
   void initState() {
     super.initState();
@@ -30,7 +33,7 @@ class _SentRequestFriendState extends State<SentRequestFriend> with TickerProvid
   Widget setUpChild() {
     if (_state == 0) {
       return Text(
-        widget.content,
+        "Save",
         style: const TextStyle(
           color: Colors.white,
           fontSize: 16,
@@ -38,38 +41,34 @@ class _SentRequestFriendState extends State<SentRequestFriend> with TickerProvid
       );
     } else if (_state == 1) {
       return FutureBuilder(future: Future(() async {
-       // SharedPreferences ref = await SharedPreferences.getInstance();
-       // var token = ref.getStringList("userToken")[2];
-        try {
-          return SubRepo.mutationGraphQL("", mutation.sendFriendRequest(widget.requestID));
-        } catch (e) {
-          return null;
-        }
+        return provider.save();
       }), builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting)
           return SizedBox(
             height: 20,
             width: 20,
             child: CircularProgressIndicator(
+              strokeWidth: 2,
               value: null,
               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
             ),
           );
         else {
-          
-          if (snapshot.data.data == null) {
-            return Icon(Icons.indeterminate_check_box, color: Colors.white);
-          } else {
-            var result = snapshot.data.data['sendFriendRequest'];
-            if (result == false) {
-              return Icon(Icons.indeterminate_check_box, color: Colors.white);
-            } else
+         
+          try {
+            if (snapshot.data.data['editRoom']['status'] == 200) {
               return Icon(Icons.check, color: Colors.white);
+            }
+          } catch (e) {
+            return Icon(Icons.clear, color: Colors.white);
           }
+          return Icon(Icons.clear, color: Colors.white);
+
+          //return Icon(Icons.check, color: Colors.white);
         }
       });
     } else {
-      return Icon(Icons.indeterminate_check_box, color: Colors.white);
+      return Icon(Icons.check, color: Colors.white);
     }
   }
 
@@ -113,25 +112,28 @@ class _SentRequestFriendState extends State<SentRequestFriend> with TickerProvid
 
   @override
   Widget build(BuildContext context) {
+    provider = Injector.get(context: context);
     return PhysicalModel(
       color: Colors.transparent,
       child: Container(
         margin: EdgeInsets.only(right: 10),
-        height: widget.height,
-        width: widget.width,
+        height: 30,
         key: _globalKey,
-        child: RaisedButton(
-          shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(25)),
-          padding: EdgeInsets.all(0),
-          animationDuration: Duration(milliseconds: 1000),
-          onPressed: () {
-            setState(() {
-              if (_state == 0) {
-                animateButton();
-              }
-            });
-          },
-          child: setUpChild(),
+        child: AbsorbPointer(
+          absorbing: provider.isLoading ? true : false,
+          child: RaisedButton(
+            color: provider.isLoading ? Colors.grey : Colors.indigo,
+            padding: EdgeInsets.all(0),
+            animationDuration: Duration(milliseconds: 1000),
+            onPressed: () {
+              setState(() {
+                if (_state == 0) {
+                  animateButton();
+                }
+              });
+            },
+            child: setUpChild(),
+          ),
         ),
       ),
     );

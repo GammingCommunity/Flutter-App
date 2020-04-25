@@ -5,7 +5,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gamming_community/API/Subscription.dart';
 import 'package:gamming_community/API/config/mainAuth.dart';
-import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/faslideAnimation.dart';
 import 'package:gamming_community/provider/notficationModel.dart';
@@ -120,6 +119,7 @@ class _HomeState extends State<HomePage>
                           Expanded(
                             child: FaSlideAnimation(
                               show: true,
+                              delayed: 200,
                               child: TextField(
                                 onSubmitted: (String value) {
                                   print(_pageController.page);
@@ -157,7 +157,7 @@ class _HomeState extends State<HomePage>
                                             }
                                             if (error != null) {
                                               print(error);
-                                              return Text(error.toString());
+                                              return Container();
                                             } else {
                                               // print(payload.toString());
                                               var result = JoinRoom.fromJson(payload['onJoinRoom']);

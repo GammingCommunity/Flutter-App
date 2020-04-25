@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:rxdart/rxdart.dart';
 
-Future<FlutterLocalNotificationsPlugin>  initNotfication() async {
+Future<FlutterLocalNotificationsPlugin> initNotfication() async {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 // Streams are created so that app can respond to notification-related events since the plugin is initialised in the `main` function
-  BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
-      BehaviorSubject<ReceivedNotification>();
+  /*BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
+      BehaviorSubject<ReceivedNotification>();*/
   BehaviorSubject<String> selectNotificationSubject = BehaviorSubject<String>();
   /*NotificationAppLaunchDetails notificationAppLaunchDetails;
   notificationAppLaunchDetails =

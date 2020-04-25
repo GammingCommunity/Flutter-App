@@ -92,6 +92,8 @@ class GraphQLQuery {
           member
           description
           createAt
+          roomBackground
+          roomLogo
       }
     }
   """;
@@ -178,6 +180,7 @@ class GraphQLQuery {
     query{
       lookAccount (ids:$ids){
         account {
+          id
           name
           avatar_url
         }
@@ -270,9 +273,9 @@ class GraphQLQuery {
   }
   
  """;
-  String searchGame(String query) => """
+  String searchGame(String query,String gameID) => """
     query{
-      searchGame(name:"$query"){
+      searchGame(name:"$query",id:"$gameID"){
         _id
         name
         logo{
@@ -345,5 +348,25 @@ class GraphQLQuery {
       }
     }
   }
+  """;
+  String getRoomInfo(String roomID) => """
+    query{
+      getRoomInfo(roomID:"$roomID"){
+        _id
+          hostID
+          roomName
+          isPrivate
+          game{
+            gameID
+            gameName
+          }
+          maxOfMember
+          member
+          description
+          createAt
+          roomLogo
+          roomBackground
+      } 
+    }
   """;
 }

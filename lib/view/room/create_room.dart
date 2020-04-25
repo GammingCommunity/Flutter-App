@@ -14,7 +14,6 @@ class CreateRoom extends StatefulWidget {
 class _CreateRoomState extends State<CreateRoom> {
   bool _isPublic = true;
   bool isScroll = false;
-  ScrollController _scrollController;
   List<String> sampleUser = [
     "https://api.adorable.io/avatars/90/abott@adorable.io.png",
     "https://api.adorable.io/avatars/90/magic.png",
@@ -28,7 +27,6 @@ class _CreateRoomState extends State<CreateRoom> {
 
   @override
   void initState() {
-    _scrollController = ScrollController();
     super.initState();
   }
 

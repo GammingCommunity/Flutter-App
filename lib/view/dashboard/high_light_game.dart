@@ -40,7 +40,10 @@ class _CarouselState extends State<Carousel> {
           }
           if (result.loading) {
             return CarouselSlider.builder(
-              height: ScreenUtil().uiHeightPx / 4,
+              options: CarouselOptions(
+                height: ScreenUtil().uiHeightPx / 4,
+                enlargeCenterPage: true,
+              ),
               itemCount: 3,
               itemBuilder: (context, indexItem) {
                 return ContainerResponsive(
@@ -53,17 +56,19 @@ class _CarouselState extends State<Carousel> {
                   width: ScreenUtil().uiWidthPx,
                 );
               },
-              enlargeCenterPage: true,
             );
           } else {
-            var _image = ListGameImage.fromJson(result.data['getListGame']).listGameImage;
+            var _image = GameImages.fromJson(result.data['getListGame']).listGameImage;
 
             return _image.isEmpty
                 ? Align(
                     alignment: Alignment.center,
                     child: SvgPicture.asset('assets/icons/empty_icon.svg'))
                 : CarouselSlider.builder(
-                    height: ScreenUtil().uiHeightPx / 2,
+                    options: CarouselOptions(
+                      height: ScreenUtil().uiHeightPx / 2,
+                      enlargeCenterPage: true,
+                    ),
                     itemCount: 3,
                     itemBuilder: (context, indexItem) {
                       return Material(
@@ -98,7 +103,6 @@ class _CarouselState extends State<Carousel> {
                         ),
                       );
                     },
-                    enlargeCenterPage: true,
                   );
           }
         },

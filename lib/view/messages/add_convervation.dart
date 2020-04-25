@@ -71,6 +71,7 @@ class _AddConservationsState extends State<AddConservation> {
                 ],
               )),
           //List friends here
+          //TODO add check friend
           Expanded(
               child: Column(
             children: <Widget>[

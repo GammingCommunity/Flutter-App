@@ -1,6 +1,6 @@
 class GraphQLMutation {
-  String addRoom(String hostID, String roomName, bool isPrivate,
-          int numofMember, String gameID, String gameName) =>
+  String addRoom(String hostID, String roomName, bool isPrivate, int numofMember, String gameID,
+          String gameName) =>
       """
         mutation{
             createRoom(userID:"$hostID",roomInput:{
@@ -33,6 +33,7 @@ class GraphQLMutation {
           success
           message
         }
+      }
     """;
   /* need variables: current,roomID */
   String joinRoom() => """
@@ -65,16 +66,8 @@ class GraphQLMutation {
     """;
   }
 
-  String editRoom(
-      String roomID,
-      String hostID,
-      String roomName,
-      bool isPrivate,
-      String descrp,
-      int numofMember,
-      List<String> member,
-      String gameID,
-      String gameName) {
+  String editRoom(String roomID, String hostID, String roomName, bool isPrivate, String descrp,
+      int numofMember, String member, String gameID, String gameName,String roomLogo,String roomBg) {
     return """
       mutation{
         editRoom(roomID:"$roomID",hostID:"$hostID",newData:{
@@ -88,6 +81,8 @@ class GraphQLMutation {
             gameID:"$gameID"
             gameName:"$gameName"
           }
+          roomBackground:"$roomBg"
+          roomLogo:"$roomLogo"
         }){
           status
           success
@@ -105,7 +100,10 @@ class GraphQLMutation {
       }
     """;
   }
-  String editAccount(String name,String des,String phone,String month,String year,String avatarUrl) => """
+
+  String editAccount(
+          String name, String des, String phone, String month, String year, String avatarUrl) =>
+      """
     mutation{
       editThisAccount(account:{
         name:"$name"
@@ -120,7 +118,7 @@ class GraphQLMutation {
       }
     }
   """;
-  String editEmail(String email) =>"""
+  String editEmail(String email) => """
     mutation {
     editAccount(account: {email: {email: "$email"}}) {
       status
@@ -129,15 +127,20 @@ class GraphQLMutation {
   }
 
   """;
+
   /// {
   ///   respond : true => has send ;
   ///   false => already sent or something else
   /// }
-  String sendFriendRequest(int requestID) =>"""
+  String sendFriendRequest(int requestID) => """
     mutation{
       sendFriendRequest(receiver_id:$requestID)
     }
   """;
+  String confirmRequest(int senderID, bool isAccept) => """
+    mutation{
+      confirmFriendRequest(sender_id:$senderID,is_confirm:$isAccept)
+    }
+
+  """;
 }
-
-

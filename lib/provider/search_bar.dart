@@ -28,12 +28,10 @@ class SearchProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
   void setCurrentScrollOffset(double offset) {
     _currentScrollOffset = offset;
     notifyListeners();
   }
 
   get currentOffset => _currentScrollOffset;
-
 }

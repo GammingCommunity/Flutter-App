@@ -7,8 +7,6 @@ import 'package:gamming_community/class/CRUD.dart';
 import 'package:gamming_community/class/Room.dart';
 import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/utils/get_token.dart';
-import 'package:gamming_community/view/room_manager/room_manager.dart';
-import 'package:intl/intl.dart';
 part 'room_manager_event.dart';
 part 'room_manager_state.dart';
 
@@ -65,7 +63,7 @@ class RoomManagerBloc extends Bloc<RoomManagerEvent, RoomManagerState> {
         room.add(Room(
             id: roomID,
             createAt: DateTime.now().toString(),
-            gameInfo: {"gameID": event.gameID, "gameName": event.gameName},
+            gameInfo: GameInfo(gameID: event.gameID,gameName: event.gameName ), // {"gameID": event.gameID, "gameName": event.gameName},
             hostID: info['userID'],
             isPrivate: event.isPrivate,
             maxOfMember: event.numofMember,
@@ -79,9 +77,10 @@ class RoomManagerBloc extends Bloc<RoomManagerEvent, RoomManagerState> {
       }
     }
 
-    if (event is EditRoom) {}
+    if (event is ModifyRoom) {}
     if (event is RemoveRoom) {
       try {
+        //TODO : show notify confirm delete
         var result = await MainRepo.mutationGraphQL(
             await getToken(), mutation.removeRoom(room[event.index].id, info['userID']));
         var respond = CRUD.fromJson(result.data['removeRoom']);

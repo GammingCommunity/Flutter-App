@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class FaSlideAnimation extends StatefulWidget {
   final Widget child;
   final bool show;
-  FaSlideAnimation({this.child,this.show});
+  final int delayed;
+  FaSlideAnimation({this.child, this.show, @required this.delayed});
   @override
   _FaSlideAnimationState createState() => _FaSlideAnimationState();
 }
@@ -21,11 +24,17 @@ class _FaSlideAnimationState extends State<FaSlideAnimation> with TickerProvider
           ..addListener(() {
             setState(() {});
           });
-   widget.show ?  controller.forward() :  controller.reverse();
+    widget.show
+        ? Timer(Duration(milliseconds: widget.delayed), () {
+            controller.forward();
+          })
+        : Timer(Duration(milliseconds: widget.delayed), () {
+            controller.reverse();
+          });
   }
 
   @override
-  void dispose() { 
+  void dispose() {
     controller.dispose();
     super.dispose();
   }
@@ -34,7 +43,10 @@ class _FaSlideAnimationState extends State<FaSlideAnimation> with TickerProvider
   Widget build(BuildContext context) {
     return SlideTransition(
       position: animation,
-      child: FadeTransition(opacity: controller,child: widget.child,),
+      child: FadeTransition(
+        opacity: controller,
+        child: widget.child,
+      ),
     );
   }
 }

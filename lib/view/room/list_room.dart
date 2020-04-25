@@ -266,7 +266,7 @@ class _RoomState extends State<RoomList> with AutomaticKeepAliveClientMixin<Room
                                                                     child: Text(room[index]
                                                                                 .gameInfo !=
                                                                             null
-                                                                        ? "${room[index].gameInfo["gameName"]}"
+                                                                        ? "${room[index].gameInfo.gameName}"
                                                                         : "null")),
                                                               ],
                                                             )

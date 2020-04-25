@@ -3,16 +3,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Mutation.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
+import 'package:gamming_community/utils/get_token.dart';
 import 'package:gamming_community/utils/uploadFile.dart';
 
 class ProgressButton extends StatefulWidget {
   //TODO: error on update
   final File imagePath;
-  final String token;
   final String nickname, email, phone, describe, birthday, userID;
   ProgressButton(
       {this.imagePath,
-      this.token,
       this.userID,
       this.nickname,
       this.email,
@@ -21,10 +20,10 @@ class ProgressButton extends StatefulWidget {
       this.birthday});
 
   @override
-  _ProgressBUttonState createState() => _ProgressBUttonState();
+  _ProgressButtonState createState() => _ProgressButtonState();
 }
 
-class _ProgressBUttonState extends State<ProgressButton> with TickerProviderStateMixin {
+class _ProgressButtonState extends State<ProgressButton> with TickerProviderStateMixin {
   int _state = 0;
   Animation _animation;
   AnimationController _controller;
@@ -54,7 +53,7 @@ class _ProgressBUttonState extends State<ProgressButton> with TickerProviderStat
         //GraphQLClient client = authAPI(widget.token);
         var avatarUrl = await uploadFile(widget.userID, widget.imagePath);
         return await SubRepo.mutationGraphQL(
-            widget.token,
+            await getToken(),
             mutation.editAccount(
                 widget.nickname, widget.describe, widget.email, "", "", avatarUrl));
       }), builder: (context, snapshot) {

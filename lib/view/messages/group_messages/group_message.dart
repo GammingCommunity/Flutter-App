@@ -5,6 +5,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/GroupMessage.dart';
 import 'package:gamming_community/class/ReceiveNotfication.dart';
+import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/models/group_chat_provider.dart';
 import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
@@ -15,6 +16,7 @@ import 'package:gamming_community/view/messages/group_messages/group_chat_messag
 import 'package:gamming_community/view/messages/group_messages/group_chat_service.dart';
 import 'package:gamming_community/view/messages/messages.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
@@ -55,8 +57,6 @@ class _MessagesState extends State<GroupMessageWidget>
   OverlayEntry _mediaOverlayEntry;
   final LayerLink _layerLink = LayerLink();
   SharedPref ref = SharedPref();
-  List<int> _bytes = [];
-  int _total = 0, _received = 0;
 
   List<String> sampleUser = [
     "https://api.adorable.io/avatars/90/abott@adorable.io.png",
@@ -99,7 +99,7 @@ class _MessagesState extends State<GroupMessageWidget>
               sender: {"id": e.sender, "profile_url": ""},
               animationController: animationController,
               text: e.text,
-              sendDate: e.createAt));
+              sendDate: e.createAt.toLocal()));
           // update to save to cache
           groupchatProvider.onAddNewMessage2(e);
 
@@ -109,7 +109,7 @@ class _MessagesState extends State<GroupMessageWidget>
           });
         });
         break;
-      default:
+      case false:
         List<GroupMessage> listMessage = await ref.readfromCache();
         print(listMessage.length);
         listMessage.forEach((e) {
@@ -131,6 +131,8 @@ class _MessagesState extends State<GroupMessageWidget>
             animateToBottom();
           });
         });
+        break;
+      default:
     }
     /*if( await ref.checkDataExist() == true){
       List<GroupMessage> listMessage=  await ref.readfromCache();
@@ -327,7 +329,7 @@ class _MessagesState extends State<GroupMessageWidget>
         child: CompositedTransformFollower(
           link: this._layerLink,
           showWhenUnlinked: false,
-          offset: Offset(offset.dx - 10, -offset.dy - 40),
+          offset: Offset(offset.dx - 10, -offset.dy - 55),
           child: Material(
             borderRadius: BorderRadius.circular(15),
             elevation: 2.0,
@@ -373,10 +375,7 @@ class _MessagesState extends State<GroupMessageWidget>
   @override
   void initState() {
     super.initState();
-    scrollController = ScrollController()
-      ..addListener(() {
-        print(MediaQuery.of(context).viewInsets.bottom);
-      });
+    scrollController = ScrollController();
     chatController = TextEditingController();
     animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 200));
 
@@ -421,9 +420,9 @@ class _MessagesState extends State<GroupMessageWidget>
             return;
           }
         },
-        child: Container(
-          height: screenSize.height - 50,
-          padding: EdgeInsets.only(top: 10),
+        child: ContainerResponsive(
+          height: screenSize.height,
+          padding: EdgeInsetsResponsive.only(top: 10, left: 0),
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
@@ -455,7 +454,7 @@ class _MessagesState extends State<GroupMessageWidget>
                           groupchatProvider.messages[index].sendDate.minute)
                     SizedBox(height: 5),
                   Text(formatDateTime(groupchatProvider.messages[index].sendDate)),
-                  SizedBox(height: 5),
+                  SizedBox(height: 10),
                   groupchatProvider.messages[index],
                 ],
               );
@@ -465,7 +464,7 @@ class _MessagesState extends State<GroupMessageWidget>
   Widget buildTextComposer() {
     return Container(
       alignment: Alignment.center,
-      height: 40,
+      height: 50,
       decoration: BoxDecoration(
         color: Color(AppConstraint.searchBackground),
       ),
@@ -492,21 +491,15 @@ class _MessagesState extends State<GroupMessageWidget>
                 )),
           ),
           Positioned(
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Material(
-                  type: MaterialType.circle,
-                  clipBehavior: Clip.antiAlias,
-                  color: Colors.transparent,
-                  child: IconButton(
-                      icon: Icon(Icons.bubble_chart),
-                      onPressed: () {
-                        print(
-                            "${scrollController.position.viewportDimension}, ${MediaQuery.of(context).viewInsets.bottom}");
-                        onSendMesasge(chatController.text, "text");
-                      })),
-            ),
-          ),
+              child: Align(
+                  alignment: Alignment.topRight,
+                  child: CircleIcon(
+                    icon: Icons.bubble_chart,
+                    iconSize: 20,
+                    onTap: () {
+                      onSendMesasge(chatController.text, "text");
+                    },
+                  ))),
           Positioned(
               child: CompositedTransformTarget(
             link: this._layerLink,

@@ -6,6 +6,7 @@ import 'package:gamming_community/provider/changeProfile.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
+import 'package:gamming_community/utils/get_token.dart';
 import 'package:gamming_community/utils/progress_button.dart';
 import 'package:gamming_community/view/profile/load_image.dart';
 import 'package:gamming_community/view/profile/load_image_network.dart';
@@ -18,8 +19,8 @@ bool isShownBottomAvatar = false;
 GraphQLMutation mutation = GraphQLMutation();
 
 class EditProfile extends StatefulWidget {
-  final String token,userID,currentProfile;
-  EditProfile({this.token,this.userID, this.currentProfile});
+  final String userID,currentProfile;
+  EditProfile({this.userID, this.currentProfile});
   @override
   _EditProfileState createState() => _EditProfileState();
 }
@@ -54,8 +55,7 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future getProfileInfo() async {
-    // TODO : TOken edit profile 
-    var result= await SubRepo.queryGraphQL(widget.token, query.getCurrentUserInfo());
+    var result= await SubRepo.queryGraphQL(await getToken(), query.getCurrentUserInfo());
     User user = User.fromJson(result.data["lookAccount"]["account"]);
     if (mounted) {
       setState(() {
@@ -147,7 +147,6 @@ class _EditProfileState extends State<EditProfile> {
                     ProgressButton(
                       userID: widget.userID,
                       imagePath:getImage.getFile,
-                      token: widget.token,
                       nickname: _nickname.text,
                       email: "",
                       phone: _phone.text,
