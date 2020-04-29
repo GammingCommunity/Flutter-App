@@ -52,10 +52,10 @@ class _InputState extends State<SignUpInput> {
         }
         if(state is SignUpSuccess){
           Navigator.of(context).pushNamedAndRemoveUntil('/homepage',(Route<dynamic> route) => false);
-          print("Sign up success;");
+          print("Sign up success");
         }
         if(state is SignUpFailed){
-          print("Sign up faild;");
+          print("Sign up faild");
         }
         return null;
       },

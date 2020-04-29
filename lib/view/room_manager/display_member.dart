@@ -65,7 +65,7 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
       }),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return buildLoading(context);
+          return buildLoading(context,widget.size);
         } else {
           var users = snapshot.data;
           print(currentID == "68");
@@ -91,8 +91,8 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
                                 width: widget.size,
                                 fit: BoxFit.cover,
                                 placeholder: (context, image) => Container(
-                                  color: Colors.grey,
                                   decoration: BoxDecoration(
+                                      color: Colors.grey,
                                       borderRadius: BorderRadius.circular(widget.borderRadius)),
                                 ),
                                 errorWidget: (context, error, image) => Icon(Icons.error),
@@ -124,6 +124,9 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
   bool get wantKeepAlive => true;
 }
 
-Widget buildLoading(BuildContext context) {
-  return Center(child: SpinKitCubeGrid(color: Theme.of(context).iconTheme.color, size: 10));
+Widget buildLoading(BuildContext context,double size) {
+  return Container(
+    height: size,
+    width: size,
+    child: Center(child: SpinKitCubeGrid(color: Theme.of(context).iconTheme.color, size: 10)));
 }

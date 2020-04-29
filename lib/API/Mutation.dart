@@ -1,6 +1,6 @@
 class GraphQLMutation {
   String addRoom(String hostID, String roomName, bool isPrivate, int numofMember, String gameID,
-          String gameName) =>
+          String gameName,String roomLogo,String roomBackground) =>
       """
         mutation{
             createRoom(userID:"$hostID",roomInput:{
@@ -13,6 +13,8 @@ class GraphQLMutation {
               gameID:"$gameID"
               gameName:"$gameName"
             }
+            roomLogo:"$roomLogo",
+            roomBackground:"$roomBackground"
           },roomChatInput:{
               roomID:""
               member:["$hostID"]
@@ -37,15 +39,18 @@ class GraphQLMutation {
     """;
   /* need variables: current,roomID */
   String joinRoom() => """
-    mutation(\$current:String!,\$roomID:String!){
-      joinRoom(roomID:\$roomID,currentUserID:\$current,info:{
-        userID:\$current
-        roomID:\$roomID
-      }){
-        message
-        status
-        success
-      }
+    mutation(\$hostID:String!,\$currentID:String!,\$roomID:String!){
+      joinRoom(roomID:\$roomID,currentID:\$currentID,info:{
+      hostID:\$hostID
+    userID:\$currentID
+    roomID:\$roomID
+  }){
+      message
+      status
+      success
+  }
+    
+  
 }
   """;
   String register(String loginName, String password, String userName) {
@@ -142,5 +147,21 @@ class GraphQLMutation {
       confirmFriendRequest(sender_id:$senderID,is_confirm:$isAccept)
     }
 
+  """;
+  String confirmJoinRequest(String hostID, String userID, String roomID) => """
+    mutation{
+      confirmUserRequest(hostID:"$hostID",userID:"$userID",roomID:"$roomID"){
+        status
+        success
+      }
+    }
+  """;
+  String cancelJoinRequest(String hostID,String roomID,String userID) => """
+    mutation{
+      cancelRequest(hostID:"$hostID",roomID:"$roomID",userID:"$userID"){
+        status
+        success
+      }
+    }
   """;
 }

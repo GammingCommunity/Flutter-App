@@ -1,0 +1,36 @@
+{
+    "login": {
+        "ForgotEmailOrUsername": "Quên tên đăng nhập hoặc email",
+        "invaidUsername": "Tên tài khoản không hợp lệ",
+        "invaildPassword": "Mật khẩu không hợp lệ",
+        "usernameInputLabel": "Tên đăng nhập hoặc email",
+        "yourPassword": "Mật khẩu",
+        "signIn": "Đăng nhập",
+        "forgotPassword": "Quên mật khẩu ?",
+        "dontHaveAccount": "Không có tài khoản ?",
+        "signUp": "Đăng ký",
+        "signUpNow": "Đăng ký ngay"
+    },
+    "signUp": {
+        "signUpSuccess": "Đăng ký thành công",
+        "signUpFail": "Đăng ký thất bại",
+        "invaildEmail": "Email không hợp lệ",
+        "invaildUsername": "Tên đăng nhập không hợp lệ",
+        "invaildPassword": "Mật khẩu không hợp lệ",
+        "emailInputLabel": "Email (tuỳ chọn)",
+        "userNameInputLabel": "Tên đăng nhập",
+        "nickNameInputLabel": "Nick name",
+        "passwordInputLabel": "Mật khẩu",
+        "repassValidate": "Mật khẩu không chính xác",
+        "retypePassInputLabel": "Nhập lại mật khẩu",
+        "signUp": "ĐĂNG KÝ"
+    },
+    "home": {
+        "bottomNavigation": {
+            "dashboard": "Bảng tin",
+            "explorer": "Khám phá",
+            "manager": "Quản lý",
+            "chat": "Nhắn tin"
+        }
+    }
+}

@@ -245,16 +245,20 @@ class GraphQLQuery {
     }
   }
  """;
-  String getListRoomByID(String id) => """
+  String getListRoomByID(String id, String userID, int limit, int page) => """
   query{
-    getRoomByGame(gameID:"$id"){
+    getRoomByGame(gameID:"$id",userID:"$userID",limit:$limit,page:$page){
       _id
       member
       roomName
       hostID
       isPrivate
       maxOfMember
-      createAt 
+      createAt
+      roomBackground
+      roomLogo
+      isJoin
+      isRequest
   }
   }
  """;
@@ -273,7 +277,7 @@ class GraphQLQuery {
   }
   
  """;
-  String searchGame(String query,String gameID) => """
+  String searchGame(String query, String gameID) => """
     query{
       searchGame(name:"$query",id:"$gameID"){
         _id
@@ -367,6 +371,16 @@ class GraphQLQuery {
           roomLogo
           roomBackground
       } 
+    }
+  """;
+  String getPendingJoinRoom(String userID) => """
+    query{
+      getPendingJoinRoom_User(userID:"$userID"){
+        userID
+        roomID
+        isApprove
+        joinTime
+      }
     }
   """;
 }

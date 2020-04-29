@@ -123,7 +123,7 @@ class _SaveButtonState extends State<SaveButton> with TickerProviderStateMixin {
           absorbing: provider.isLoading ? true : false,
           child: RaisedButton(
             color: provider.isLoading ? Colors.grey : Colors.indigo,
-            padding: EdgeInsets.all(0),
+            
             animationDuration: Duration(milliseconds: 1000),
             onPressed: () {
               setState(() {

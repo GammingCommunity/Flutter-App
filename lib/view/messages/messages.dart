@@ -120,7 +120,7 @@ class _MessagesState extends State<Messages>
                                       borderRadius: BorderRadius.circular(15)),
                                   child: Text(
                                     "10",
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),
                                   ),
                                 )
                               ],

@@ -28,9 +28,7 @@ class _SignUpState extends State<SignUp> {
                 child: Header(),
               ),
             ),
-            Expanded(
-                flex: 2,
-                child: Container(color: backgroundColor, child: SignUpInput()))
+            Expanded(flex: 2, child: Container(color: backgroundColor, child: SignUpInput()))
           ]),
         )));
   }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:gamming_community/customWidget/restartWidget.dart';
+import 'package:gamming_community/generated/i18n.dart';
 import 'package:gamming_community/models/chat_provider.dart';
 import 'package:gamming_community/models/group_chat_provider.dart';
 import 'package:gamming_community/provider/changeProfile.dart';
@@ -17,6 +20,7 @@ import 'package:gamming_community/view/profile/profile.dart';
 import 'package:gamming_community/view/profile/settingProvider.dart';
 import 'package:gamming_community/view/room/create_room.dart';
 import 'package:gamming_community/view/room/provider/navigateNextPage.dart';
+import 'package:gamming_community/view/room/provider/room_list_provider.dart';
 import 'package:gamming_community/view/room_manager/bloc/room_manager_bloc.dart';
 import 'package:gamming_community/view/room_manager/provider/edit_room_provider.dart';
 import 'package:gamming_community/view/room_manager/room_create_provider.dart';
@@ -35,19 +39,22 @@ void main() async {
   Widget defaultHome = Login();
   SharedPreferences ref = await SharedPreferences.getInstance();
   bool isLoggin = ref.getBool('isLogin') != null ?? false;
+  bool isEng = ref.getBool("isEng") != null ?? false;
   if (isLoggin) {
     defaultHome = HomePage();
   }
-  runApp(MyApp(home: defaultHome));
+  runApp(MyApp(home: defaultHome,enLanguage: isEng));
   SystemChrome.setEnabledSystemUIOverlays([]);
 }
 
 class MyApp extends StatelessWidget {
   final Widget home;
-  MyApp({this.home});
+  final bool enLanguage;
+  MyApp({this.home, this.enLanguage = true});
 
   @override
   Widget build(BuildContext context) {
+    final i18n = I18n.delegate;
     SettingProvider settingProvider;
     return MultiProvider(
         providers: [
@@ -85,12 +92,21 @@ class MyApp extends StatelessWidget {
               Inject(() => NotificationProvider()),
               Inject(() => RoomCreateProvider()),
               Inject(() => EditRoomProvider()),
+              Inject(() => RoomsProvider())
             ],
             builder: (context) {
               settingProvider = Injector.get(context: context);
               return StateBuilder(
                   models: [],
                   builder: (context, _) => MaterialApp(
+                        localeResolutionCallback: i18n.resolution(fallback: Locale('en', 'US')),
+                        supportedLocales: i18n.supportedLocales,
+                        locale: enLanguage ? Locale('en', 'US') : Locale('vi', 'VI'),
+                        localizationsDelegates: {
+                          i18n,
+                          GlobalMaterialLocalizations.delegate,
+                          GlobalWidgetsLocalizations.delegate
+                        },
                         debugShowCheckedModeBanner: false,
                         themeMode: settingProvider.darkTheme ? ThemeMode.dark : ThemeMode.light,
                         title: 'Gamming Community',

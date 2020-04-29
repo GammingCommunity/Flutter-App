@@ -148,8 +148,9 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                       PageTransition(child: CreateRoomV2(), type: PageTransitionType.fade));
                 }),
             body: RefreshIndicator(
-              onRefresh: () async {
+              onRefresh: () {
                 roomManagerBloc.add(RefreshRooms());
+                return _refreshCompleter.future;
               },
               child: ContainerResponsive(
                 height: screenSize.height,
@@ -214,8 +215,6 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                                             imageUrl: rooms[index].roomBackground,
                                             fit: BoxFit.cover,
                                             height: 100.h,
-                                            
-                                            
                                           ),
 
                                     SizedBox(

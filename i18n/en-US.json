@@ -1,0 +1,36 @@
+{
+    "login": {
+        "ForgotEmailOrUsername": "Forgot your email or username",
+        "invaidUsername": "Invaild Username",
+        "invaildPassword": "Invaild Password",
+        "usernameInputLabel": "Your username or email",
+        "yourPassword": "Your password",
+        "signIn": "Sign In",
+        "forgotPassword": "Forgot password ?",
+        "dontHaveAccount": "Don't have account ?",
+        "signUp": "Sign Up",
+        "signUpNow": "Sign Up now"
+    },
+    "signUp":{
+        "signUpSuccess":"Sign up sucess",
+        "signUpFail": "Sign up faild",
+        "invaildEmail":"Invaild email",
+        "invaildUsername": "Invaild username",
+        "invaildPassword": "Invaild password",
+        "emailInputLabel":"Email (optional)",
+        "userNameInputLabel":"Username",
+        "nickNameInputLabel":"Nick name",
+        "passwordInputLabel":"Password",
+        "repassValidate":"Password not match",
+        "retypePassInputLabel":"Type your password again",
+        "signUp":"SIGN UP"
+    },
+    "home":{
+        "bottomNavigation":{
+            "dashboard":"Dashboard",
+            "explorer":"Explorer",
+            "manager":"Manager",
+            "chat":"Chat"
+        }
+    }
+}

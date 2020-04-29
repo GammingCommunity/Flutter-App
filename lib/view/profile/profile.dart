@@ -3,6 +3,7 @@ import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
+import 'package:gamming_community/view/profile/custom/changeLanguage.dart';
 import 'package:gamming_community/view/profile/edit_profile.dart';
 import 'package:gamming_community/view/profile/row_account_setting.dart';
 import 'package:gamming_community/view/profile/settingProvider.dart';
@@ -53,12 +54,9 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Align(
-                  alignment: Alignment.center,
-                  child: AppConstraint.spinKitCubeGrid(context)
-                );
+                    alignment: Alignment.center, child: AppConstraint.spinKitCubeGrid(context));
               } else
                 return Column(
-                 
                   children: <Widget>[
                     //Edit button
                     Expanded(
@@ -85,7 +83,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                   Align(
                                     alignment: Alignment.topRight,
                                     child: Padding(
-                                      padding: EdgeInsetsResponsive.only(right:10),
+                                      padding: EdgeInsetsResponsive.only(right: 10),
                                       child: RaisedButton.icon(
                                           onPressed: () {
                                             Navigator.of(context).push(PageRouteBuilder(
@@ -121,7 +119,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                     fadeInCurve: Curves.easeIn,
                                     fadeInDuration: Duration(seconds: 1),
                                     imageBuilder: (context, imageProvider) => ContainerResponsive(
-                                      height: 80.h ,
+                                      height: 80.h,
                                       width: 80.w,
                                       decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(1000),
@@ -147,7 +145,6 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                     widget.userName ?? username,
                                     style: usernameStyle,
                                   ),
-                                  
                                   TextResponsive(
                                     nickName,
                                     style: nickNameStyle,
@@ -155,16 +152,15 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
-                                      
                                       CircleIcon(
                                         icon: FeatherIcons.userPlus,
                                         iconSize: 25,
-                                        onTap: (){},
+                                        onTap: () {},
                                       ),
                                       CircleIcon(
                                         icon: FeatherIcons.messageCircle,
                                         iconSize: 25,
-                                        onTap: (){},
+                                        onTap: () {},
                                       ),
                                     ],
                                   ),
@@ -174,84 +170,91 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                           ],
                         )),
                     // Setting blablabla....
-                    
+
                     Expanded(
                       flex: 3,
-                      child:  Padding(
-                            padding: EdgeInsetsResponsive.symmetric(horizontal: 10,vertical: 10),
-                            child: Wrap(
-                              spacing: 20,
-                              runSpacing: 20,
-                              children: <Widget>[
-                                Column(
-                                  children: <Widget>[
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Padding(
-                                          padding: EdgeInsetsResponsive.only(left: 30),
-                                          child: Row(
-                                            children: <Widget>[
-                                              Icon(
-                                                OpenIconicIcons.moon,
-                                                size: 30,
-                                              ),
-                                              SizedBox(
-                                                width: 20,
-                                              ),
-                                              TextResponsive(
-                                                "Dark mode",
-                                                style: settingFont,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Switch(
-                                            value: changeTheme,
-                                            onChanged: (e) {
-                                              settingProvider.setTheme();
-                                              setState(() {
-                                                changeTheme = e;
-                                              });
-                                            })
-                                      ],
-                                    ),
-                                  ],
+                      child: Padding(
+                          padding: EdgeInsetsResponsive.symmetric(horizontal: 10, vertical: 10),
+                          child: Wrap(
+                            runSpacing: 20,
+                            spacing: 20,
+                            children: <Widget>[
+                              RowProfileSetting(
+                                icon: Icon(
+                                  OpenIconicIcons.moon,
+                                  size: 30,
                                 ),
-                                RowProfileSetting(
-                                    onTap: () {},
-                                    icon: Icon(Icons.language, size: 30, color: Colors.amber),
-                                    text: "Language"),
-                                RowProfileSetting(
-                                    onTap: () {},
-                                    icon: Icon(Icons.leak_add, size: 30, color: Colors.blueGrey),
-                                    text: "Follows"),
-                                RowProfileSetting(
-                                    onTap: () {},
-                                    icon: Icon(Icons.favorite, size: 30, color: Colors.pink),
-                                    text: "Following"),
-                                RowProfileSetting(
-                                    onTap: () {},
-                                    icon: Icon(
-                                      Icons.feedback,
-                                      size: 30,
-                                    ),
-                                    text: "Feedback"),
-                                RowProfileSetting(
-                                    onTap: () {},
-                                    icon: Icon(Icons.leak_remove, size: 30, color: Colors.red[300]),
-                                    text: "Restrict users"),
-                                RowProfileSetting(
-                                    onTap: () async {
-                                      print("log out");
-                                      loggout(context);
-                                    },
-                                    icon: Icon(Icons.power_settings_new,
-                                        size: 30, color: Colors.red[300]),
-                                    text: "Log out")
-                              ],
-                            )),
-                     
+                                clickable: false,
+                                onTap: () {},
+                                text: "Dark mode",
+                                widget: Switch(
+                                    value: changeTheme,
+                                    onChanged: (e) {
+                                      settingProvider.setTheme();
+                                      setState(() {
+                                        changeTheme = e;
+                                      });
+                                    }),
+                              ),
+                              RowProfileSetting(
+                                  onTap: () {},
+                                  widget: Row(
+                                    children: <Widget>[
+                                      //default language here
+                                      ChangeLanguage(
+                                        defaultLanguage: "en",
+                                      )
+                                    ],
+                                  ),
+                                  clickable: false,
+                                  icon: Icon(Icons.language, size: 30, color: Colors.amber),
+                                  text: "Language"),
+                              RowProfileSetting(
+                                  onTap: () {},
+                                  widget: Container(
+                                    padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
+                                    child: Text("0"),
+                                  ),
+                                  icon: Icon(Icons.leak_add, size: 30, color: Colors.blueGrey),
+                                  text: "Follows"),
+                              RowProfileSetting(
+                                  onTap: () {},
+                                  widget: Container(
+                                    padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
+                                    child: Text("0"),
+                                  ),
+                                  icon: Icon(Icons.favorite, size: 30, color: Colors.pink),
+                                  text: "Following"),
+                              RowProfileSetting(
+                                  onTap: () {},
+                                  widget: Container(
+                                    padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
+                                    child: Text("0"),
+                                  ),
+                                  icon: Icon(
+                                    Icons.feedback,
+                                    size: 30,
+                                  ),
+                                  text: "Feedback"),
+                              RowProfileSetting(
+                                  onTap: () {},
+                                  widget: Container(
+                                    padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
+                                    child: Text("0"),
+                                  ),
+                                  icon: Icon(Icons.leak_remove, size: 30, color: Colors.red[300]),
+                                  text: "Restrict users"),
+                              RowProfileSetting(
+                                  onTap: () async {
+                                    print("log out");
+                                    loggout(context);
+                                  },
+                                  widget: Container(),
+                                  icon: Icon(Icons.power_settings_new,
+                                      size: 30, color: Colors.red[300]),
+                                  text: "Log out")
+                            ],
+                          )),
                     )
                   ],
                 );

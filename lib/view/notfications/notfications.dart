@@ -3,8 +3,10 @@ import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Subscription.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
+import 'package:gamming_community/repository/room_repo.dart';
 import 'package:gamming_community/view/notfications/notificationProvider.dart';
 import 'package:gamming_community/view/notfications/notifications_service.dart';
+import 'package:gamming_community/view/notfications/roomInfo_widget.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
@@ -24,6 +26,7 @@ class _NotficationsState extends State<Notfications> with TickerProviderStateMix
     tabController = TabController(length: 3, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       notificationProvider.loadFriendRequest();
+      notificationProvider.loadPendingRequest();
     });
   }
 
@@ -52,6 +55,7 @@ class _NotficationsState extends State<Notfications> with TickerProviderStateMix
                         ],
                       ),
                       TabBar(
+                        indicatorSize: TabBarIndicatorSize.label,
                         controller: tabController,
                         tabs: [
                           Tab(
@@ -96,21 +100,52 @@ class _NotficationsState extends State<Notfications> with TickerProviderStateMix
                         )),
                   ),
                   //Pending
+                  //TODO: show pending room here,
                   Container(
-                    child: RefreshIndicator(
-                        onRefresh: () {
-                          return notificationProvider.refresh(3);
-                        },
-                        child: ListView.builder(
-                          itemCount: 1,
-                          itemBuilder: (context, index) {},
-                        )),
+                    child: pendings.isEmpty
+                        ? Center(child: CircularProgressIndicator())
+                        : RefreshIndicator(
+                            onRefresh: () {
+                              return notificationProvider.refresh(3);
+                            },
+                            child: ListView.separated(
+                              separatorBuilder: (context, index) => Divider(
+                                thickness: 2,
+                              ),
+                              itemCount: pendings.length,
+                              itemBuilder: (context, index) {
+                                return ContainerResponsive(
+                                  padding: EdgeInsetsResponsive.all(10),
+                                  height: 80.h,
+                                  child: Row(
+                                    children: <Widget>[
+                                      RoomInfo(
+                                        future: RoomRepo.loadingRoomInfo(pendings[index].roomID),
+                                        joinTime: pendings[index].joinTime
+                                      ),
+                                      Spacer(),
+                                      ContainerResponsive(
+                                        height: 30.h,
+                                        width: 60.h,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                            color: Theme.of(context).accentColor,
+                                            borderRadius: BorderRadius.circular(10)),
+                                        child: Text("Pending"),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
+                            )),
                   ),
                   //Friends Request
-                   notificationProvider.hasValue
-                          ? Center(child: CircularProgressIndicator())
-                          : Container(
-                              child:  notificationProvider.checkFriendsRequest ?  Text("No friends request now.") : RefreshIndicator(
+                  notificationProvider.hasValue
+                      ? Center(child: CircularProgressIndicator())
+                      : Container(
+                          child: notificationProvider.checkFriendsRequest
+                              ? Text("No friends request now.")
+                              : RefreshIndicator(
                                   onRefresh: () {
                                     return notificationProvider.refresh(3);
                                   },
@@ -157,7 +192,7 @@ class _NotficationsState extends State<Notfications> with TickerProviderStateMix
                                       );
                                     },
                                   )),
-                            ),
+                        ),
                 ]),
               ),
             )));

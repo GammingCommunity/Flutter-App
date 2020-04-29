@@ -31,7 +31,7 @@ class _DashBoardState extends State<DashBoard> with AutomaticKeepAliveClientMixi
           Flexible(
             flex: 2,
             child: Container(
-                height: 200.h,
+                height: 150.h,
                 width: MediaQuery.of(context).size.width,
                 child: Carousel(widget.token)),
           ),
@@ -46,7 +46,7 @@ class _DashBoardState extends State<DashBoard> with AutomaticKeepAliveClientMixi
           ),
           SizedBox(height: 10),
           Flexible(
-            flex: 2,
+            flex: 3,
             child: Category()),
           SizedBox(height: 20),
           Row(

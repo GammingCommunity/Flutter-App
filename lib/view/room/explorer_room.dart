@@ -99,7 +99,9 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
                             ),
                             itemCount: rooms.length,
                             itemBuilder: (context, index) {
-                              return buildItem(context, rooms, index);
+                              return Hero(
+                                tag: rooms[index].id,
+                                child: buildItem(context, rooms, index));
                             },
                           ),
                         ),
@@ -138,7 +140,7 @@ Widget buildItem(BuildContext context, List<Room> rooms, int index) {
     child: InkWell(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => RoomByGame(gameID: rooms[index].id)));
+            context, MaterialPageRoute(builder: (context) => RoomByGame(gameID: rooms[index].id,gameName: rooms[index].gameName,)));
       },
       child: ContainerResponsive(
         width: ScreenUtil().uiWidthPx,

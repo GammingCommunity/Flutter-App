@@ -7,6 +7,7 @@ import 'package:gamming_community/API/Subscription.dart';
 import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/faslideAnimation.dart';
+import 'package:gamming_community/generated/i18n.dart';
 import 'package:gamming_community/provider/notficationModel.dart';
 import 'package:gamming_community/provider/search_bar.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
@@ -142,7 +143,7 @@ class _HomeState extends State<HomePage>
                               ),
                               //TODO: fetch notification
 
-                              Positioned(
+                             /* Positioned(
                                   top: 5,
                                   right: 5,
                                   child: GraphQLProvider(
@@ -192,7 +193,7 @@ class _HomeState extends State<HomePage>
                                             }
                                           },
                                         ),
-                                      )))
+                                      )))*/
                             ],
                           ),
                           // profile image
@@ -243,15 +244,15 @@ class _HomeState extends State<HomePage>
                           tabMargin: EdgeInsets.only(bottom: 0),
                           tabs: [
                             GButton(
-                              text: "Dashboard",
+                              text: I18n.of(context).homeBottomNavigationDashboard,
                               icon: OpenIconicIcons.dashboard,
                             ), //dashboard
                             GButton(
-                              text: "Explorer",
+                              text: I18n.of(context).homeBottomNavigationExplorer,
                               icon: OpenIconicIcons.compass,
                             ), // home
-                            GButton(text: "Manager", icon: OpenIconicIcons.globe), // explorer
-                            GButton(text: "Chat", icon: OpenIconicIcons.chat), // chat
+                            GButton(text: I18n.of(context).homeBottomNavigationManager, icon: OpenIconicIcons.globe), // explorer
+                            GButton(text: I18n.of(context).homeBottomNavigationChat, icon: OpenIconicIcons.chat), // chat
                             // notificaiton
                           ],
                           onTabChange: (index) => {

@@ -11,6 +11,9 @@ class AppConstraint {
   static const double button_radius = 15;
   static const String sample_proifle_url = "https://via.placeholder.com/150";
   static const String default_profile = "https://droncoma.sirv.com/Profile/default_profile.png";
+  static const String default_logo = "https://droncoma.sirv.com/Logo/logo.png";
+  static const String default_background =
+      "https://droncoma.sirv.com/default_background/no_image.png";
   static Image noImage = Image.asset('assets/images/no_image.png');
   static Widget spinKitCubeGrid(context) =>
       SpinKitCubeGrid(color: Theme.of(context).iconTheme.color, size: 20);

@@ -25,7 +25,7 @@ class _CategoryState extends State<Category> {
   Widget build(BuildContext context) {
     return ContainerResponsive(
       padding: EdgeInsetsResponsive.symmetric(vertical: 10),
-      height: 100.h,
+      height: 200.h,
         child:  ListView.separated(
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
@@ -49,7 +49,7 @@ class _CategoryState extends State<Category> {
                 },
                 child: ContainerResponsive(
                   alignment: Alignment.center,
-                  width: 150.w,
+                  width: 120.w,
                   decoration: BoxDecoration(
                       /*gradient: LinearGradient(
                                 begin: Alignment.topLeft,

@@ -6,6 +6,7 @@ import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/CRUD.dart';
 import 'package:gamming_community/class/Room.dart';
 import 'package:gamming_community/repository/main_repo.dart';
+import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/get_token.dart';
 part 'room_manager_event.dart';
 part 'room_manager_state.dart';
@@ -53,10 +54,11 @@ class RoomManagerBloc extends Bloc<RoomManagerEvent, RoomManagerState> {
     if (event is AddRoom) {
       yield AddRoomLoading();
       try {
+        //TODO: let user change logo and background in create room page, now set default
         var result = await MainRepo.mutationGraphQL(
             await getToken(),
             mutation.addRoom(info['userID'], event.roomName, event.isPrivate, event.numofMember,
-                event.gameID, event.gameName));
+                event.gameID, event.gameName,AppConstraint.default_logo,AppConstraint.default_background));
         var roomID = CRUD.fromJson(result.data['createRoom']).payload;
         var listMember = [];
         listMember.add(info['userID']);

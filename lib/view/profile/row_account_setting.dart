@@ -7,17 +7,19 @@ class RowProfileSetting extends StatelessWidget {
   final Icon icon;
   final String text;
   final Function onTap;
-  RowProfileSetting({this.icon, this.text, this.onTap});
+  final Widget widget;
+  final bool clickable;
+  RowProfileSetting({this.icon, this.text, this.onTap, this.widget, this.clickable = true});
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        return onTap();
-      },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Padding(
+        onTap: clickable ? () {
+          return onTap();
+        } : null,
+        child: ContainerResponsive(
+          height: 40,
+          width: ScreenUtil().uiWidthPx,
+          child: Padding(
             padding: EdgeInsetsResponsive.only(left: 30),
             child: Row(
               children: <Widget>[
@@ -29,11 +31,13 @@ class RowProfileSetting extends StatelessWidget {
                   text,
                   style: settingFont,
                 ),
+                Spacer(),
+                widget
               ],
             ),
           ),
-        ],
-      ),
+        ),
+      
     );
   }
 }

@@ -11,6 +11,8 @@ class Room {
   String createAt;
   String roomLogo;
   String roomBackground;
+  bool isJoin;
+  bool isRequest;
   Room(
       {this.id,
       this.roomName,
@@ -21,6 +23,8 @@ class Room {
       this.isPrivate,
       this.roomLogo,
       this.roomBackground,
+      this.isJoin,
+      this.isRequest,
       this.createAt});
   factory Room.fromJson(Map json) {
     return Room(
@@ -33,7 +37,11 @@ class Room {
         memberID: json['member'],
         createAt: json['createAt'],
         roomLogo: json['roomLogo'],
-        roomBackground: json['roomBackground']);
+        roomBackground: json['roomBackground'],
+        isJoin: json['isJoin'],
+        isRequest: json['isRequest']
+        
+        );
   }
 }
 
@@ -56,14 +64,19 @@ class Rooms {
             id: item['_id'],
             hostID: item['hostID'],
             roomName: item['roomName'],
-            gameInfo: GameInfo(gameID: item['game']['gameID'], gameName: item['game']['gameName']),
+            gameInfo: item['game'] == null
+                ? GameInfo()
+                : GameInfo(gameID: item['game']['gameID'], gameName: item['game']['gameName']),
             //gameInfo: item['game'] ??= item['game'],
             isPrivate: item['isPrivate'],
             maxOfMember: item['maxOfMember'],
             memberID: item['member'],
             createAt: item['createAt'],
             roomBackground: item['roomBackground'],
-            roomLogo: item['roomLogo']
+            roomLogo: item['roomLogo'],
+            isJoin: item['isJoin'],
+            isRequest: item['isRequest']
+            
             ));
       }
     } catch (e) {
