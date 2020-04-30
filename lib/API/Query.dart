@@ -245,9 +245,9 @@ class GraphQLQuery {
     }
   }
  """;
-  String getListRoomByID(String id, String userID, int limit, int page) => """
+  String getListRoomByID(String id, String userID, int limit, int page,[String groupSize = "none"]) => """
   query{
-    getRoomByGame(gameID:"$id",userID:"$userID",limit:$limit,page:$page){
+    getRoomByGame(gameID:"$id",userID:"$userID",limit:$limit,page:$page,groupSize:$groupSize){
       _id
       member
       roomName

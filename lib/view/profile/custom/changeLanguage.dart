@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gamming_community/repository/lang_repo.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 
@@ -11,6 +12,8 @@ class ChangeLanguage extends StatefulWidget {
 
 class _ChangeLanguageState extends State<ChangeLanguage> {
   bool enLang = true;
+  var _restartChannel = MethodChannel("restartApp");
+
   @override
   void initState() {
     super.initState();
@@ -29,17 +32,17 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
               child: RaisedButton(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   color: enLang ? Colors.indigo : Colors.grey,
-                  onPressed: () async{
-                    enLang
-                        ? null
-                        : await showChangeLanguageConfirm(context, enLang) ? setState((){
-                          enLang = !enLang;
-                        }) : null;
-                        
-                        /*setState(() {
-                            print("${showChangeLanguageConfirm(context, enLang).then((value) => print(value)) } here ");
-                            != null ?  : null;
-                          });*/
+                  onPressed: () async {
+                    if (enLang) {
+                      return null;
+                    } else if (await showChangeLanguageConfirm(context, true)) {
+                      setState(() {
+                        enLang = !enLang;
+                      });
+                      await LangRepo.setLanguage(true);
+                      _restartChannel.invokeMethod("restartApp");
+                      //await showChangeLanguageConfirm(context, true);
+                    }
                   },
                   child: Text("EN")),
             ),
@@ -49,12 +52,17 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
                 minWidth: 50,
                 child: RaisedButton(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    onPressed: () async{
-                      !enLang
-                          ? null
-                          : await showChangeLanguageConfirm(context, enLang) ? setState((){
+                    onPressed: () async {
+                      if (!enLang) {
+                        return null;
+                      } else if (await showChangeLanguageConfirm(context, false)) {
+                        setState(() {
                           enLang = !enLang;
-                        }) : null;
+                        });
+                        await LangRepo.setLanguage(false);
+                        _restartChannel.invokeMethod("restartApp");
+                        // await showChangeLanguageConfirm(context, false);
+                      }
                     },
                     color: enLang ? Colors.grey : Colors.indigo,
                     child: Text("VI"))),
@@ -65,7 +73,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
   }
 }
 
-Future<bool> showChangeLanguageConfirm(BuildContext context, bool isEng) async{
+Future<bool> showChangeLanguageConfirm(BuildContext context, bool isEng) async {
   return await showDialog(
     context: context,
     barrierDismissible: true,
@@ -73,18 +81,29 @@ Future<bool> showChangeLanguageConfirm(BuildContext context, bool isEng) async{
       height: 100.h,
       width: 150.w,
       child: AlertDialog(
-        content: Text(
-            "Change to ${isEng ? "English" : "Vietnamese"}. You should restart your app to take effect."),
+        title: Text(
+          "Restart Required",
+          textAlign: TextAlign.center,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            RichText(
+                text: TextSpan(
+                    text: ' "Change to ${isEng ? "English" : "Vietnamese"}" ',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic))),
+            Text("You should restart your app to take effect.")
+          ],
+        ),
         actions: <Widget>[
           FlatButton(
               onPressed: () {
-                Navigator.pop(context,false);
+                Navigator.pop(context, false);
               },
               child: Text("Cancel")),
           FlatButton(
               onPressed: () async {
-                LangRepo.setLanguage(isEng);
-                Navigator.pop(context,true);   
+                Navigator.pop(context, true);
               },
               child: Text("OK")),
         ],

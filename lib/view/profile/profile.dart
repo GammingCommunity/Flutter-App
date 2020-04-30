@@ -31,9 +31,8 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
   Future getInfo() async {
     SharedPreferences refs = await SharedPreferences.getInstance();
     List<String> res = refs.getStringList("userToken");
-    //print(res[0]);
-    print('profile ${widget.userProfile}');
-    return res;
+    bool isEng = refs.getBool("isEng");
+    return isEng;
   }
 
   @override
@@ -55,7 +54,8 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Align(
                     alignment: Alignment.center, child: AppConstraint.spinKitCubeGrid(context));
-              } else
+              } else {
+                bool isEng = snapshot.data;
                 return Column(
                   children: <Widget>[
                     //Edit button
@@ -202,7 +202,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                     children: <Widget>[
                                       //default language here
                                       ChangeLanguage(
-                                        defaultLanguage: "en",
+                                        defaultLanguage: isEng ? "en": "vi",
                                       )
                                     ],
                                   ),
@@ -258,6 +258,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                     )
                   ],
                 );
+              }
             },
           )),
     );

@@ -56,7 +56,7 @@ class _EditProfileState extends State<EditProfile> {
 
   Future getProfileInfo() async {
     var result= await SubRepo.queryGraphQL(await getToken(), query.getCurrentUserInfo());
-    User user = User.fromJson(result.data["lookAccount"]["account"]);
+    User user = User.fromJson(result.data["getThisAccount"]);
     if (mounted) {
       setState(() {
         _nickname.text = user.nickname;
@@ -126,9 +126,9 @@ class _EditProfileState extends State<EditProfile> {
             appBar: PreferredSize(
               preferredSize: Size.fromHeight(30),
               child: Container(
-                color: AppColors.PRIMARY_COLOR,
+                
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  
                   children: <Widget>[
                     Material(
                       color: Colors.transparent,
@@ -144,6 +144,7 @@ class _EditProfileState extends State<EditProfile> {
                       "Edit Profile",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
+                    Spacer(),
                     ProgressButton(
                       userID: widget.userID,
                       imagePath:getImage.getFile,

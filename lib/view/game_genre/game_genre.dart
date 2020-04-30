@@ -113,7 +113,7 @@ class _GameGenreState extends State<GameGenre> {
                                   Navigator.push(
                                       context,
                                       PageTransition(
-                                          type: PageTransitionType.upToDown,
+                                          type: PageTransitionType.rightToLeft,
                                           child: CategoriesDetail(
                                             itemTag: listGame[index].name,
                                             gameDetail: listGame[index],

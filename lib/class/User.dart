@@ -14,11 +14,11 @@ class User {
     var user = User();
     try {
       user = User(
-          id:json['id'],
+          id:json['id'].toString(),
           email: json['email'] ??= '',
           birthday: '',
           nickname: json['name'] ??= '',
-          phoneNumber: json['phone']['phone'] ??= '',
+          phoneNumber: json['phone'] ??= '',
           describe: json['describe'],
           profileUrl: json['avatar_url'] ??= AppConstraint.default_profile);
     } catch (e) {

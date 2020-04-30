@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:gamming_community/customWidget/restartWidget.dart';
 import 'package:gamming_community/generated/i18n.dart';
 import 'package:gamming_community/models/chat_provider.dart';
 import 'package:gamming_community/models/group_chat_provider.dart';
@@ -39,11 +38,11 @@ void main() async {
   Widget defaultHome = Login();
   SharedPreferences ref = await SharedPreferences.getInstance();
   bool isLoggin = ref.getBool('isLogin') != null ?? false;
-  bool isEng = ref.getBool("isEng") != null ?? false;
+  bool isEng = ref.getBool("isEng");
   if (isLoggin) {
     defaultHome = HomePage();
   }
-  runApp(MyApp(home: defaultHome,enLanguage: isEng));
+  runApp(MyApp(home: defaultHome, enLanguage: isEng));
   SystemChrome.setEnabledSystemUIOverlays([]);
 }
 

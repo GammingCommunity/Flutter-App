@@ -309,6 +309,7 @@ class _HomeState extends State<HomePage>
                 body: ContainerResponsive(
                     height: screenSize.height,
                     child: PageView(
+                      physics: NeverScrollableScrollPhysics(),
                       onPageChanged: (index) {
                         setState(() {
                           _currentIndex = index;
