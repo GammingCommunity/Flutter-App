@@ -7,11 +7,13 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final IconData backIcon;
   final double iconSize;
   final Function onNavigateOut;
+  final EdgeInsetsGeometry padding;
   CustomAppBar(
       {@required this.child,
       @required this.height,
       @required this.onNavigateOut,
       this.iconSize = 20,
+      @required this.padding,
       @required this.backIcon});
 
   @override
@@ -25,15 +27,18 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     return PreferredSize(
-        child: Row(
-          children: <Widget>[
-            CircleIcon(
-              icon: widget.backIcon,
-              iconSize: widget.iconSize,
-              onTap: () => widget.onNavigateOut(),
-            ),
-            for (Widget widget in widget.child) widget
-          ],
+        child: Padding(
+          padding: widget.padding,
+          child: Row(
+            children: <Widget>[
+              CircleIcon(
+                icon: widget.backIcon,
+                iconSize: widget.iconSize,
+                onTap: () => widget.onNavigateOut(),
+              ),
+              for (Widget widget in widget.child) widget
+            ],
+          ),
         ),
         preferredSize: Size.fromHeight(widget.height));
   }

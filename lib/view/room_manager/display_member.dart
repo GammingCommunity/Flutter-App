@@ -68,7 +68,7 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
           return buildLoading(context,widget.size);
         } else {
           var users = snapshot.data;
-          print(currentID == "68");
+          //print(currentID == "68");
           return users.isEmpty
               ? Text("Has error")
               : Row(
