@@ -5,10 +5,12 @@ import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/CountRoom.dart';
 import 'package:gamming_community/provider/search_bar.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
+import 'package:gamming_community/view/room/provider/explorerProvider.dart';
 import 'package:gamming_community/view/specify_room_game/room_by_game.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
 
 class Explorer extends StatefulWidget {
   final String token;
@@ -24,13 +26,14 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
 
   @override
   void initState() {
-    print("init explorer room0");
+    print("init explorer room");
     scrollController = ScrollController();
     scrollController.addListener(() {
       setState(() {
         scrollPosition = scrollController.position.pixels;
       });
     });
+
     super.initState();
   }
 
@@ -43,37 +46,27 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-    super.build(context);
     var search = Provider.of<SearchProvider>(context);
+
+    super.build(context);
     return Scaffold(
       body: ContainerResponsive(
-            padding: EdgeInsetsResponsive.all(10),
-            height: screenSize.height,
-            width: screenSize.width,
-            child: GraphQLProvider(
-                client: customClient(widget.token),
-                child: CacheProvider(
-                    child: Query(
-                  options: QueryOptions(documentNode: gql(query.countRoomOnEachGame('ASC'))),
-                  builder: (result, {fetchMore, refetch}) {
-                    if (result.loading) {
-                      return Center(
-                          child: AppConstraint.spinKitCubeGrid(
-                              context)); //itemLoading(screenSize.width);
-                    }
-                    if (result.hasException ||
-                        result.data['countRoomOnEachGame'] as List<dynamic> == []) {
-                      print(result.exception);
-                      return buildException(context);
-                    } else {
-                      var rooms =
-                          ListNumberOfRoom.json(result.data['countRoomOnEachGame']).listRoom;
-
-                      return ContainerResponsive(
-                        
-                        child: NotificationListener(
-                          onNotification: (notification) {
-                            /* if (notification is ScrollUpdateNotification) {
+        padding: EdgeInsetsResponsive.all(10),
+        height: screenSize.height,
+        width: screenSize.width,
+        child: WhenRebuilderOr<ExploreProvider>(
+            observe: () => RM.get<ExploreProvider>()..future((s) => s.init()),
+            builder: (context, explorerModel) {
+              return explorerModel.whenConnectionState(
+                onIdle: null,
+                onWaiting: () => AppConstraint.loadingIndicator(context),
+                onError: (error) => buildException(context),
+                onData: (explorerModel) {
+                  var rooms = explorerModel.rooms;
+                  return ContainerResponsive(
+                    child: NotificationListener(
+                      onNotification: (notification) {
+                        /* if (notification is ScrollUpdateNotification) {
                               search.setCurrentScrollOffset(scrollPosition);
                             }
                             /*print("current scroll position" + scrollPosition.toString());
@@ -89,26 +82,25 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
                                 search.setHideSearchBar(false);
                               });
                             }*/
-                          },
-                          child: ListView.separated(
-                            //controller: scrollController,
-                            
-                            addAutomaticKeepAlives: true,
-                            separatorBuilder: (context, index) => SizedBox(
-                              height: 20,
-                            ),
-                            itemCount: rooms.length,
-                            itemBuilder: (context, index) {
-                              return Hero(
-                                tag: rooms[index].id,
-                                child: buildItem(context, rooms, index));
-                            },
-                          ),
+                      },
+                      child: ListView.separated(
+                        //controller: scrollController,
+
+                        addAutomaticKeepAlives: true,
+                        separatorBuilder: (context, index) => SizedBox(
+                          height: 20,
                         ),
-                      );
-                    }
-                  },
-                ))),
+                        itemCount: rooms.length,
+                        itemBuilder: (context, index) {
+                          return Hero(
+                              tag: rooms[index].id, child: buildItem(context, rooms, index));
+                        },
+                      ),
+                    ),
+                  );
+                },
+              );
+            }),
       ),
     );
   }
@@ -140,7 +132,12 @@ Widget buildItem(BuildContext context, List<Room> rooms, int index) {
     child: InkWell(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => RoomByGame(gameID: rooms[index].id,gameName: rooms[index].gameName,)));
+            context,
+            MaterialPageRoute(
+                builder: (context) => RoomByGame(
+                      gameID: rooms[index].id,
+                      gameName: rooms[index].gameName,
+                    )));
       },
       child: ContainerResponsive(
         width: ScreenUtil().uiWidthPx,

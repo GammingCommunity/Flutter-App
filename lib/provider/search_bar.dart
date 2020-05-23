@@ -9,11 +9,11 @@ class SearchProvider with ChangeNotifier {
     switch (index) {
       case 0:
         isChange = true;
-        return content = "Search here";
+        return content = "Hello  Friends";
         break;
       case 1:
         isChange = true;
-        return content = "Search game";
+        return content = "....";
         break;
       case 2:
         isChange = true;
@@ -23,7 +23,12 @@ class SearchProvider with ChangeNotifier {
         isChange = true;
         return content = "Search friends";
         break;
+      case 4:
+        isChange = true;
+        return content = "Search friends";
+        break;
       default:
+        
     }
     notifyListeners();
   }

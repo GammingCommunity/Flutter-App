@@ -1,5 +1,5 @@
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/class/Room.dart';
+import 'package:gamming_community/class/GroupChat.dart';
 import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/utils/get_token.dart';
 import 'package:gamming_community/view/profile/edit_profile.dart';
@@ -8,7 +8,7 @@ import 'package:states_rebuilder/states_rebuilder.dart';
 class RoomsProvider extends StatesRebuilder {
   var query = GraphQLQuery();
   bool hasNoValue = false;
-  List<Room> _rooms = [];
+  List<GroupChat> _rooms = [];
   String groupSize = "";
   String gameID = "";
   String userID = "";
@@ -16,7 +16,7 @@ class RoomsProvider extends StatesRebuilder {
   int nextPage = 1;
   int limit = 6;
 
-  List<Room> get rooms => _rooms;
+  List<GroupChat> get rooms => _rooms;
   
   /*--------------------------------------------------------------------------------- */
 
@@ -48,13 +48,13 @@ class RoomsProvider extends StatesRebuilder {
   }
 
 /*--------------------------------------------------------------------------------- */
-  Future<List<Room>> queryRoom(
+  Future<List<GroupChat>> queryRoom(
       String gameID, String userID, int limit, int nextPage, String groupSize) async {
     try {
       var result = await MainRepo.queryGraphQL(
           await getToken(), query.getListRoomByID(gameID, userID, limit, nextPage, groupSize));
 
-      return Rooms.fromJson(result.data['getRoomByGame']).rooms;
+      return GroupChats.fromJson(result.data['getRoomByGame']).rooms;
     } catch (e) {
       return [];
     }

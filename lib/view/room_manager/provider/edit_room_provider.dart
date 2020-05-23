@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/class/Room.dart';
+import 'package:gamming_community/class/GroupChat.dart';
 import 'package:gamming_community/class/list_game_image.dart';
 import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/repository/upload_image.dart';
@@ -31,7 +31,7 @@ class EditRoomProvider extends StatesRebuilder {
   Future initLoading(String roomID) async {
     setLoading(true);
     var result = await MainRepo.queryGraphQL(await getToken(), query.getRoomInfo(roomID));
-    var roomInfo = Room.fromJson(result.data['getRoomInfo']);
+    var roomInfo = GroupChat.fromJson(result.data['getRoomInfo']);
     this.listMember.addAll(roomInfo.memberID.cast<String>());
     this.roomID = roomInfo.id;
     this.maxofMember = roomInfo.maxOfMember;

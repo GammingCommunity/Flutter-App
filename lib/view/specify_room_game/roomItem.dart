@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:gamming_community/class/Room.dart';
-import 'package:gamming_community/customWidget/faslideAnimation.dart';
+import 'package:gamming_community/class/GroupChat.dart';
+import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/brighness_query.dart';
 import 'package:gamming_community/utils/skeleton_template.dart';
@@ -11,7 +11,7 @@ import 'package:gamming_community/view/specify_room_game/join_button.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 
 class RoomItem extends StatefulWidget {
-  final Room room;
+  final GroupChat room;
   RoomItem({this.room});
   @override
   _RoomItemState createState() => _RoomItemState();
@@ -23,7 +23,7 @@ class _RoomItemState extends State<RoomItem> with AutomaticKeepAliveClientMixin 
     var rooms = widget.room;
     var v = DateTime.now().difference(DateTime.tryParse(rooms.createAt).toLocal());
     super.build(context);
-    return FaSlideAnimation(
+    return FaSlideAnimation.slideUp(
         show: true,
         delayed: 100,
         child: InkWell(

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:gamming_community/customWidget/faslideAnimation.dart';
+import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/view/login/bloc/bloc/login_bloc.dart';
 import 'package:gamming_community/view/login/login_input.dart';
+import 'package:responsive_widgets/responsive_widgets.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -31,21 +32,27 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                   constraints: BoxConstraints(minHeight: constraint.maxHeight),
                   child: IntrinsicHeight(
                       child: Column(children: <Widget>[
-                    FaSlideAnimation(
-                      show: true,
-                      delayed: 200,
-                      child: Expanded(
-                          flex: 2,
-                          child: Container(
+                    Expanded(
+                      flex: 2,
+                      child: FaSlideAnimation.slideDown(
+                        show: true,
+                        delayed: 200,
+                        child: Container(
                             height: 200,
-                            width: 200,
+                            width: MediaQuery.of(context).size.width,
+                            alignment: Alignment.center,
                             child: SvgPicture.asset('assets/icons/logo/brand.svg'),
-                          )),
+                          ),
+                      ),
                     ),
-                    FaSlideAnimation(
-                      show: true,
-                      delayed: 200,
-                      child: Expanded(flex: 3, child: LoginInput()))
+                    Expanded(
+                      flex: 3,
+                      child: FaSlideAnimation.slideDown(
+                        show: true,
+                        delayed: 300,
+                        child: LoginInput(),
+                      ),
+                    )
                   ])),
                 ),
               );

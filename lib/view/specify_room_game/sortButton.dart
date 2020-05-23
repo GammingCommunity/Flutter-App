@@ -19,9 +19,9 @@ class _SortButtonState extends State<SortButton> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
           child: Row(
             children: <Widget>[
-              Text(isPress ? "Hide" : "Filter",style: TextStyle(color:Colors.white)),
+              Text(isPress ? "Hide" : "Filter", style: TextStyle(color: Colors.white)),
               SizedBox(width: 5),
-              Icon(isPress ? Icons.clear : Icons.arrow_drop_down,color:Colors.white)
+              Icon(isPress ? Icons.clear : Icons.arrow_drop_down, color: Colors.white)
             ],
           ),
           onPressed: () {

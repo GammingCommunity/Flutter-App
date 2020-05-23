@@ -5,14 +5,21 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/class/GroupMessage.dart';
+import 'package:gamming_community/hive_models/member.dart';
 import 'package:gamming_community/repository/upload_image.dart';
+import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/display_image.dart';
 import 'package:gamming_community/view/messages/group_messages/group_chat_service.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:optimized_cached_image/widgets.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+
+import '../private_message.dart';
+
+var currentTime = new DateTime.now();
 
 class GroupChatMessage extends StatefulWidget {
   final bool fromStorage;
@@ -20,7 +27,7 @@ class GroupChatMessage extends StatefulWidget {
   final String type;
   final String currentID;
   final String roomID;
-  final Map<String, dynamic> sender;
+  final String sender;
   final GMessage text;
   final String imageUri;
   final AnimationController animationController;
@@ -49,6 +56,7 @@ class _GroupChatMessageState extends State<GroupChatMessage>
   int byteCount = 0;
   AnimationController controller;
   Animation animation;
+  Box<Members> members = Hive.box('members');
 
   //for upload image from local
   Future showProgress() async {
@@ -105,6 +113,7 @@ class _GroupChatMessageState extends State<GroupChatMessage>
     widget.fromStorage ?? showProgress();
     controller = AnimationController(vsync: this, duration: Duration(milliseconds: 200));
     animation = Tween(begin: 0, end: 1).animate(controller);
+    print("U add new mess ");
   }
 
   @override
@@ -116,13 +125,16 @@ class _GroupChatMessageState extends State<GroupChatMessage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    bool isMe = widget.currentID == widget.sender['id'];
+    bool isMe = widget.currentID == widget.sender;
     bool fromStorage = widget.fromStorage;
     var imageUri = widget.imageUri;
     var imageUrl = widget.text.content;
+    // get username for userlist
+    var userProfile = members.get(widget.roomID).members.singleWhere((e) => e.userID == widget.sender);
+   // var userProfile = Member(image: AppConstraint.default_profile, name: "asdsad", userID: "0000");
+
     return SizeTransition(
-        sizeFactor:
-            CurvedAnimation(parent: widget.animationController, curve: Curves.easeOut), //new
+        sizeFactor: CurvedAnimation(parent: widget.animationController, curve: Curves.easeOut),
         axisAlignment: 0.0,
         axis: Axis.vertical,
         child: Container(
@@ -138,78 +150,115 @@ class _GroupChatMessageState extends State<GroupChatMessage>
                   },
                   borderRadius: BorderRadius.circular(1000),
                   child: CircleAvatar(
-                    backgroundImage: NetworkImage(widget.sender['profile_url']),
+                    backgroundImage: NetworkImage(userProfile.image),
                   ),
                 ),
               if (isMe)
                 CircleAvatar(
-                  backgroundImage: NetworkImage("https://picsum.photos/300"),
+                  backgroundImage: NetworkImage(userProfile.image),
                 ),
               if (widget.type == "text")
                 Flexible(
-                  child: Container(
-                      //alignment: Alignment.center,
-                      padding: EdgeInsets.all(8),
-                      margin: EdgeInsets.symmetric(horizontal: 6),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Theme.of(context).primaryColor,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        child: Row(
+                          children: [
+                            // member name here
+
+                            Text(userProfile.name),
+                            SizedBox(width: 10),
+                            Text(formatDateTime(widget.sendDate),
+                                style: TextStyle(color: Colors.grey, fontSize: 10))
+                          ],
+                        ),
                       ),
-                      child:
-                          Text(widget.text.content, style: Theme.of(context).textTheme.bodyText2)),
+                      Container(
+                          //alignment: Alignment.center,
+                          padding: EdgeInsets.all(8),
+                          margin: EdgeInsets.symmetric(horizontal: 6),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          child: Text(widget.text.content,
+                              style: Theme.of(context).textTheme.bodyText2)),
+                    ],
+                  ),
                 ),
               if (widget.type == "media")
                 Flexible(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.deferToChild,
-                    onTap: () {
-                      _generatePalete(context, imageUrl, fromStorage);
-                    },
-                    child: Container(
-                      color: Colors.grey,
-                      margin: EdgeInsets.only(left: 10),
-                      height: 100,
-                      width: 200,
-                      child: Stack(
-                        children: <Widget>[
-                          fromStorage == true
-                              ? Align(
-                                  alignment: Alignment.center,
-                                  child: Image.file(
-                                    File(widget.imageUri),
-                                    height: 100,
-                                    width: 200,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : Align(
-                                  alignment: Alignment.center,
-                                  child: OptimizedCacheImage(
-                                    imageUrl: imageUrl,
-                                    height: widget.text.height.toDouble() > 1000
-                                        ? widget.text.height.toDouble() / 2
-                                        : widget.text.height.toDouble(),
-                                    width: widget.text.width.toDouble() > 1000
-                                        ? widget.text.width.toDouble() / 2
-                                        : widget.text.width.toDouble(),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                          Align(
-                            alignment: Alignment.center,
-                            child: uploadComplete
-                                ? FadeTransition(
-                                    opacity: controller,
-                                    child: Icon(
-                                      Icons.check,
-                                      color: Colors.indigo,
-                                      size: 40,
-                                    ))
-                                : Container(),
-                          )
-                        ],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          children: [
+                            // member name here
+                            Text(userProfile.name),
+                            SizedBox(width: 10),
+                            Text(formatDateTime(widget.sendDate),
+                                style: TextStyle(color: Colors.grey, fontSize: 10))
+                          ],
+                        ),
                       ),
-                    ),
+                      GestureDetector(
+                        behavior: HitTestBehavior.deferToChild,
+                        onTap: () {
+                          _generatePalete(context, imageUrl, fromStorage);
+                        },
+                        child: Container(
+                          color: Colors.grey,
+                          margin: EdgeInsets.only(left: 10),
+                          height: 100,
+                          width: 200,
+                          child: Stack(
+                            children: <Widget>[
+                              fromStorage == true
+                                  ? Align(
+                                      alignment: Alignment.center,
+                                      child: Image.file(
+                                        File(widget.imageUri),
+                                        height: 100,
+                                        width: 200,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                  : Align(
+                                      alignment: Alignment.center,
+                                      child: OptimizedCacheImage(
+                                        imageUrl: imageUrl,
+                                        height: widget.text.height.toDouble() > 1000
+                                            ? widget.text.height.toDouble() / 2
+                                            : widget.text.height.toDouble(),
+                                        width: widget.text.width.toDouble() > 1000
+                                            ? widget.text.width.toDouble() / 2
+                                            : widget.text.width.toDouble(),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                              Align(
+                                alignment: Alignment.center,
+                                child: uploadComplete
+                                    ? FadeTransition(
+                                        opacity: controller,
+                                        child: Icon(
+                                          Icons.check,
+                                          color: Colors.indigo,
+                                          size: 40,
+                                        ))
+                                    : Container(),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 )
             ],

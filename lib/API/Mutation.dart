@@ -1,6 +1,6 @@
 class GraphQLMutation {
   String addRoom(String hostID, String roomName, bool isPrivate, int numofMember, String gameID,
-          String gameName,String roomLogo,String roomBackground) =>
+          String gameName, String roomLogo, String roomBackground) =>
       """
         mutation{
             createRoom(userID:"$hostID",roomInput:{
@@ -71,8 +71,18 @@ class GraphQLMutation {
     """;
   }
 
-  String editRoom(String roomID, String hostID, String roomName, bool isPrivate, String descrp,
-      int numofMember, String member, String gameID, String gameName,String roomLogo,String roomBg) {
+  String editRoom(
+      String roomID,
+      String hostID,
+      String roomName,
+      bool isPrivate,
+      String descrp,
+      int numofMember,
+      String member,
+      String gameID,
+      String gameName,
+      String roomLogo,
+      String roomBg) {
     return """
       mutation{
         editRoom(roomID:"$roomID",hostID:"$hostID",newData:{
@@ -156,11 +166,21 @@ class GraphQLMutation {
       }
     }
   """;
-  String cancelJoinRequest(String hostID,String roomID,String userID) => """
+  String cancelJoinRequest(String hostID, String roomID, String userID) => """
     mutation{
       cancelRequest(hostID:"$hostID",roomID:"$roomID",userID:"$userID"){
         status
         success
+      }
+    }
+  """;
+  String reaction(String commentTo,String reactType, String postID,String commentID) => """
+    mutation{
+      reaction(to:"$commentID,type:"$reactType",postID:"$postID",commentID:"$commentID"){
+        status
+        payload
+        success
+        status
       }
     }
   """;

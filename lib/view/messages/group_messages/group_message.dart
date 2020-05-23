@@ -7,18 +7,18 @@ import 'package:gamming_community/class/GroupMessage.dart';
 import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/models/group_chat_provider.dart';
-import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/checkHasConnection.dart';
-import 'package:gamming_community/view/messages/group_messages/SharedPref.dart';
 import 'package:gamming_community/view/messages/group_messages/group_chat_message.dart';
 import 'package:gamming_community/view/messages/group_messages/group_chat_service.dart';
-import 'package:gamming_community/view/messages/messages.dart';
+import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
+
+import '../private_message.dart';
 
 class GroupMessageWidget extends StatefulWidget {
   final String roomID, currentID;
@@ -40,7 +40,9 @@ class _MessagesState extends State<GroupMessageWidget>
   GroupChatProvider groupchatProvider;
   ScrollController scrollController;
   GraphQLQuery query = GraphQLQuery();
+  Box<GroupMessage> groupMessage;
   AnimationController animationController;
+
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
@@ -49,14 +51,13 @@ class _MessagesState extends State<GroupMessageWidget>
   BehaviorSubject<String> selectNotificationSubject = BehaviorSubject<String>();
   NotificationAppLaunchDetails notificationAppLaunchDetails;
 
-  final RelativeRectTween relativeRectTween = RelativeRectTween(
+  /* final RelativeRectTween relativeRectTween = RelativeRectTween(
     begin: RelativeRect.fromLTRB(0, 0, 0, 0),
     end: RelativeRect.fromLTRB(0, 0, 0, 40),
-  );
+  );*/
 
   OverlayEntry _mediaOverlayEntry;
   final LayerLink _layerLink = LayerLink();
-  SharedPref ref = SharedPref();
 
   List<String> sampleUser = [
     "https://api.adorable.io/avatars/90/abott@adorable.io.png",
@@ -77,26 +78,29 @@ class _MessagesState extends State<GroupMessageWidget>
   void loadMessage() async {
     var animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+
     // TODO current profile current null for maintain reason
-    //TODO add emoji
+    // TODO add emoji
     // TODO add add picture, video , etc
 
-    // check if cache has already cache
-
+    // use cache if has no connection
+    print(groupMessage);
     switch (await checkConnection()) {
       case true:
-        var result = await MainRepo.queryGraphQL("", query.getRoomMessage(widget.roomID));
+        //cache first
 
-        var listMessage = GroupMessages.mapFromJson(result.data).groupMessages;
+        //add to local
+        //groupMessage.clear();
+        var grMessageData = await groupchatProvider.initLoadMessage(widget.roomID);
 
-        listMessage.forEach((e) {
+        grMessageData.forEach((e) {
           groupchatProvider.onAddNewMessage(GroupChatMessage(
               fromStorage: false,
               imageUri: "",
               roomID: widget.roomID,
-              type: e.type,
+              type: e.messageType,
               currentID: widget.currentID,
-              sender: {"id": e.sender, "profile_url": ""},
+              sender: e.sender,
               animationController: animationController,
               text: e.text,
               sendDate: e.createAt.toLocal()));
@@ -108,9 +112,33 @@ class _MessagesState extends State<GroupMessageWidget>
             animateToBottom();
           });
         });
+
+        /* listMessage.forEach((element) {
+          groupMessage.add(element);
+        });*/
+
+        /* listMessage.forEach((e) {
+          groupchatProvider.onAddNewMessage(GroupChatMessage(
+              fromStorage: false,
+              imageUri: "",
+              roomID: widget.roomID,
+              type: e.messageType,
+              currentID: widget.currentID,
+              sender: e.sender,
+              animationController: animationController,
+              text: e.text,
+              sendDate: e.createAt.toLocal()));
+          // update to save to cache
+          groupchatProvider.onAddNewMessage2(e);
+
+          animationController.forward();
+          Timer(Duration(seconds: 2), () {
+            animateToBottom();
+          });
+        });*/
         break;
       case false:
-        List<GroupMessage> listMessage = await ref.readfromCache();
+        /* List<GroupMessage> listMessage = await ref.readfromCache();
         print(listMessage.length);
         listMessage.forEach((e) {
           groupchatProvider.onAddNewMessage(GroupChatMessage(
@@ -130,7 +158,7 @@ class _MessagesState extends State<GroupMessageWidget>
           Timer(Duration(seconds: 2), () {
             animateToBottom();
           });
-        });
+        });*/
         break;
       default:
     }
@@ -181,6 +209,7 @@ class _MessagesState extends State<GroupMessageWidget>
     }*/
   }
 
+  // update cache
   void onSendMesasge(String message, String type) {
     //print(widget.profileUrl);
     if (chatController.text.isEmpty) return;
@@ -189,10 +218,11 @@ class _MessagesState extends State<GroupMessageWidget>
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
 
     var groupMessage = GroupChatMessage(
+      roomID: widget.roomID,
       fromStorage: false,
       imageUri: "",
       currentID: widget.currentID,
-      sender: {"id": widget.currentID, "profile_url": ""},
+      sender: widget.currentID,
       animationController: animationController,
       type: "text",
       text: GMessage(content: message),
@@ -205,9 +235,9 @@ class _MessagesState extends State<GroupMessageWidget>
 
     // add mess to listview
     groupchatProvider.onAddNewMessage(groupMessage);
-
+    // add mess to list model
     groupchatProvider.onAddNewMessage2(GroupMessage(
-        type: "text",
+        messageType: "text",
         createAt: DateTime.now(),
         messageID: "",
         sender: widget.currentID,
@@ -226,7 +256,7 @@ class _MessagesState extends State<GroupMessageWidget>
       fromStorage: fromLocal,
       roomID: widget.roomID,
       currentID: widget.currentID,
-      sender: {"id": widget.currentID, "profile_url": ""},
+      sender: widget.currentID,
       animationController: animationController,
       imageUri: path,
       type: "media",
@@ -253,7 +283,7 @@ class _MessagesState extends State<GroupMessageWidget>
   void onRecieveMessage() {
     groupchatProvider.socket.on('group-message', (data) async {
       print('recive message' + data.toString());
-
+      // update db with new value
       notificationAppLaunchDetails =
           await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
 
@@ -280,7 +310,7 @@ class _MessagesState extends State<GroupMessageWidget>
           AnimationController(vsync: this, duration: Duration(milliseconds: 500));
 
       var chatMessage = GroupChatMessage(
-          sender: {"id": data[1]['id'], "profile_url": ""},
+          sender: data['id'],
           text: data[1]['text'],
           animationController: animationController,
           sendDate: DateTime.now());
@@ -348,8 +378,6 @@ class _MessagesState extends State<GroupMessageWidget>
                         return;
                       else
                         chatImage(widget.roomID, image.path);
-
-                      print('Image');
                     } catch (e) {
                       return;
                     }
@@ -361,7 +389,6 @@ class _MessagesState extends State<GroupMessageWidget>
                     var image = await ImagePicker.pickVideo(
                       source: ImageSource.gallery,
                     );
-                    print('Video');
                   },
                 )
               ],
@@ -375,14 +402,19 @@ class _MessagesState extends State<GroupMessageWidget>
   @override
   void initState() {
     super.initState();
-    scrollController = ScrollController();
+    scrollController = ScrollController()
+      ..addListener(() {
+        if (scrollController.offset == scrollController.position.minScrollExtent) {
+          groupchatProvider.fechMoreMessage(widget.roomID, 10, 2);
+        }
+      });
     chatController = TextEditingController();
     animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 200));
 
     WidgetsBinding.instance.addPostFrameCallback((d) {
       groupchatProvider.initSocket();
       groupchatProvider.joinGroup(widget.roomID);
-
+      groupchatProvider.initMember(widget.member, widget.roomID);
       loadMessage();
       onRecieveMessage();
       animateToBottom();
@@ -399,7 +431,6 @@ class _MessagesState extends State<GroupMessageWidget>
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-    var silverBarHeight = widget.silverBarHeight;
     groupchatProvider = Injector.get(context: context);
 
     super.build(context);
@@ -438,27 +469,56 @@ class _MessagesState extends State<GroupMessageWidget>
   }
 
   Widget buildGroupChat() {
-    return Expanded(
-        child: ListView.builder(
-            addAutomaticKeepAlives: true,
-            padding: EdgeInsets.only(left: 8, right: 8, bottom: 12, top: 12),
-            itemCount: groupchatProvider.messages.length,
-            controller: scrollController,
-            itemBuilder: (context, index) {
-              return Column(
-                children: <Widget>[
-                  if (index == 0) Text(formatDate(groupchatProvider.messages[index].sendDate)),
-                  SizedBox(height: 5),
-                  if (index != 0 &&
-                      groupchatProvider.messages[index - 1].sendDate.minute !=
-                          groupchatProvider.messages[index].sendDate.minute)
-                    SizedBox(height: 5),
-                  Text(formatDateTime(groupchatProvider.messages[index].sendDate)),
-                  SizedBox(height: 10),
-                  groupchatProvider.messages[index],
-                ],
-              );
-            }));
+    return groupchatProvider.groupMessage.isEmpty
+        ? Container(
+            width: 20, height: 20, alignment: Alignment.center, child: CircularProgressIndicator())
+        : Expanded(
+            child: ListView.separated(
+                separatorBuilder: (context, index) => SizedBox(
+                      height: 10,
+                    ),
+                addAutomaticKeepAlives: true,
+                padding: EdgeInsets.only(left: 8, right: 8, bottom: 12, top: 12),
+                itemCount: groupchatProvider.messages.length,
+                controller: scrollController,
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: <Widget>[
+                      if (index == 0)
+                        buildDateTimeSeparate(groupchatProvider.messages[index].sendDate),
+                      SizedBox(height: 5),
+                      if (index != 0 &&
+                          groupchatProvider.messages[index - 1].sendDate.day !=
+                              groupchatProvider.messages[index].sendDate.day)
+                        buildDateTimeSeparate(groupchatProvider.messages[index].sendDate),
+                      //Text(formatDateTime(groupchatProvider.messages[index].sendDate)),
+                      //SizedBox(height: 10),
+                      groupchatProvider.messages[index],
+                    ],
+                  );
+                }));
+  }
+
+  Widget buildDateTimeSeparate(DateTime datetime) {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            margin: EdgeInsets.only(right: 20),
+            child: Divider(
+              thickness: 2,
+            ),
+          ),
+        ),
+        Text(formatDate(datetime)),
+        Expanded(
+            child: Container(
+                margin: EdgeInsets.only(left: 20),
+                child: Divider(
+                  thickness: 2,
+                )))
+      ],
+    );
   }
 
   Widget buildTextComposer() {

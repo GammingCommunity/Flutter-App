@@ -1,27 +1,15 @@
-import 'dart:async';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config/mainAuth.dart';
-import 'package:gamming_community/class/Room.dart';
-import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/customAppBar.dart';
-import 'package:gamming_community/customWidget/faslideAnimation.dart';
+import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
-import 'package:gamming_community/utils/brighness_query.dart';
-import 'package:gamming_community/utils/progress_button.dart';
-import 'package:gamming_community/utils/skeleton_template.dart';
 import 'package:gamming_community/view/profile/settingProvider.dart';
 import 'package:gamming_community/view/room/provider/room_list_provider.dart';
-import 'package:gamming_community/view/room_manager/display_member.dart';
-import 'package:gamming_community/view/specify_room_game/join_button.dart';
 import 'package:gamming_community/view/specify_room_game/roomItem.dart';
 import 'package:gamming_community/view/specify_room_game/sortButton.dart';
 import 'package:gamming_community/view/specify_room_game/sortChip.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
@@ -135,7 +123,7 @@ class _RoomByGameState extends State<RoomByGame> with TickerProviderStateMixin {
                                 addAutomaticKeepAlives: true,
                                 controller: scrollController,
                                 physics: AlwaysScrollableScrollPhysics(),
-                                separatorBuilder: (context, index) => FaSlideAnimation(
+                                separatorBuilder: (context, index) => FaSlideAnimation.slideUp(
                                     show: true, delayed: 200, child: Divider(thickness: 1)),
                                 itemCount: roomsProvider.rooms.length,
                                 itemBuilder: (context, index) {

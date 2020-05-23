@@ -11,6 +11,16 @@ GraphQLClient mainAPI(String token) {
   );
 }
 
+GraphQLClient postAPI(String token) {
+  HttpLink httpLink =
+      HttpLink(uri: "https://post-service.glitch.me/graphql", headers: {"token": token});
+
+  return GraphQLClient(
+    cache: NormalizedInMemoryCache(dataIdFromObject: typenameDataIdFromObject),
+    link: httpLink,
+  );
+}
+
 ValueNotifier<GraphQLClient> customClient(String token) {
   Link httpLink = HttpLink(uri: "https://gmgraphql.glitch.me/graphql", headers: {"token": token});
   var client = ValueNotifier(GraphQLClient(

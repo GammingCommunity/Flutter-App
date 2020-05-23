@@ -79,7 +79,7 @@ class GraphQLQuery {
   }*/
   String getRoomCurrentUser(String currentUserID) => """
     query{
-      roomManage(hostID:"$currentUserID"){
+      roomManager{
           _id
           hostID
           roomName
@@ -245,7 +245,9 @@ class GraphQLQuery {
     }
   }
  """;
-  String getListRoomByID(String id, String userID, int limit, int page,[String groupSize = "none"]) => """
+  String getListRoomByID(String id, String userID, int limit, int page,
+          [String groupSize = "none"]) =>
+      """
   query{
     getRoomByGame(gameID:"$id",userID:"$userID",limit:$limit,page:$page,groupSize:$groupSize){
       _id
@@ -337,12 +339,11 @@ class GraphQLQuery {
     }
     }
   """;
-  String getRoomMessage(String roomID) => """
+  String getRoomMessage(String roomID,int page,int limit) => """
     query{
-      getRoomMessage(roomID:"$roomID"){
-        messages{
+      getRoomMessage(roomID:"$roomID",page:$page,limit:$limit){
+        sender
         messageType
-        id
         text{
           content
           height
@@ -351,7 +352,6 @@ class GraphQLQuery {
         createAt
       }
     }
-  }
   """;
   String getRoomInfo(String roomID) => """
     query{
@@ -380,6 +380,22 @@ class GraphQLQuery {
         roomID
         isApprove
         joinTime
+      }
+    }
+  """;
+  String fetchPost(String users) => """
+    query{
+      fetchPost(users:$users){
+        post_id
+        title
+        content
+        media
+        tag
+        permission
+        created_time
+        countComment
+        countReaction
+        
       }
     }
   """;

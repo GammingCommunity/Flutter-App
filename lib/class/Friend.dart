@@ -25,4 +25,5 @@ class ListFriends {
     }
     return ListFriends(listFriend: _listFriend);
   }
+
 }

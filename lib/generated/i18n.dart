@@ -76,8 +76,10 @@ class I18n implements WidgetsLocalizations {
   String get signUpRetypePassInputLabel => "Type your password again";
   /// "SIGN UP"
   String get signUpSignUp => "SIGN UP";
-  /// "Dashboard"
-  String get homeBottomNavigationDashboard => "Dashboard";
+  /// "Feeds"
+  String get homeBottomNavigationFeeds => "Feeds";
+  /// "News"
+  String get homeBottomNavigationNews => "News";
   /// "Explorer"
   String get homeBottomNavigationExplorer => "Explorer";
   /// "Manager"
@@ -162,9 +164,12 @@ class _I18n_vi_VI extends I18n {
   /// "ĐĂNG KÝ"
   @override
   String get signUpSignUp => "ĐĂNG KÝ";
-  /// "Bảng tin"
+  /// "Bản tin"
   @override
-  String get homeBottomNavigationDashboard => "Bảng tin";
+  String get homeBottomNavigationFeeds => "Bản tin";
+  /// "Tin tức"
+  @override
+  String get homeBottomNavigationNews => "Tin tức";
   /// "Khám phá"
   @override
   String get homeBottomNavigationExplorer => "Khám phá";

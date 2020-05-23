@@ -2,14 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/Game.dart';
-import 'package:gamming_community/class/Room.dart';
+import 'package:gamming_community/class/GroupChat.dart';
 import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/view/messages/group_messages/group_message.dart';
 
 class RoomDetail extends StatefulWidget {
   final String itemTag;
-  final Room room;
+  final GroupChat room;
   RoomDetail({this.room, this.itemTag});
   @override
   _RoomDetailState createState() => _RoomDetailState();

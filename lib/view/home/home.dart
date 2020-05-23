@@ -4,22 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gamming_community/API/Subscription.dart';
-import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
-import 'package:gamming_community/customWidget/faslideAnimation.dart';
+import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/generated/i18n.dart';
 import 'package:gamming_community/provider/notficationModel.dart';
 import 'package:gamming_community/provider/search_bar.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/notfication_initailization.dart';
-import 'package:gamming_community/view/dashboard/dashboard.dart';
-import 'package:gamming_community/view/messages/messages.dart';
-import 'package:gamming_community/view/notfications/model/join_room_model.dart';
+import 'package:gamming_community/view/feeds/feeds.dart';
+import 'package:gamming_community/view/messages/private_message.dart';
+import 'package:gamming_community/view/news/news.dart';
 import 'package:gamming_community/view/notfications/notfications.dart';
 import 'package:gamming_community/view/profile/profile.dart';
 import 'package:gamming_community/view/room_manager/room_manager.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:open_iconic_flutter/open_iconic_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -52,8 +50,12 @@ class _HomeState extends State<HomePage>
 
     getUserInfo().then((value) => {
           _listWidget = [
-            DashBoard(),
-            Explorer(),
+            // DashBoard(),
+            Feeds(),
+            NewsWidget(),
+            Explorer(
+              token: token,
+            ),
             RoomManager(
               token: token,
             ),
@@ -67,7 +69,7 @@ class _HomeState extends State<HomePage>
     /*controller = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     animation = Tween(begin: Offset(0, 1), end: Offset.zero)
         .animate(CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn));*/
-    _pageController = PageController();//(viewportFraction: 0.999);
+    _pageController = PageController(); //(viewportFraction: 0.999);
   }
 
   Future getUserInfo() async {
@@ -98,52 +100,66 @@ class _HomeState extends State<HomePage>
 
     ResponsiveWidgets.init(context,
         allowFontScaling: true, height: screenSize.height, width: screenSize.width);
-        
+
     return ResponsiveWidgets.builder(
       allowFontScaling: true,
       height: screenSize.height,
       width: screenSize.width,
       child: Selector2<SearchProvider, NotificationModel, Tuple2<String, bool>>(
-          selector: (_, search, notify) =>
-              Tuple2(search.changeContent(_currentIndex), notify.isSeen),
-          builder: (context, value, child) => Scaffold(
-                appBar: PreferredSize(
-                  preferredSize: Size.fromHeight(40),
-                  child: ContainerResponsive(
-                      width: screenSize.width,
-                      height: 40,
-                      padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: <Widget>[
-                          Expanded(
-                            child: FaSlideAnimation(
-                              show: true,
-                              delayed: 200,
-                              child: TextField(
-                                onSubmitted: (String value) {
-                                  print(_pageController.page);
-                                },
-                                controller: searchController,
-                                decoration: InputDecoration.collapsed(hintText: value.item1),
-                              ),
-                            ),
-                          ),
-                          Stack(
-                            children: <Widget>[
-                              CircleIcon(
-                                icon: FeatherIcons.bell,
-                                iconSize: 20,
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      maintainState: true, builder: (context) => Notfications()));
-                                  notification.seen(true);
-                                },
-                              ),
-                              //TODO: fetch notification
+        selector: (context, search, notify) => Tuple2(search.changeContent(_currentIndex), notify.isSeen),
+        builder: (context, value, child) => Scaffold(
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(40),
+            child: ContainerResponsive(
+                width: screenSize.width,
+                height: 40,
+                padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    Expanded(
+                      child: FaSlideAnimation.slideDown(
+                        show: true,
+                        delayed: 200,
+                        child: TextField(
+                          onSubmitted: (String value) {
+                            print(_pageController.page);
+                          },
+                          controller: searchController,
+                          decoration: InputDecoration.collapsed(hintText: value.item1),
+                        ),
+                      ),
+                    ),
+                    CircleIcon(
+                      icon: FeatherIcons.plus,
+                      iconSize: 20,
+                      onTap: () {
+                        //show model bottom sheet
+                        showBottomSheet(
+                            context: context,
+                            builder: (context) => Container(
+                                height: 100,
+                                width: ScreenUtil().uiWidthPx,
+                                child: Column(children: <Widget>[
+                                  Title(color: Colors.red, child: Text("asd"))
+                                ])));
+                      },
+                    ),
+                    Stack(
+                      children: <Widget>[
+                        CircleIcon(
+                          icon: FeatherIcons.bell,
+                          iconSize: 20,
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                maintainState: true, builder: (context) => Notfications()));
+                            notification.seen(true);
+                          },
+                        ),
+                        //TODO: fetch notification
 
-                             /* Positioned(
+                        /* Positioned(
                                   top: 5,
                                   right: 5,
                                   child: GraphQLProvider(
@@ -194,81 +210,87 @@ class _HomeState extends State<HomePage>
                                           },
                                         ),
                                       )))*/
-                            ],
-                          ),
-                          // profile image
-                          InkWell(
-                            borderRadius: BorderRadius.circular(1000),
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  PageTransition(
-                                      child: Profile(
-                                          userID: userID,
-                                          userName: userName,
-                                          userProfile: userProfile),
-                                      type: PageTransitionType.fade,
-                                      alignment: Alignment.center));
-                            },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10000),
-                              clipBehavior: Clip.antiAlias,
-                              child: CachedNetworkImage(
-                                height: 30,
-                                width: 30,
-                                imageUrl: userProfile ?? AppConstraint.default_profile,
-                                placeholder: (context, url) => Container(
-                                  height: 30,
-                                  width: 30,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10000),
-                                      color: Colors.grey[400]),
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      )),
-                ),
-                bottomNavigationBar: ContainerResponsive(
-                    height: 49,
-                    child: Stack(
-                      children: <Widget>[
-                        GNav(
-                          gap: 8,
-                          activeColor: Colors.white,
-                          iconSize: 24,
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                          duration: Duration(milliseconds: 500),
-                          tabBackgroundColor: Colors.indigo,
-                          tabMargin: EdgeInsets.only(bottom: 0),
-                          tabs: [
-                            GButton(
-                              text: I18n.of(context).homeBottomNavigationDashboard,
-                              icon: OpenIconicIcons.dashboard,
-                            ), //dashboard
-                            GButton(
-                              text: I18n.of(context).homeBottomNavigationExplorer,
-                              icon: OpenIconicIcons.compass,
-                            ), // home
-                            GButton(text: I18n.of(context).homeBottomNavigationManager, icon: OpenIconicIcons.globe), // explorer
-                            GButton(text: I18n.of(context).homeBottomNavigationChat, icon: OpenIconicIcons.chat), // chat
-                            // notificaiton
-                          ],
-                          onTabChange: (index) => {
-                            setState(() {
-                              _currentIndex = index;
-                              _pageController.animateToPage(index,
-                                  duration: Duration(milliseconds: 200),
-                                  curve: Curves.easeInToLinear);
-                            })
-                          },
-                          selectedIndex: _currentIndex,
-                        )
                       ],
-                    ))
+                    ),
+                    // profile image
+                    InkWell(
+                      borderRadius: BorderRadius.circular(1000),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                child: Profile(
+                                    userID: userID, userName: userName, userProfile: userProfile),
+                                type: PageTransitionType.fade,
+                                alignment: Alignment.center));
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10000),
+                        clipBehavior: Clip.antiAlias,
+                        child: CachedNetworkImage(
+                          height: 30,
+                          width: 30,
+                          imageUrl: userProfile ?? AppConstraint.default_profile,
+                          placeholder: (context, url) => Container(
+                            height: 30,
+                            width: 30,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10000),
+                                color: Colors.grey[400]),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                )),
+          ),
+          bottomNavigationBar: ContainerResponsive(
+              height: 49,
+              child: Stack(
+                children: <Widget>[
+                  GNav(
+                    gap: 8,
+                    activeColor: Colors.white,
+                    iconSize: 24,
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                    duration: Duration(milliseconds: 500),
+                    tabBackgroundColor: Colors.indigo,
+                    tabMargin: EdgeInsets.only(bottom: 0),
+                    tabs: [
+                      //dashboard
+                      GButton(
+                        text: I18n.of(context).homeBottomNavigationFeeds,
+                        icon: OpenIconicIcons.spreadsheet,
+                      ),
+                      GButton(
+                        text: I18n.of(context).homeBottomNavigationNews,
+                        icon: OpenIconicIcons.spreadsheet,
+                      ),
+                      GButton(
+                        text: I18n.of(context).homeBottomNavigationExplorer,
+                        icon: OpenIconicIcons.compass,
+                      ), // home
+                      GButton(
+                          text: I18n.of(context).homeBottomNavigationManager,
+                          icon: OpenIconicIcons.globe), // explorer
+                      GButton(
+                          text: I18n.of(context).homeBottomNavigationChat,
+                          icon: OpenIconicIcons.chat), // chat
+                      // notificaiton
+                    ],
+                    onTabChange: (index) => {
+                      setState(() {
+                        _currentIndex = index;
+                        _pageController.animateToPage(index,
+                            duration: Duration(milliseconds: 200), curve: Curves.easeInToLinear);
+                      })
+                    },
+                    selectedIndex: _currentIndex,
+                  )
+                ],
+              ))
 
-                /*BottomNavyBar(
+          /*BottomNavyBar(
                   selectedIndex: _currentIndex,
                   onItemSelected: (int index) {
                     setState(() {
@@ -305,22 +327,22 @@ class _HomeState extends State<HomePage>
                         inactiveColor: Colors.white),
                   ],
                 )*/
-                ,
-                body: ContainerResponsive(
-                    height: screenSize.height,
-                    child: PageView(
-                      physics: NeverScrollableScrollPhysics(),
-                      onPageChanged: (index) {
-                        setState(() {
-                          _currentIndex = index;
-                        });
-                      },
-                      controller: _pageController,
-                      children: _listWidget,
-                    ),
-                  ),
-                ),
-              ),
+          ,
+          body: ContainerResponsive(
+            height: screenSize.height,
+            child: PageView(
+              physics: NeverScrollableScrollPhysics(),
+              onPageChanged: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              controller: _pageController,
+              children: _listWidget,
+            ),
+          ),
+        ),
+      ),
     );
   }
 

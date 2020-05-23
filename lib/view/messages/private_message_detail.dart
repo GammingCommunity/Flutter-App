@@ -8,9 +8,9 @@ import 'package:gamming_community/models/chat_provider.dart';
 import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
-import 'package:gamming_community/view/messages/chat_message.dart';
 import 'package:gamming_community/view/messages/list_user.dart';
-import 'package:gamming_community/view/messages/messages.dart';
+import 'package:gamming_community/view/messages/private_chat.dart';
+import 'package:gamming_community/view/messages/private_message.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
@@ -64,7 +64,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
     var listMessage = PrivateMessages.fromJson(result.data['getPrivateChat']).privateMessages;
 
     listMessage.forEach((e) {
-      chatProvider.onAddNewMessage(ChatMessage(
+      chatProvider.onAddNewMessage(PrivateChat(
         currentID: widget.currentID,
         sender: {"id": e.sender['id'], "profile_url": e.sender['profile_url']},
         animationController: animationController,
@@ -83,7 +83,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
     var animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
 
-    var chatMessage = ChatMessage(
+    var chatMessage = PrivateChat(
       currentID: widget.currentID,
       sender: {"id": widget.currentID, "profile_url": widget.profileUrl},
       animationController: animationController,
@@ -145,7 +145,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
 
       var animationController =
           AnimationController(vsync: this, duration: Duration(milliseconds: 500));
-      var chatMessage = ChatMessage(
+      var chatMessage = PrivateChat(
           sender: {"id": data[1]['user']['id'], "profile_url": widget.profileUrl},
           text: data[1]['text'],
           animationController: animationController,

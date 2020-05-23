@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/class/Room.dart';
+import 'package:gamming_community/class/GroupChat.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/models/group_chat_provider.dart';
 import 'package:gamming_community/view/messages/group_messages/SharedPref.dart';
 import 'package:gamming_community/view/messages/group_messages/group_message.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 class RoomDetailV2 extends StatefulWidget {
   final String itemTag;
-  final Room room;
+  final GroupChat room;
   RoomDetailV2({this.room, this.itemTag});
   @override
   _RoomDetailState createState() => _RoomDetailState();
@@ -28,12 +29,17 @@ class _RoomDetailState extends State<RoomDetailV2> with TickerProviderStateMixin
   bool hideGroupMember = true;
   bool hideDetail = true;
   double currentOffset = 0.0;
-  SharedPref ref = SharedPref();
+  String userID = "";
   @override
   void initState() {
     tabController = TabController(length: 2, vsync: this);
     animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 100));
     animation = Tween(begin: 0.0, end: 1.0).animate(animationController);
+    getUserID().then((value) {
+      setState(() {
+        this.userID = value;
+      });
+    });
     /*scrollController = ScrollController()
       ..addListener(() {
         print(scrollController.offset);
@@ -68,6 +74,11 @@ class _RoomDetailState extends State<RoomDetailV2> with TickerProviderStateMixin
     super.initState();
   }
 
+  Future getUserID() async {
+    SharedPreferences refs = await SharedPreferences.getInstance();
+    return refs.getString("userID");
+  }
+
   @override
   void dispose() {
     //scrollController.dispose();
@@ -97,9 +108,7 @@ class _RoomDetailState extends State<RoomDetailV2> with TickerProviderStateMixin
                         child: IconButton(
                             icon: Icon(Icons.chevron_left),
                             onPressed: () async {
-                              groupChatProvider.clearCache();
-                              await ref.checkDataExist("listMessage") ??
-                                  groupChatProvider.saveToCache();
+                              groupChatProvider.clearAndUpdate();
 
                               Navigator.of(context).pop();
                             }),
@@ -122,7 +131,7 @@ class _RoomDetailState extends State<RoomDetailV2> with TickerProviderStateMixin
                       CircleIcon(
                         icon: Icons.info,
                         iconSize: 30,
-                        onTap: (){
+                        onTap: () {
                           // show member
                         },
                       )
@@ -159,7 +168,7 @@ class _RoomDetailState extends State<RoomDetailV2> with TickerProviderStateMixin
                       silverBarHeight: silverAppBarHeight,
                       roomID: widget.room.id,
                       member: widget.room.memberID,
-                      currentID: "43",
+                      currentID: userID,
                     ),
 
                     //tab 2 :show file file

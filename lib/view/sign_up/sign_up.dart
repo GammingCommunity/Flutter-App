@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gamming_community/view/sign_up/bloc/bloc/signup_bloc.dart';
-import 'package:gamming_community/view/sign_up/signup_header.dart';
-import 'package:gamming_community/view/sign_up/signup_input.dart';
+import 'package:gamming_community/view/sign_up/step_sign_up/email.dart';
+import 'package:gamming_community/view/sign_up/step_sign_up/gender.dart';
+import 'package:gamming_community/view/sign_up/step_sign_up/password.dart';
+import 'package:gamming_community/view/sign_up/step_sign_up/profile.dart';
+import 'package:gamming_community/view/sign_up/step_sign_up/username.dart';
+import 'package:provider/provider.dart';
+
+import 'provider/sign_up_provider.dart';
+import 'step_sign_up/dateOfBirth.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -10,26 +15,62 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  final backgroundColor = Color(0xff322E2E);
-  final titleScreen = TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
+  PageController pageController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    pageController = PageController();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-    return BlocProvider<SignUpBloc>(
-        create: (context) => SignUpBloc(),
-        child: Scaffold(
-            body: Container(
-          height: screenSize.height,
-          child: Column(children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: Container(
-                color: backgroundColor,
-                child: Header(),
-              ),
+    //          widget.controller.animateToPage(1, duration: Duration(milliseconds: 200), curve: Curves.fastOutSlowIn);
+    var pageProvider = Provider.of<SignUpProvider>(context);
+
+    return Consumer<SignUpProvider>(builder: (context, value, child) {
+      int pageIndex = value.getPageIndex;
+      return Scaffold(
+        appBar: PreferredSize(
+            child: Stack(
+              fit: StackFit.loose,
+              children: <Widget>[
+                IconButton(
+                    icon: Icon(Icons.arrow_left),
+                    onPressed: () {
+                      value.getPageIndex > 0
+                          ? {
+                            pageController.animateToPage(pageIndex - 1,
+                              duration: Duration(milliseconds: 200), curve: Curves.fastOutSlowIn),
+                              value.setPageIndex(pageIndex - 1)
+                          }
+                          : Navigator.pop(context);
+                    }),
+                Align(
+                  alignment: Alignment.center,
+                  child: Text("Sign Up"),
+                )
+              ],
             ),
-            Expanded(flex: 2, child: Container(color: backgroundColor, child: SignUpInput()))
-          ]),
-        )));
+            preferredSize: Size.fromHeight(30)),
+        body: Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: PageView(
+              controller: pageController,
+              physics: NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              children: <Widget>[
+                DateOfBirth(controller: pageController),
+                Gender(controller: pageController),
+                UserName(controller: pageController),
+                Password(controller: pageController),
+                Email(controller: pageController),
+                Profile()
+              ],
+            )),
+      );
+    });
   }
 }

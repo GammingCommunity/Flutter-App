@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/User.dart';
+import 'package:gamming_community/models/group_chat_provider.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/get_token.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
 
 class DisplayMember extends StatefulWidget {
   final List ids;
@@ -29,6 +31,7 @@ class DisplayMember extends StatefulWidget {
 class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveClientMixin {
   var query = GraphQLQuery();
   String currentID = "";
+  GroupChatProvider _groupChatProvider;
   @override
   void initState() {
     super.initState();
@@ -48,7 +51,7 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
+    _groupChatProvider = Injector.get();
     return FutureBuilder<List<User>>(
       future: Future(() async {
         // convert to list int
@@ -57,6 +60,7 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
         try {
           var result = await SubRepo.queryGraphQL(await getToken(), query.getUserInfo(listInt));
           getUsers = ListUser.fromJson(result.data['lookAccount']).listUser;
+          
         } catch (e) {
           print(e);
           return [];
@@ -65,12 +69,12 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
       }),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return buildLoading(context,widget.size);
+          return buildLoading(context, widget.size);
         } else {
           var users = snapshot.data;
           //print(currentID == "68");
           return users.isEmpty
-              ? Text("Has error")
+              ? Text("Error")
               : Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -124,9 +128,9 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
   bool get wantKeepAlive => true;
 }
 
-Widget buildLoading(BuildContext context,double size) {
+Widget buildLoading(BuildContext context, double size) {
   return Container(
-    height: size,
-    width: size,
-    child: Center(child: SpinKitCubeGrid(color: Theme.of(context).iconTheme.color, size: 10)));
+      height: size,
+      width: size,
+      child: Center(child: SpinKitCubeGrid(color: Theme.of(context).iconTheme.color, size: 10)));
 }

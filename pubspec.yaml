@@ -3,7 +3,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.3.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -25,7 +25,7 @@ dependencies:
   pull_to_refresh: ^1.5.7
   provider: ^4.0.5
   socket_io_client: ^0.9.9
-  states_rebuilder: ^1.14.3
+  states_rebuilder: ^1.15.0
   intl: ^0.16.1
   video_player: ^0.10.8+1
   chewie: ^0.9.10
@@ -42,9 +42,14 @@ dependencies:
   responsive_widgets: ^2.0.1
   optimized_cached_image: ^0.1.7
   feather_icons_flutter: ^4.7.4
+  hive: ^1.4.1+1
+  hive_flutter: ^0.3.0+2
+dependency_overrides: 
+  path: 1.7.0 
+
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  hive_generator: ^0.7.0+2
+  build_runner: ^1.8.1
   
 flutter_icons:
   image_path: "assets/images/launcher_icon/logo.png"
@@ -53,6 +58,7 @@ flutter_icons:
 flutter:
   uses-material-design: true
   assets:
+      - assets/loading/
       - assets/icons/article_logo/
       - assets/icons/logo/
       - assets/icons/platforms/
@@ -67,15 +73,12 @@ flutter:
     fonts:
     - asset: fonts/ProductSans-Regular.ttf
    
-  - family: GoogleSans-Medium     
+  - family: GoogleSans-Bold     
     fonts:
-    - asset: fonts/ProductSans-Medium.ttf
+    - asset: fonts/ProductSans-Bold.ttf
   - family: GoogleSans-Italic
     fonts:
     - asset: fonts/ProductSans-Italic.ttf
-  - family: GoogleSans-Light
+  - family: GoogleSans-Bold-Italic
     fonts:
-    - asset: fonts/ProductSans-Light.ttf
-  - family: GoogleSans-Bold
-    fonts:
-    - asset: fonts/ProductSans-Bold.ttf
+    - asset: fonts/ProductSans-Bold-Italic.ttf

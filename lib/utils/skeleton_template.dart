@@ -11,7 +11,7 @@ class SkeletonTemplate {
           borderRadius: BorderRadius.circular(borderRadius)));
   }
 
-  static image(double height, double width, double borderRadius,[Color color = Colors.grey]) {
+  static image(double height, double width,[double borderRadius = 10000,Color color = Colors.grey]) {
     return ContainerResponsive(
         height: height.h,
         width: width.w,

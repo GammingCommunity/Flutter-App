@@ -3,7 +3,7 @@ import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
-import 'package:gamming_community/customWidget/faslideAnimation.dart';
+import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/utils/brighness_query.dart';
 import 'package:gamming_community/view/room/admin_tradio.dart';
@@ -63,7 +63,7 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
         return Scaffold(
           floatingActionButton: Visibility(
               visible: value.checkroomName,
-              child: FaSlideAnimation(
+              child: FaSlideAnimation.slideUp(
                 delayed: 200,
                 show: value.checkroomName,
                 child: SizedBoxResponsive(

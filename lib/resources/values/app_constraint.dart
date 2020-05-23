@@ -2,6 +2,11 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gamming_community/utils/brighness_query.dart';
+import 'package:gamming_community/customWidget/loading.dart';
+import 'package:gamming_community/view/profile/settingProvider.dart';
+import 'package:provider/provider.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
 
 class AppConstraint {
   static const double categoryText = 25;
@@ -17,6 +22,15 @@ class AppConstraint {
   static Image noImage = Image.asset('assets/images/no_image.png');
   static Widget spinKitCubeGrid(context) =>
       SpinKitCubeGrid(color: Theme.of(context).iconTheme.color, size: 20);
+
+  static Widget loadingIndicator(BuildContext context,[double size = 50]) {
+    SettingProvider settingProvider = Injector.get(context: context);
+
+    return settingProvider.darkTheme
+        ? CustomLoadingIndicator(darkMode: true,size:size)
+        : CustomLoadingIndicator(darkMode: false,size:size);
+  }
+
   static SvgPicture emptyIcon = SvgPicture.asset('assets/icons/empty_logo.svg');
   static const double roomTitleSize = 20;
   static ChewieProgressColors chewieProgressColors = ChewieProgressColors(

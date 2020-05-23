@@ -1,7 +1,5 @@
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/class/Room.dart';
 import 'package:gamming_community/repository/main_repo.dart';
-import 'package:gamming_community/repository/room_repo.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/utils/get_token.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';

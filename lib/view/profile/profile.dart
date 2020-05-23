@@ -31,7 +31,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
   Future getInfo() async {
     SharedPreferences refs = await SharedPreferences.getInstance();
     List<String> res = refs.getStringList("userToken");
-    bool isEng = refs.getBool("isEng");
+    bool isEng = refs.getBool("isEng") == null ? true : false;
     return isEng;
   }
 
@@ -207,7 +207,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                     ],
                                   ),
                                   clickable: false,
-                                  icon: Icon(Icons.language, size: 30, color: Colors.amber),
+                                  icon: Icon(Icons.language, size: 30,), //  color: Colors.amber,
                                   text: "Language"),
                               RowProfileSetting(
                                   onTap: () {},
@@ -215,7 +215,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                     padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
                                     child: Text("0"),
                                   ),
-                                  icon: Icon(Icons.leak_add, size: 30, color: Colors.blueGrey),
+                                  icon: Icon(Icons.leak_add, size: 30, ), //color: Colors.blueGrey,
                                   text: "Follows"),
                               RowProfileSetting(
                                   onTap: () {},
@@ -223,7 +223,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                     padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
                                     child: Text("0"),
                                   ),
-                                  icon: Icon(Icons.favorite, size: 30, color: Colors.pink),
+                                  icon: Icon(Icons.favorite, size: 30,), //  color: Colors.pink
                                   text: "Following"),
                               RowProfileSetting(
                                   onTap: () {},
@@ -242,7 +242,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                     padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
                                     child: Text("0"),
                                   ),
-                                  icon: Icon(Icons.leak_remove, size: 30, color: Colors.red[300]),
+                                  icon: Icon(Icons.leak_remove, size: 30, ), //color: Colors.red[300]
                                   text: "Restrict users"),
                               RowProfileSetting(
                                   onTap: () async {
@@ -251,7 +251,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                   },
                                   widget: Container(),
                                   icon: Icon(Icons.power_settings_new,
-                                      size: 30, color: Colors.red[300]),
+                                      size: 30, ), //color: Colors.red[300]
                                   text: "Log out")
                             ],
                           )),

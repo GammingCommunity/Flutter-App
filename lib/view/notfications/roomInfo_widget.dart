@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:gamming_community/class/Room.dart';
+import 'package:gamming_community/class/GroupChat.dart';
 import 'package:gamming_community/utils/skeleton_template.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 
@@ -16,7 +16,7 @@ class _RoomInfoState extends State<RoomInfo> with AutomaticKeepAliveClientMixin 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return FutureBuilder<Room>(
+    return FutureBuilder<GroupChat>(
         future: widget.future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

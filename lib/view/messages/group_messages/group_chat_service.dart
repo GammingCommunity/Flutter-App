@@ -1,3 +1,5 @@
+import 'package:gamming_community/class/Conservation.dart';
+
 class GroupChatService{
   static textMessage(String roomID,String currentID,String text){
     return [
@@ -5,7 +7,7 @@ class GroupChatService{
             "groupID": roomID,
           },
           {
-            "type": "text",
+            "messageType": "text",
             "id": currentID,
             "text": {
               "content":text,
@@ -21,7 +23,7 @@ class GroupChatService{
             "groupID": roomID,
           },
           {
-            "type": "media",
+            "messageType": "media",
             "id": currentID,
             "text": {
               "content":url,
@@ -31,5 +33,7 @@ class GroupChatService{
           }
         ];
   }
-  
+  static addToCache(Message message){
+    
+  }
 }

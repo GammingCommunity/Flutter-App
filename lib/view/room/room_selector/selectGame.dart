@@ -36,7 +36,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    roomCreateProvider.setNumOfMember(2); // default
+    //roomCreateProvider.setNumOfMember(2); // default
     controller = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
   }
 
@@ -54,7 +54,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     var searchGame = Provider.of<SearchGame>(context);
-    roomCreateProvider = Injector.get(context: context);
+    roomCreateProvider = Injector.get();
     return GraphQLProvider(
         client: customClient(""),
         child: CacheProvider(

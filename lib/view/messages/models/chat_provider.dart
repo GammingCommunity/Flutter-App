@@ -1,11 +1,12 @@
-import 'package:gamming_community/view/messages/chat_message.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+
+import '../private_chat.dart';
 class ChatProvider extends StatesRebuilder{
   IO.Socket socket;
-  List<ChatMessage> messages = [];
+  List<PrivateChat> messages = [];
 
-  void onAddNewMessage(ChatMessage chatMessage) {
+  void onAddNewMessage(PrivateChat chatMessage) {
     this.messages.add(chatMessage);
     rebuildStates();
   }
