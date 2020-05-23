@@ -82,9 +82,10 @@ class _MessagesState extends State<GroupMessageWidget>
     // TODO current profile current null for maintain reason
     // TODO add emoji
     // TODO add add picture, video , etc
+    // TODO disable animate to bottom when load old message
 
     // use cache if has no connection
-    print(groupMessage);
+    //print(groupMessage);
     switch (await checkConnection()) {
       case true:
         //cache first
@@ -94,119 +95,36 @@ class _MessagesState extends State<GroupMessageWidget>
         var grMessageData = await groupchatProvider.initLoadMessage(widget.roomID);
 
         grMessageData.forEach((e) {
-          groupchatProvider.onAddNewMessage(GroupChatMessage(
-              fromStorage: false,
-              imageUri: "",
-              roomID: widget.roomID,
-              type: e.messageType,
-              currentID: widget.currentID,
-              sender: e.sender,
-              animationController: animationController,
-              text: e.text,
-              sendDate: e.createAt.toLocal()));
-          // update to save to cache
-          groupchatProvider.onAddNewMessage2(e);
-
-          animationController.forward();
-          Timer(Duration(seconds: 2), () {
-            animateToBottom();
-          });
+          addNewMessage(e,false);
         });
 
-        /* listMessage.forEach((element) {
-          groupMessage.add(element);
-        });*/
-
-        /* listMessage.forEach((e) {
-          groupchatProvider.onAddNewMessage(GroupChatMessage(
-              fromStorage: false,
-              imageUri: "",
-              roomID: widget.roomID,
-              type: e.messageType,
-              currentID: widget.currentID,
-              sender: e.sender,
-              animationController: animationController,
-              text: e.text,
-              sendDate: e.createAt.toLocal()));
-          // update to save to cache
-          groupchatProvider.onAddNewMessage2(e);
-
-          animationController.forward();
-          Timer(Duration(seconds: 2), () {
-            animateToBottom();
-          });
-        });*/
         break;
       case false:
-        /* List<GroupMessage> listMessage = await ref.readfromCache();
-        print(listMessage.length);
-        listMessage.forEach((e) {
-          groupchatProvider.onAddNewMessage(GroupChatMessage(
-              fromStorage: false,
-              imageUri: "",
-              roomID: widget.roomID,
-              type: e.type,
-              currentID: widget.currentID,
-              sender: {"id": e.sender, "profile_url": ""},
-              animationController: animationController,
-              text: e.text,
-              sendDate: e.createAt));
-          // update to save to cache
-          groupchatProvider.onAddNewMessage2(e);
-
-          animationController.forward();
-          Timer(Duration(seconds: 2), () {
-            animateToBottom();
-          });
-        });*/
+      
         break;
       default:
     }
-    /*if( await ref.checkDataExist() == true){
-      List<GroupMessage> listMessage=  await ref.readfromCache();
-       print(listMessage.length);
-      listMessage.forEach((e) {
-       
-      groupchatProvider.onAddNewMessage(GroupChatMessage(
-          fromStorage: false,
-          imageUri: "",
-          roomID: widget.roomID,
-          type: e.type,
-          currentID: widget.currentID,
-          sender: {"id": e.sender, "profile_url": ""},
-          animationController: animationController,
-          text: e.text,
-          sendDate: e.createAt));
-      // update to save to cache
-      groupchatProvider.onAddNewMessage2(e);
+    
+  }
 
-      animationController.forward();
+  addNewMessage(GroupMessage e,bool loadOldMessage) {
+    groupchatProvider.onAddNewMessage(GroupChatMessage(
+        fromStorage: false,
+        imageUri: "",
+        roomID: widget.roomID,
+        type: e.messageType,
+        currentID: widget.currentID,
+        sender: e.sender,
+        animationController: animationController,
+        text: e.text,
+        sendDate: e.createAt.toLocal()),loadOldMessage);
+    // update to save to cache
+    groupchatProvider.onAddNewMessage2(e);
+
+     animationController.forward();
+    loadOldMessage ? null : Timer(Duration(seconds: 2), () {
       animateToBottom();
     });
-    }
-    else{
-      var result = await MainRepo.queryGraphQL("", query.getRoomMessage(widget.roomID));
-
-      var listMessage = GroupMessages.mapFromJson(result.data).groupMessages;
-
-        listMessage.forEach((e) {
-          groupchatProvider.onAddNewMessage(GroupChatMessage(
-              fromStorage: false,
-              imageUri: "",
-              roomID: widget.roomID,
-              type: e.type,
-              currentID: widget.currentID,
-              sender: {"id": e.sender, "profile_url": ""},
-              animationController: animationController,
-              text: e.text,
-              sendDate: e.createAt));
-          // update to save to cache
-          groupchatProvider.onAddNewMessage2(e);
-
-          animationController.forward();
-          animateToBottom();
-        });
-    }*/
   }
 
   // update cache
@@ -234,7 +152,7 @@ class _MessagesState extends State<GroupMessageWidget>
     groupMessage.animationController.forward();
 
     // add mess to listview
-    groupchatProvider.onAddNewMessage(groupMessage);
+    groupchatProvider.onAddNewMessage(groupMessage,false);
     // add mess to list model
     groupchatProvider.onAddNewMessage2(GroupMessage(
         messageType: "text",
@@ -268,7 +186,7 @@ class _MessagesState extends State<GroupMessageWidget>
     groupMessage.animationController.forward();
 
     // add mess to listview
-    groupchatProvider.onAddNewMessage(groupMessage);
+    groupchatProvider.onAddNewMessage(groupMessage,false);
 
     chatController.clear();
     animateToBottom();
@@ -317,7 +235,7 @@ class _MessagesState extends State<GroupMessageWidget>
       //add message to end
       chatMessage.animationController.forward();
       // add message to list and update UI
-      groupchatProvider.onAddNewMessage(chatMessage);
+      groupchatProvider.onAddNewMessage(chatMessage,false);
 
       await Future.delayed(Duration(milliseconds: 100));
 
@@ -405,7 +323,14 @@ class _MessagesState extends State<GroupMessageWidget>
     scrollController = ScrollController()
       ..addListener(() {
         if (scrollController.offset == scrollController.position.minScrollExtent) {
-          groupchatProvider.fechMoreMessage(widget.roomID, 10, 2);
+          print("load more");
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+            var messages =
+                await groupchatProvider.fechMoreMessage(roomID: widget.roomID, limit: 10);
+            for (var item in messages) {
+              addNewMessage(item,true);
+            }
+          });
         }
       });
     chatController = TextEditingController();
@@ -413,11 +338,12 @@ class _MessagesState extends State<GroupMessageWidget>
 
     WidgetsBinding.instance.addPostFrameCallback((d) {
       groupchatProvider.initSocket();
-      groupchatProvider.joinGroup(widget.roomID);
+      
       groupchatProvider.initMember(widget.member, widget.roomID);
+      groupchatProvider.joinGroup(widget.roomID);
       loadMessage();
       onRecieveMessage();
-      animateToBottom();
+      
     });
   }
 

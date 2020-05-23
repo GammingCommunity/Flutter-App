@@ -15,12 +15,15 @@ class GroupChatProvider extends StatesRebuilder {
   String socketID;
   IO.Socket socket;
   var query = GraphQLQuery();
+  int page = 2;
   List<GroupChatMessage> messages = [];
   List<GroupMessage> groupMessage = [];
   Box<GroupMessage> groupMessageBox = Hive.box("groupMessage");
   Box<Members> memberBox = Hive.box('members');
-  void onAddNewMessage(GroupChatMessage groupchatMessage) {
-    this.messages.add(groupchatMessage);
+  void onAddNewMessage(GroupChatMessage groupchatMessage, bool loadOldMessage) {
+    // true -> load old message
+    // false -> load new message
+    loadOldMessage  == true ? messages.insert(0, groupchatMessage) : this.messages.add(groupchatMessage);
     rebuildStates();
   }
 
@@ -48,17 +51,26 @@ class GroupChatProvider extends StatesRebuilder {
   Future<List<GroupMessage>> initLoadMessage(
     String roomID,
   ) async {
-    var result = await MainRepo.queryGraphQL(await getToken(), query.getRoomMessage(roomID, 1, 10));
+    var result = await MainRepo.queryGraphQL(
+        await getToken(), query.getRoomMessage(roomID: roomID, limit: 10, page: 1));
 
     var listMessage = GroupMessages.listFromJson(result.data['getRoomMessage']).groupMessages;
 
     return listMessage;
   }
 
-  Future fechMoreMessage(String roomID, int limit, int page) async {
-    var result =
-        await MainRepo.queryGraphQL(await getToken(), query.getRoomMessage(roomID, limit, page));
-    print(result.data);
+  Future<List<GroupMessage>> fechMoreMessage({String roomID, int limit}) async {
+    
+    var result = await MainRepo.queryGraphQL(
+        await getToken(), query.getRoomMessage(roomID: roomID, limit: limit, page: page));
+    var listMessage = GroupMessages.listFromJson(result.data['getRoomMessage']).groupMessages;
+    if (listMessage.isEmpty) {
+      return [];
+    } else {
+      this.page++;
+     print(page);
+      return listMessage;
+    }
   }
 
   void setMember() {}

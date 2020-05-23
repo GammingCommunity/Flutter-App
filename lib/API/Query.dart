@@ -339,7 +339,7 @@ class GraphQLQuery {
     }
     }
   """;
-  String getRoomMessage(String roomID,int page,int limit) => """
+  String getRoomMessage({String roomID,int page,int limit}) => """
     query{
       getRoomMessage(roomID:"$roomID",page:$page,limit:$limit){
         sender

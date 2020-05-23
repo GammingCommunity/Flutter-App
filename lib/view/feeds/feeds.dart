@@ -51,7 +51,7 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
               return model.whenConnectionState(
                   onIdle: null,
                   onWaiting: () => AppConstraint.loadingIndicator(context),
-                  onError: (error) => buildException(),
+                  onError: (error) => buildException(context),
                   onData: (data) {
                     var posts = data.posts;
                     return SmartRefresher(
@@ -100,7 +100,7 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
   bool get wantKeepAlive => true;
 }
 
-Widget buildException() {
+Widget buildException(BuildContext context) {
   return Container(
     height: 50,
     width: ScreenUtil().uiWidthPx,
@@ -111,7 +111,13 @@ Widget buildException() {
         CircleIcon(
           icon: FeatherIcons.rotateCw,
           iconSize: 20,
-          onTap: () {},
+          onTap: () {
+            void rebuild(Element el) {
+              el.markNeedsBuild();
+              el.visitChildren(rebuild);
+            }
+             (context as Element).visitChildren(rebuild);
+          },
         )
       ],
     ),

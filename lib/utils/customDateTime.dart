@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 customDateTime(DateTime datetime) {
   
   var currentTime = DateTime.now().toLocal();
-  print("$datetime $currentTime");
+  //print("$datetime $currentTime");
 
   // check time in range
 
@@ -12,7 +12,7 @@ customDateTime(DateTime datetime) {
       return "${DateFormat.m().format(datetime)} minute";
     }
     // if current hours > hours
-    if (currentTime.hour > datetime.hour) {
+    else if (currentTime.hour > datetime.hour) {
       return "${DateFormat.H().format(datetime)} hours";
     }
   }

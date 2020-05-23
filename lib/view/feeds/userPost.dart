@@ -70,7 +70,7 @@ class _UserPostState extends State<UserPost> {
                         size: 15,
                       ),
                       SizedBox(width:10),
-                      Text("${customDateTime(widget.post.createdTime)} ago")
+                      Text("${customDateTime(widget.post.createdTime)}")
                     ],
                   ),
                 ),
