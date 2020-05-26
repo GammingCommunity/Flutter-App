@@ -108,6 +108,7 @@ class _RoomItemState extends State<RoomItem> with AutomaticKeepAliveClientMixin 
                     ],
                   ),
                 ),
+                // join button
                 Positioned.fill(
                     child: Align(
                   alignment: Alignment.bottomRight,
@@ -124,7 +125,7 @@ class _RoomItemState extends State<RoomItem> with AutomaticKeepAliveClientMixin 
                           FeatherIcons.plus,
                           size: 15,
                         ),
-                        Text("Join")
+                         Text("Join")
                       ],
                     ),
                     info: {"hostID": rooms.hostID, "roomID": rooms.id},

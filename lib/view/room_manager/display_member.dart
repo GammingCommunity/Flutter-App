@@ -60,7 +60,6 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
         try {
           var result = await SubRepo.queryGraphQL(await getToken(), query.getUserInfo(listInt));
           getUsers = ListUser.fromJson(result.data['lookAccount']).listUser;
-          
         } catch (e) {
           print(e);
           return [];
@@ -79,31 +78,34 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    for (var item in users)
-                      Stack(
+                    for(var index = 0; index< users.length ; index++)
+                            Stack(
                         children: <Widget>[
-                          InkWell(
-                            borderRadius: BorderRadius.circular(widget.borderRadius),
-                            onTap: () {
-                              widget.clickable ? widget.onTap() : null;
-                            },
-                            child: ClipRRect(
+                          Positioned(
+                           
+                            child: InkWell(
                               borderRadius: BorderRadius.circular(widget.borderRadius),
-                              child: CachedNetworkImage(
-                                imageUrl: item.profileUrl ?? AppConstraint.default_profile,
-                                height: widget.size,
-                                width: widget.size,
-                                fit: BoxFit.cover,
-                                placeholder: (context, image) => Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius: BorderRadius.circular(widget.borderRadius)),
+                              onTap: () {
+                                widget.clickable ? widget.onTap() : null;
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(widget.borderRadius),
+                                child: CachedNetworkImage(
+                                  imageUrl: users[index].profileUrl ?? AppConstraint.default_profile,
+                                  height: widget.size,
+                                  width: widget.size,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, image) => Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey,
+                                        borderRadius: BorderRadius.circular(widget.borderRadius)),
+                                  ),
+                                  errorWidget: (context, error, image) => Icon(Icons.error),
                                 ),
-                                errorWidget: (context, error, image) => Icon(Icons.error),
                               ),
                             ),
                           ),
-                          widget.showBadged ?? currentID == item.id
+                          widget.showBadged ?? currentID == users[index].id
                               ? Positioned(
                                   bottom: -4,
                                   right: -3,
@@ -117,6 +119,8 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
                                 ),
                         ],
                       ),
+                    //for (var item in users)
+                      
                   ],
                 );
         }

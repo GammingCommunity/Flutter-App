@@ -47,7 +47,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
   }
 
   double changeHeight(int number) {
-    return (120 * number).toDouble();
+    return (80 * number).toDouble();
   }
 
   @override
@@ -116,11 +116,12 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                               curve: Curves.fastOutSlowIn,
                               // display data here
                               child: Container(
-                                margin: EdgeInsets.only(top: 30),
+                                margin: EdgeInsets.only(top: 50),
                                 padding: EdgeInsets.only(left: 10, right: 10),
                                 height: 80,
                                 width: screenSize.width - 40,
-                                child: ListView.builder(
+                                child: ListView.separated(
+                                  separatorBuilder: (context, index) => SizedBox(height: 20,),
                                   physics: NeverScrollableScrollPhysics(),
                                   itemCount: value.item3,
                                   itemBuilder: (context, index) {

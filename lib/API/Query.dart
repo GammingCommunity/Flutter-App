@@ -249,7 +249,7 @@ class GraphQLQuery {
           [String groupSize = "none"]) =>
       """
   query{
-    getRoomByGame(gameID:"$id",userID:"$userID",limit:$limit,page:$page,groupSize:$groupSize){
+    getRoomByGame(gameID:"$id",limit:$limit,page:$page,groupSize:$groupSize){
       _id
       member
       roomName
@@ -316,17 +316,7 @@ class GraphQLQuery {
       }
     }
   """;
-  String searchFriend(String name) => """
-      query{
-        getFriends(friend_name:"$name"){
-          friend{
-            id
-            name
-            avatar_url 
-          }
-        }
-      }
-    """;
+
   String getFriendRequest() => """
     query{
       getFriendRequests{
@@ -339,7 +329,7 @@ class GraphQLQuery {
     }
     }
   """;
-  String getRoomMessage({String roomID,int page,int limit}) => """
+  String getRoomMessage({String roomID, int page, int limit}) => """
     query{
       getRoomMessage(roomID:"$roomID",page:$page,limit:$limit){
         sender
@@ -397,6 +387,18 @@ class GraphQLQuery {
         countReaction
         
       }
+    }
+  """;
+  String searchFriend(String str) => """
+    query{
+      searchAccounts(key:"$str"){
+          account{
+            id
+            name
+            avatar_url 
+          }
+          relationship
+        }
     }
   """;
 }

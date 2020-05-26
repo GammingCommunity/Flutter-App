@@ -106,7 +106,8 @@ class _HomeState extends State<HomePage>
       height: screenSize.height,
       width: screenSize.width,
       child: Selector2<SearchProvider, NotificationModel, Tuple2<String, bool>>(
-        selector: (context, search, notify) => Tuple2(search.changeContent(_currentIndex), notify.isSeen),
+        selector: (context, search, notify) =>
+            Tuple2(search.changeContent(_currentIndex), notify.isSeen),
         builder: (context, value, child) => Scaffold(
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(40),
@@ -253,7 +254,7 @@ class _HomeState extends State<HomePage>
                     activeColor: Colors.white,
                     iconSize: 24,
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                    duration: Duration(milliseconds: 500),
+                    duration: Duration(milliseconds: 200),
                     tabBackgroundColor: Colors.indigo,
                     tabMargin: EdgeInsets.only(bottom: 0),
                     tabs: [
@@ -282,7 +283,7 @@ class _HomeState extends State<HomePage>
                       setState(() {
                         _currentIndex = index;
                         _pageController.animateToPage(index,
-                            duration: Duration(milliseconds: 200), curve: Curves.easeInToLinear);
+                            duration: Duration(milliseconds: 200), curve: Curves.fastOutSlowIn);
                       })
                     },
                     selectedIndex: _currentIndex,

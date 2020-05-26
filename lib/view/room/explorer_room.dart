@@ -147,7 +147,10 @@ Widget buildItem(BuildContext context, List<Room> rooms, int index) {
               borderRadius: BorderRadius.circular(15),
               child: CachedNetworkImage(
                 imageUrl: rooms[index].background,
-                placeholder: (context, url) => Container(),
+                placeholder: (context, url) => Container(
+                  height: 110,
+                  color: Colors.grey[300],
+                ),
               ),
             ),
             Positioned(

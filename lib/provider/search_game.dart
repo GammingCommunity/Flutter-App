@@ -26,8 +26,8 @@ class SearchGame with ChangeNotifier {
     try {
         listQuery.clear();
         var result = await MainRepo.queryGraphQL(await getToken(), query.searchGame(text,""));
-        var data = Game.fromJson(result.data);
-        data != null ? listQuery.add(data) : listQuery = [];
+        var data = ListGame.fromJson(result.data['searchGame']).games;
+        data != null ? listQuery.addAll(data) : listQuery = [];
         requestSearch(false);
         loadingComplete(1);
     } catch (e) {

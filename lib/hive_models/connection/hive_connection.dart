@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart' as pathProvider;
 Future hiveInit() async {
   var appDocumentDirectory = await pathProvider.getApplicationDocumentsDirectory();
   Hive.init(appDocumentDirectory.path);
-  Hive.deleteFromDisk();
+  
   Hive.registerAdapter(GroupMessageAdapter());
   Hive.registerAdapter(GMessageAdapter());
   Hive.registerAdapter(GroupChatAdapter());
