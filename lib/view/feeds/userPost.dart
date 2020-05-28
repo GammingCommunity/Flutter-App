@@ -14,7 +14,7 @@ class UserPost extends StatefulWidget {
   _UserPostState createState() => _UserPostState();
 }
 
-class _UserPostState extends State<UserPost> {
+class _UserPostState extends State<UserPost> with AutomaticKeepAliveClientMixin{
   double profileSize = 40;
   String userName = "";
 
@@ -119,4 +119,8 @@ class _UserPostState extends State<UserPost> {
       ),
     );
   }
+
+  @override
+
+  bool get wantKeepAlive => true;
 }

@@ -119,7 +119,7 @@ class _HomeState extends State<HomePage>
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
-                    Expanded(
+                    /*Expanded(
                       child: FaSlideAnimation.slideDown(
                         show: true,
                         delayed: 200,
@@ -131,7 +131,8 @@ class _HomeState extends State<HomePage>
                           decoration: InputDecoration.collapsed(hintText: value.item1),
                         ),
                       ),
-                    ),
+                    ),*/
+                    Spacer(),
                     CircleIcon(
                       icon: FeatherIcons.plus,
                       iconSize: 20,

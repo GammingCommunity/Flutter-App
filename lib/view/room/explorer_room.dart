@@ -1,13 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/CountRoom.dart';
 import 'package:gamming_community/provider/search_bar.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/room/provider/explorerProvider.dart';
 import 'package:gamming_community/view/specify_room_game/room_by_game.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
