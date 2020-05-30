@@ -43,7 +43,7 @@ class GroupChatProvider extends StatesRebuilder {
     var result = ListUser.fromJson(getMember.data['lookAccount']).listUser;
     for (var item in result) {
       var member = <Member>[]
-        ..add(Member(image: item.profileUrl, name: item.nickname, userID: item.id));
+        ..add(Member(image: item.profileUrl, name: item.nickname, userID: item.id.toString()));
       memberBox.put(groupID, Members(groupID: groupID, members: member));
     }
   }

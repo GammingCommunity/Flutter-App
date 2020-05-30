@@ -82,10 +82,10 @@ class I18n implements WidgetsLocalizations {
   String get homeBottomNavigationNews => "News";
   /// "Explorer"
   String get homeBottomNavigationExplorer => "Explorer";
-  /// "Manager"
-  String get homeBottomNavigationManager => "Manager";
-  /// "Chat"
-  String get homeBottomNavigationChat => "Chat";
+  /// "My Room"
+  String get homeBottomNavigationMyRoom => "My Room";
+  /// "Messages"
+  String get homeBottomNavigationMessages => "Messages";
 }
 
 class _I18n_en_US extends I18n {
@@ -173,12 +173,12 @@ class _I18n_vi_VI extends I18n {
   /// "Khám phá"
   @override
   String get homeBottomNavigationExplorer => "Khám phá";
-  /// "Quản lý"
+  /// "Phòng của tôi"
   @override
-  String get homeBottomNavigationManager => "Quản lý";
-  /// "Nhắn tin"
+  String get homeBottomNavigationMyRoom => "Phòng của tôi";
+  /// "Tin nhắn"
   @override
-  String get homeBottomNavigationChat => "Nhắn tin";
+  String get homeBottomNavigationMessages => "Tin nhắn";
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

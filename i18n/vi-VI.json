@@ -30,8 +30,8 @@
             "Feeds": "Bản tin",
             "News":"Tin tức",
             "explorer": "Khám phá",
-            "manager": "Quản lý",
-            "chat": "Nhắn tin"
+            "myRoom": "Phòng của tôi",
+            "messages": "Tin nhắn"
         }
     }
 }

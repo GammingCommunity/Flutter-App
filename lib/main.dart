@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +15,7 @@ import 'package:gamming_community/resources/values/app_theme.dart';
 import 'package:gamming_community/view/feeds/provider/feedsProvider.dart';
 import 'package:gamming_community/view/forgot_password/forgotPassword.dart';
 import 'package:gamming_community/view/home/home.dart';
+import 'package:gamming_community/view/home/provider/search_friend_provider.dart';
 import 'package:gamming_community/view/login/bloc/bloc/login_bloc.dart';
 import 'package:gamming_community/view/login/login.dart';
 import 'package:gamming_community/view/news/provider/newsProvider.dart';
@@ -40,7 +42,7 @@ import 'package:gamming_community/provider/notficationModel.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // init hiveDB
-  
+
   await hiveInit();
 
   // check login from logout
@@ -107,7 +109,8 @@ class MyApp extends StatelessWidget {
               Inject(() => RoomsProvider()),
               Inject(() => NewsProvider()),
               Inject(() => FeedsProvider()),
-              Inject(() => ExploreProvider())
+              Inject(() => ExploreProvider()),
+              Inject(() => SearchFriendsProvider())
             ],
             builder: (context) {
               settingProvider = Injector.get(context: context);
@@ -127,6 +130,8 @@ class MyApp extends StatelessWidget {
                         title: 'Gamming Community',
                         darkTheme: AppTheme.darkTheme,
                         theme: AppTheme.lightTheme,
+                        builder: (context, child) => BotToastInit(child: child,), //1. call BotToastInit
+                        navigatorObservers: [BotToastNavigatorObserver()],
                         //initialRoute: '/',
                         onGenerateRoute: (RouteSettings settings) {
                           List<String> pathElements = settings.name.split("/");

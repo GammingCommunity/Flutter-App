@@ -152,6 +152,11 @@ class GraphQLMutation {
       sendFriendRequest(receiver_id:$requestID)
     }
   """;
+  String removeFriendRequest(int userID) => """
+    mutation{
+      removeFriendRequest(receiver_id:$userID)
+    }
+  """;
   String confirmRequest(int senderID, bool isAccept) => """
     mutation{
       confirmFriendRequest(sender_id:$senderID,is_confirm:$isAccept)
@@ -174,7 +179,7 @@ class GraphQLMutation {
       }
     }
   """;
-  String reaction(String commentTo,String reactType, String postID,String commentID) => """
+  String reaction(String commentTo, String reactType, String postID, String commentID) => """
     mutation{
       reaction(to:"$commentID,type:"$reactType",postID:"$postID",commentID:"$commentID"){
         status

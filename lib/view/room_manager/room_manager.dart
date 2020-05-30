@@ -241,6 +241,7 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                                           Padding(
                                             padding: EdgeInsetsResponsive.all(5),
                                             child: DisplayMember(
+                                              showBadged: true,
                                                 borderRadius: 1000,
                                                 size: 30,
                                                 ids: rooms[index].memberID),

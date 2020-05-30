@@ -78,11 +78,10 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    for(var index = 0; index< users.length ; index++)
-                            Stack(
+                    for (var index = 0; index < users.length; index++)
+                      Stack(
                         children: <Widget>[
                           Positioned(
-                           
                             child: InkWell(
                               borderRadius: BorderRadius.circular(widget.borderRadius),
                               onTap: () {
@@ -91,7 +90,8 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(widget.borderRadius),
                                 child: CachedNetworkImage(
-                                  imageUrl: users[index].profileUrl ?? AppConstraint.default_profile,
+                                  imageUrl:
+                                      users[index].profileUrl ?? AppConstraint.default_profile,
                                   height: widget.size,
                                   width: widget.size,
                                   fit: BoxFit.cover,
@@ -105,22 +105,25 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
                               ),
                             ),
                           ),
-                          widget.showBadged ?? currentID == users[index].id
-                              ? Positioned(
-                                  bottom: -4,
-                                  right: -3,
-                                  child: Icon(
-                                    Icons.star,
-                                    color: Colors.amber,
-                                  ))
-                              : Container(
-                                  height: 10,
-                                  width: 10,
-                                ),
+                          widget.showBadged
+                              ? currentID == users[index].id
+                                  ? Positioned(
+                                      bottom: -4,
+                                      right: -4,
+                                      child: Icon(
+                                        Icons.star,
+                                        size: 20,
+                                        color: Colors.amber,
+                                      ))
+                                  : Container(
+                                      height: 10,
+                                      width: 10,
+                                    )
+                              : Container(),
                         ],
                       ),
-                    //for (var item in users)
                       
+                    //for (var item in users)
                   ],
                 );
         }
