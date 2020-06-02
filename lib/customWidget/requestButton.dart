@@ -144,13 +144,13 @@ class _RequestButtonState extends State<RequestButton> with TickerProviderStateM
         setState(() {
           _state = 2;
         });
-        /* Timer(Duration(seconds: 2), () {
+         Timer(Duration(seconds: 2), () {
           if (mounted) {
             setState(() {
               _state = 0;
             });
           }
-        });*/
+        });
       }
     } else if (_state == 1) {
       
