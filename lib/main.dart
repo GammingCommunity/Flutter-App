@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:gamming_community/API/config/refreshToken.dart';
 import 'package:gamming_community/generated/i18n.dart';
 import 'package:gamming_community/hive_models/connection/hive_connection.dart';
 import 'package:gamming_community/models/chat_provider.dart';
@@ -33,6 +34,7 @@ import 'package:gamming_community/view/room_manager/room_manager.dart';
 import 'package:gamming_community/view/sign_up/bloc/bloc/signup_bloc.dart';
 import 'package:gamming_community/view/sign_up/provider/sign_up_provider.dart';
 import 'package:gamming_community/view/sign_up/sign_up.dart';
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -48,11 +50,19 @@ void main() async {
   // check login from logout
   Widget defaultHome = Login();
   SharedPreferences ref = await SharedPreferences.getInstance();
-  bool isLoggin = ref.getBool('isLogin') != null ?? false;
   bool isEng = ref.getBool("isEng") ?? true;
-  if (isLoggin) {
-    defaultHome = HomePage();
+  // check token is not invaild
+
+  if (ref.getBool('isLogin') != null) {
+    if (await RefreshToken.isVaildSession()) {
+      print("vaild session");
+      defaultHome = HomePage();
+    } else {
+      await RefreshToken.renewToken();
+      defaultHome = HomePage();
+    }
   }
+
   runApp(MyApp(home: defaultHome, enLanguage: isEng));
   SystemChrome.setEnabledSystemUIOverlays([]);
 }
@@ -116,7 +126,7 @@ class MyApp extends StatelessWidget {
               settingProvider = Injector.get(context: context);
               return StateBuilder(
                   models: [],
-                  builder: (context, _) => MaterialApp(
+                  builder: (context, _) => GetMaterialApp(
                         localeResolutionCallback: i18n.resolution(fallback: Locale('en', 'US')),
                         supportedLocales: i18n.supportedLocales,
                         locale: enLanguage == true ? Locale('en', 'US') : Locale('vi', 'VI'),
@@ -130,7 +140,9 @@ class MyApp extends StatelessWidget {
                         title: 'Gamming Community',
                         darkTheme: AppTheme.darkTheme,
                         theme: AppTheme.lightTheme,
-                        builder: (context, child) => BotToastInit(child: child,), //1. call BotToastInit
+                        builder: (context, child) => BotToastInit(
+                          child: child,
+                        ), //1. call BotToastInit
                         navigatorObservers: [BotToastNavigatorObserver()],
                         //initialRoute: '/',
                         onGenerateRoute: (RouteSettings settings) {

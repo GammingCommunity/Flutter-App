@@ -12,6 +12,7 @@ import 'package:gamming_community/provider/search_bar.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/notfication_initailization.dart';
 import 'package:gamming_community/view/feeds/feeds.dart';
+import 'package:gamming_community/view/game_channel/game_channel.dart';
 import 'package:gamming_community/view/home/search_view.dart';
 import 'package:gamming_community/view/messages/private_message.dart';
 import 'package:gamming_community/view/news/news.dart';
@@ -77,13 +78,13 @@ class _HomeState extends State<HomePage>
     flutterLocalNotificationsPlugin = await initNotfication();
     SharedPreferences ref = await SharedPreferences.getInstance();
     setState(() {
-      token = ref.getStringList("userToken")[2];
+      token = ref.getString("userToken");
       userID = ref.getString("userID");
       userProfile = ref.getString("userProfile");
       userName = ref.getString("userName");
     });
 
-    //print("get profile home $userProfile");
+    print("get token ${ref.getString("userToken")}");
     return [userID, userProfile, userName, token];
   }
 
@@ -134,6 +135,14 @@ class _HomeState extends State<HomePage>
                       ),
                     ),*/
                     Spacer(),
+                    CircleIcon(
+                      icon: FeatherIcons.airplay,
+                      iconSize: 20,
+                      onTap: () {
+                        Navigator.push(context,
+                            PageTransition(child: GameChannel(), type: PageTransitionType.rightToLeft));
+                      },
+                    ),
                     CircleIcon(
                       icon: FeatherIcons.search,
                       iconSize: 20,
