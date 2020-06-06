@@ -5,14 +5,15 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gamming_community/API/Subscription.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
-import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/generated/i18n.dart';
 import 'package:gamming_community/provider/notficationModel.dart';
 import 'package:gamming_community/provider/search_bar.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/notfication_initailization.dart';
 import 'package:gamming_community/view/feeds/feeds.dart';
-import 'package:gamming_community/view/messages/private_message.dart';
+import 'package:gamming_community/view/game_channel/game_channel.dart';
+import 'package:gamming_community/view/home/search_view.dart';
+import 'package:gamming_community/view/messages/private_message/private_chats.dart';
 import 'package:gamming_community/view/news/news.dart';
 import 'package:gamming_community/view/notfications/notfications.dart';
 import 'package:gamming_community/view/profile/profile.dart';
@@ -76,13 +77,13 @@ class _HomeState extends State<HomePage>
     flutterLocalNotificationsPlugin = await initNotfication();
     SharedPreferences ref = await SharedPreferences.getInstance();
     setState(() {
-      token = ref.getStringList("userToken")[2];
+      token = ref.getString("userToken");
       userID = ref.getString("userID");
       userProfile = ref.getString("userProfile");
       userName = ref.getString("userName");
     });
 
-    //print("get profile home $userProfile");
+    print("get token ${ref.getString("userToken")}");
     return [userID, userProfile, userName, token];
   }
 
@@ -133,6 +134,22 @@ class _HomeState extends State<HomePage>
                       ),
                     ),*/
                     Spacer(),
+                   /* CircleIcon(
+                      icon: FeatherIcons.airplay,
+                      iconSize: 20,
+                      onTap: () {
+                        Navigator.push(context,
+                            PageTransition(child: GameChannel(), type: PageTransitionType.rightToLeft));
+                      },
+                    ),*/
+                    CircleIcon(
+                      icon: FeatherIcons.search,
+                      iconSize: 20,
+                      onTap: () {
+                        Navigator.push(context,
+                            PageTransition(child: SearchView(), type: PageTransitionType.fade));
+                      },
+                    ),
                     CircleIcon(
                       icon: FeatherIcons.plus,
                       iconSize: 20,
@@ -247,11 +264,11 @@ class _HomeState extends State<HomePage>
                 )),
           ),
           bottomNavigationBar: ContainerResponsive(
-              height: 49,
+              height: 50,
               child: Stack(
                 children: <Widget>[
                   GNav(
-                    gap: 8,
+                    gap: 6,
                     activeColor: Colors.white,
                     iconSize: 24,
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -266,17 +283,17 @@ class _HomeState extends State<HomePage>
                       ),
                       GButton(
                         text: I18n.of(context).homeBottomNavigationNews,
-                        icon: OpenIconicIcons.spreadsheet,
+                        icon: OpenIconicIcons.paperclip,
                       ),
                       GButton(
                         text: I18n.of(context).homeBottomNavigationExplorer,
                         icon: OpenIconicIcons.compass,
                       ), // home
                       GButton(
-                          text: I18n.of(context).homeBottomNavigationManager,
+                          text: I18n.of(context).homeBottomNavigationMyRoom,
                           icon: OpenIconicIcons.globe), // explorer
                       GButton(
-                          text: I18n.of(context).homeBottomNavigationChat,
+                          text: I18n.of(context).homeBottomNavigationMessages,
                           icon: OpenIconicIcons.chat), // chat
                       // notificaiton
                     ],

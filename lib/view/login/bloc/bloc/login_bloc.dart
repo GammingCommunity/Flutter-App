@@ -22,7 +22,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   ) async* {
     if (event is Submited) {
       yield LoginLoading();
-      
+
       String email = event.email;
       String password = event.password;
       var result = await SubRepo.queryGraphQL("", query.login(email.trim(), password.trim()));
@@ -39,12 +39,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           yield LoginSuccess();
 
           SharedPreferences refs = await SharedPreferences.getInstance();
-          refs.setStringList("userToken", [loginData.userName,loginData.userID,loginData.token]);
+          refs.setStringList("loginInfo", [email, password]);
+          refs.setString("userToken", loginData.token);
           refs.setString("userID", loginData.userID);
-          refs.setString("userProfile",loginData.userProfile);
+          refs.setString("userProfile", loginData.userProfile);
           refs.setString("userName", loginData.userName);
           refs.setBool("isLogin", true);
-          print("loginBloc "+loginData.userID + refs.getBool("isLogin ").toString() + loginData.userProfile + loginData.userName );
+          print(refs.getStringList("loginInfo"));
+          //print("loginBloc "+loginData.userID + refs.getBool("isLogin ").toString() + loginData.userProfile + loginData.userName );
         } else {
           yield LoginFailed();
         }

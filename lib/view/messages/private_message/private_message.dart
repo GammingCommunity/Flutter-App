@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class PrivateChat extends StatelessWidget {
+class PrivateMessage extends StatelessWidget {
   final String currentID;
   final Map<String, dynamic> sender;
   final String text;
   final AnimationController animationController;
   final DateTime sendDate;
-  PrivateChat({this.currentID, this.text, this.animationController, this.sender, this.sendDate});
+  PrivateMessage({this.currentID, this.text, this.animationController, this.sender, this.sendDate});
   @override
   Widget build(BuildContext context) {
     //ThemeModel themeModel = Injector.get(context: context);

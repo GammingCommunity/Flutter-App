@@ -54,7 +54,13 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
                   onError: (error) => buildException(context),
                   onData: (data) {
                     var posts = data.posts;
-                    return SmartRefresher(
+                    return posts.isEmpty ? Center(child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("You have not post. Follow some friend."),
+                        RaisedButton(child: Text("Check here"),onPressed: (){},)
+                      ],
+                    ),)  : SmartRefresher(
                       enablePullDown: true,
                       enablePullUp: true,
                       header: WaterDropHeader(),

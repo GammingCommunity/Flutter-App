@@ -6,6 +6,7 @@ import 'package:gamming_community/class/GroupChat.dart';
 import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/view/messages/group_messages/group_message.dart';
+import 'package:gamming_community/view/messages/group_messages/group_message_view.dart';
 
 class RoomDetail extends StatefulWidget {
   final String itemTag;

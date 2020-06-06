@@ -1,25 +1,34 @@
 import 'package:gamming_community/resources/values/app_constraint.dart';
 
 class User {
-  String id;
+  int id;
   String nickname;
   String describe;
   String birthday;
   String email;
   String phoneNumber;
   String profileUrl;
+  String relationship;
   User(
-      {this.id,this.birthday, this.describe, this.email, this.nickname, this.phoneNumber, this.profileUrl});
+      {this.id,
+      this.birthday,
+      this.describe,
+      this.email,
+      this.nickname,
+      this.phoneNumber,
+      this.relationship,
+      this.profileUrl});
   factory User.fromJson(json) {
     var user = User();
     try {
       user = User(
-          id:json['id'].toString(),
+          id: json['id'],
           email: json['email'] ??= '',
           birthday: '',
           nickname: json['name'] ??= '',
           phoneNumber: json['phone'] ??= '',
           describe: json['describe'],
+          relationship: json['relationship'],
           profileUrl: json['avatar_url'] ??= AppConstraint.default_profile);
     } catch (e) {
       print(e);
@@ -37,12 +46,13 @@ class ListUser {
     try {
       json.forEach((element) {
         _list.add(User(
-            id: element['account']['id'].toString(),
+            id: element['account']['id'],
             email: element['account']['email'] ??= '',
             birthday: '',
             nickname: element['account']['name'] ??= '',
             phoneNumber: element['account']['phone'] ??= '',
             describe: element['account']['describe'],
+            relationship: element['relationship'],
             profileUrl: element['account']['avatar_url']));
       });
     } catch (e) {

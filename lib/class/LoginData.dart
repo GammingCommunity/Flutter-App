@@ -5,7 +5,7 @@ class LoginData{
   String userID;
   String userProfile;
   LoginData({this.token,this.status,this.userName,this.userID,this.userProfile});
-  factory LoginData.fromJson(Map<String,dynamic> json){
+  factory LoginData.fromJson(Map json){
     try {
       var value= json.values.first;
       //print(value["account"]["id"]);

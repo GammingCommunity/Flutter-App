@@ -1,16 +1,25 @@
 class Conservation {
-  String id;
-  Map<String, String> currentUser;
-  Map<String, String> friend;
+  String conservationID;
+  List member;
+  Message latestMessage;
   List<Message> message;
-  Conservation({this.id, this.currentUser, this.friend, this.message});
+  DateTime createAt;
+  Conservation({this.conservationID, this.member, this.message, this.latestMessage,this.createAt});
 }
 
 class Message {
   String sender;
-  String text;
-  String createAt;
-  Message({this.sender, this.text, this.createAt});
+  String messageType;
+  String status;
+  TextMessage txtMessage;
+  Message({this.sender, this.messageType, this.status, this.txtMessage});
+}
+
+class TextMessage {
+  String content;
+  int height;
+  int width;
+  TextMessage({this.content, this.height, this.width});
 }
 
 class PrivateConservations {
@@ -19,24 +28,31 @@ class PrivateConservations {
   factory PrivateConservations.fromJson(List json) {
     List<Conservation> _listConservation = [];
     try {
-      json.forEach((e) {
+      for (var e in json) {
         List<Message> _listMesasge = [];
-        for (var item in e['messages']) {
-          _listMesasge.add(
-              Message(sender: item['user']['id'], text: item['text'], createAt: item['createAt']));
-        }
+
         _listConservation.add(Conservation(
-            id: e["_id"],
-            currentUser: {
-              "id": e['currentUser']['id'],
-              "profileUrl": e['currentUser']['profile_url']
-            },
-            friend: {"id": e['friend']['id'], "profileUrl": e['friend']['profile_url']},
-            message: _listMesasge));
-      });
+            conservationID: e["_id"],
+            member: e['member'],
+            latestMessage: Message(
+              sender: e['latest_message']['id'],
+              status: e['latest_message']['status'],
+              txtMessage: TextMessage(
+                content: e['latest_message']['text']['content'],
+                height: e['latest_message']['text']['height'] ,
+                width:  e['latest_message']['text']['width']
+              ),
+              messageType:e['latest_message']['messageType'] ,
+            ),
+            createAt: DateTime.parse(e['createAt']).toLocal(),
+            message: _listMesasge,
+
+            
+            ));
+      }
     } catch (e) {
       print(e);
-      return PrivateConservations();
+      return PrivateConservations(conservations: []);
     }
     return PrivateConservations(conservations: _listConservation);
   }

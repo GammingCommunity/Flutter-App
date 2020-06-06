@@ -44,6 +44,8 @@ dependencies:
   feather_icons_flutter: ^4.7.4
   hive: ^1.4.1+1
   hive_flutter: ^0.3.0+2
+  #shorthand for context usage
+  get: ^2.10.1
 dependency_overrides: 
   path: 1.7.0 
 

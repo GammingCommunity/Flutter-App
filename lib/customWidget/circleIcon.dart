@@ -5,7 +5,7 @@ class CircleIcon extends StatefulWidget {
   final double iconSize;
   final Color iconColor;
   final Function onTap;
-  CircleIcon({this.icon, this.iconColor, this.iconSize, this.onTap});
+  CircleIcon({this.icon, this.iconColor, this.iconSize = 20, this.onTap});
 
   @override
   _CircleIconState createState() => _CircleIconState();

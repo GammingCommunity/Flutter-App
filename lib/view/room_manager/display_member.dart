@@ -1,14 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/User.dart';
-import 'package:gamming_community/models/group_chat_provider.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/get_token.dart';
-import 'package:states_rebuilder/states_rebuilder.dart';
 
 class DisplayMember extends StatefulWidget {
   final List ids;
@@ -31,7 +28,6 @@ class DisplayMember extends StatefulWidget {
 class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveClientMixin {
   var query = GraphQLQuery();
   String currentID = "";
-  GroupChatProvider _groupChatProvider;
   @override
   void initState() {
     super.initState();
@@ -51,7 +47,6 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    _groupChatProvider = Injector.get();
     return FutureBuilder<List<User>>(
       future: Future(() async {
         // convert to list int
@@ -78,11 +73,10 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    for(var index = 0; index< users.length ; index++)
-                            Stack(
+                    for (var index = 0; index < users.length; index++)
+                      Stack(
                         children: <Widget>[
                           Positioned(
-                           
                             child: InkWell(
                               borderRadius: BorderRadius.circular(widget.borderRadius),
                               onTap: () {
@@ -91,7 +85,8 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(widget.borderRadius),
                                 child: CachedNetworkImage(
-                                  imageUrl: users[index].profileUrl ?? AppConstraint.default_profile,
+                                  imageUrl:
+                                      users[index].profileUrl ?? AppConstraint.default_profile,
                                   height: widget.size,
                                   width: widget.size,
                                   fit: BoxFit.cover,
@@ -105,22 +100,25 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
                               ),
                             ),
                           ),
-                          widget.showBadged ?? currentID == users[index].id
-                              ? Positioned(
-                                  bottom: -4,
-                                  right: -3,
-                                  child: Icon(
-                                    Icons.star,
-                                    color: Colors.amber,
-                                  ))
-                              : Container(
-                                  height: 10,
-                                  width: 10,
-                                ),
+                          widget.showBadged
+                              ? currentID == users[index].id
+                                  ? Positioned(
+                                      bottom: -4,
+                                      right: -4,
+                                      child: Icon(
+                                        Icons.star,
+                                        size: 20,
+                                        color: Colors.amber,
+                                      ))
+                                  : Container(
+                                      height: 10,
+                                      width: 10,
+                                    )
+                              : Container(),
                         ],
                       ),
-                    //for (var item in users)
                       
+                    //for (var item in users)
                   ],
                 );
         }

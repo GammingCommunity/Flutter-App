@@ -1,0 +1,4 @@
+class ENV {
+  static String secretKey =
+      "2tBIO24MpVQ1W6vv214r6C7UqP7JCrAuZRKRU7uwWLL1K8pyUXSsue8o3oUAegRTXhkT7PrugzTPP29kN9AK47U42jKTS6Fu9r3b6x7o3L70yUt6BmEL1Yn7I36yeB40";
+}

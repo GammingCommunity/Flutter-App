@@ -30,8 +30,8 @@
             "feeds":"Feeds",
             "news":"News",
             "explorer":"Explorer",
-            "manager":"Manager",
-            "chat":"Chat"
+            "myRoom":"My Room",
+            "messages":"Messages"
         }
     }
 }

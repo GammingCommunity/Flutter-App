@@ -10,7 +10,6 @@ import 'package:gamming_community/customWidget/PVScaleFactor.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
-import 'package:gamming_community/utils/jwt_decode.dart';
 import 'package:gamming_community/view/room/create_room_v2.dart';
 import 'package:gamming_community/view/room_manager/bloc/room_manager_bloc.dart';
 import 'package:gamming_community/view/room_manager/display_member.dart';
@@ -241,6 +240,7 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                                           Padding(
                                             padding: EdgeInsetsResponsive.all(5),
                                             child: DisplayMember(
+                                              showBadged: true,
                                                 borderRadius: 1000,
                                                 size: 30,
                                                 ids: rooms[index].memberID),

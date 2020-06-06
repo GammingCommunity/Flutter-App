@@ -8,11 +8,14 @@ import 'package:gamming_community/API/config/subAuth.dart';
 import 'package:gamming_community/class/Conservation.dart';
 import 'package:gamming_community/class/Friend.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
+import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
+import 'package:gamming_community/utils/get_token.dart';
+import 'package:gamming_community/utils/skeleton_template.dart';
+import 'package:gamming_community/utils/toListInt.dart';
 import 'package:gamming_community/view/messages/add_convervation.dart';
 import 'package:gamming_community/view/messages/friend_profile.dart';
-import 'package:gamming_community/view/messages/private_message_detail.dart';
-import 'package:gamming_community/view/messages/right_side_friends.dart';
+import 'package:gamming_community/view/messages/private_message/private_message_detail.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
@@ -76,7 +79,7 @@ class _MessagesState extends State<Messages>
     super.build(context);
     return Scaffold(
         key: _scaffoldKey,
-        endDrawer: RightSideFriends(),
+
         //create new conservation with friends
         floatingActionButton: FloatingActionButton(
             heroTag: "addnewMessage",
@@ -132,8 +135,8 @@ class _MessagesState extends State<Messages>
                                     child: CacheProvider(
                                       child: Query(
                                           options: QueryOptions(
-                                              documentNode:
-                                                  gql(query.getPrivateConservation(widget.userID))),
+                                              documentNode: gql(
+                                                  query.getAllPrivateConservation(widget.userID))),
                                           builder: (QueryResult result,
                                               {VoidCallback refetch, FetchMore fetchMore}) {
                                             if (result.hasException) {
@@ -146,12 +149,12 @@ class _MessagesState extends State<Messages>
                                             if (result.loading) {
                                               return Align(
                                                 alignment: Alignment.center,
-                                                child: AppConstraint.loadingIndicator(context,40),
+                                                child: AppConstraint.loadingIndicator(context, 40),
                                               );
                                             } else {
                                               var privateConservations =
                                                   PrivateConservations.fromJson(
-                                                          result.data['getPrivateChat'])
+                                                          result.data['getAllPrivateChat'])
                                                       .conservations;
 
                                               return ListView.builder(
@@ -159,7 +162,7 @@ class _MessagesState extends State<Messages>
                                                 itemCount: privateConservations.length,
                                                 controller: _scrollController,
                                                 itemBuilder: (context, index) {
-                                                 /* var animation = Tween(begin: 0.0, end: 1.0)
+                                                  /* var animation = Tween(begin: 0.0, end: 1.0)
                                                       .animate(CurvedAnimation(
                                                     parent: animationController,
                                                     curve: Interval(
@@ -174,11 +177,10 @@ class _MessagesState extends State<Messages>
                                                         maintainState: true,
                                                         fullscreenDialog: true,
                                                         builder: (context) => PrivateMessagesDetail(
-                                                            chatID: privateConservations[index].id,
-                                                            currentID: privateConservations[index]
-                                                                .currentUser['id'],
-                                                            profileUrl: privateConservations[index]
-                                                                .currentUser['profileUrl']),
+                                                            chatID: privateConservations[index]
+                                                                .conservationID,
+                                                            member:
+                                                                privateConservations[index].member),
                                                       ));
                                                     },
                                                     child: Padding(
@@ -188,34 +190,17 @@ class _MessagesState extends State<Messages>
                                                           crossAxisAlignment:
                                                               CrossAxisAlignment.center,
                                                           children: <Widget>[
-                                                            ClipRRect(
-                                                              borderRadius:
-                                                                  BorderRadius.circular(1000),
-                                                              child: CachedNetworkImage(
-                                                                height: 70,
-                                                                width: 70,
-                                                                fit: BoxFit.cover,
-                                                                placeholder: (context, url) =>
-                                                                    Container(
-                                                                  decoration: BoxDecoration(
-                                                                      color: Colors.grey[400],
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              1000)),
-                                                                ),
-                                                                imageUrl:
-                                                                    privateConservations[index]
-                                                                        .friend['profileUrl'],
-                                                              ),
+                                                            buildProfile(
+                                                              privateConservations[index].member,
                                                             ),
                                                             SizedBox(width: 10),
-                                                            Wrap(
+                                                            /* Wrap(
                                                               spacing: 10,
                                                               direction: Axis.vertical,
                                                               children: <Widget>[
                                                                 // get lastest message here
                                                                 Text(
-                                                                  "${privateConservations[index].friend['id']}",
+                                                                  "${privateConservations[index].latestMessage}",
                                                                   style: TextStyle(fontSize: 20),
                                                                 ),
                                                                 Row(
@@ -225,7 +210,7 @@ class _MessagesState extends State<Messages>
                                                                           .spaceBetween,
                                                                   children: <Widget>[
                                                                     Text(
-                                                                        "${privateConservations[index].message[0].text}",
+                                                                        "${privateConservations[index].latestMessage}",
                                                                         style: TextStyle(
                                                                             fontSize: 15)),
                                                                     Padding(
@@ -243,7 +228,7 @@ class _MessagesState extends State<Messages>
                                                                   ],
                                                                 ),
                                                               ],
-                                                            ),
+                                                            ),*/
                                                           ]),
                                                     ),
                                                   );
@@ -260,6 +245,34 @@ class _MessagesState extends State<Messages>
 
   @override
   bool get wantKeepAlive => true;
+}
+
+Widget buildProfile(List id) {
+  var query = GraphQLQuery();
+  return FutureBuilder(
+      future: (Future(() async {
+        return SubRepo.queryGraphQL(await getToken(), query.getUserInfo(toListInt(id)));
+      })),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return SkeletonTemplate.image(70, 70,10000);
+        } else {
+          var url = snapshot.data.data;
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(1000),
+            child: CachedNetworkImage(
+              height: 70,
+              width: 70,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                decoration: BoxDecoration(
+                    color: Colors.grey[400], borderRadius: BorderRadius.circular(1000)),
+              ),
+              imageUrl: AppConstraint.default_profile,
+            ),
+          );
+        }
+      });
 }
 
 Widget buildFriendsActive(String token) {

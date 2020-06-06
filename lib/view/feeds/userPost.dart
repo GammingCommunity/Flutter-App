@@ -14,7 +14,7 @@ class UserPost extends StatefulWidget {
   _UserPostState createState() => _UserPostState();
 }
 
-class _UserPostState extends State<UserPost> with AutomaticKeepAliveClientMixin{
+class _UserPostState extends State<UserPost> with AutomaticKeepAliveClientMixin {
   double profileSize = 40;
   String userName = "";
 
@@ -26,7 +26,7 @@ class _UserPostState extends State<UserPost> with AutomaticKeepAliveClientMixin{
   @override
   void initState() {
     super.initState();
-    
+
     getName().then((value) => setState(() {
           userName = value;
         }));
@@ -34,10 +34,11 @@ class _UserPostState extends State<UserPost> with AutomaticKeepAliveClientMixin{
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Container(
       height: widget.post.media == "" ? 155 : 200,
       width: ScreenUtil().uiWidthPx,
-      padding: EdgeInsets.only(top: 20, bottom: 10,left:20,right:20),
+      padding: EdgeInsets.only(top: 20, bottom: 10, left: 20, right: 20),
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), boxShadow: [
         BoxShadow(blurRadius: 0.1, color: Colors.grey.withOpacity(0.1), offset: Offset(0, 1))
       ]),
@@ -46,36 +47,35 @@ class _UserPostState extends State<UserPost> with AutomaticKeepAliveClientMixin{
         children: <Widget>[
           //avatar
           Row(
-              children: <Widget>[
-                DisplayAvatar(size: profileSize),
-                SizedBox(width: 10),
-                Column(
+            children: <Widget>[
+              DisplayAvatar(size: profileSize),
+              SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    userName,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  Text("@Tag here")
+                ],
+              ),
+              Expanded(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
-                    Text(
-                      userName,
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    Icon(
+                      FeatherIcons.clock,
+                      size: 15,
                     ),
-                    Text("@Tag here")
+                    SizedBox(width: 10),
+                    Text("${customDateTime(widget.post.createdTime)}")
                   ],
                 ),
-                Expanded(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      Icon(
-                        FeatherIcons.clock,
-                        size: 15,
-                      ),
-                      SizedBox(width:10),
-                      Text("${customDateTime(widget.post.createdTime)}")
-                    ],
-                  ),
-                ),
-              ],
-            
+              ),
+            ],
           ),
           SizedBox(
             height: 10,
@@ -94,9 +94,7 @@ class _UserPostState extends State<UserPost> with AutomaticKeepAliveClientMixin{
                     CircleIcon(
                       icon: FeatherIcons.thumbsUp,
                       iconSize: 15,
-                      onTap: () {
-
-                      },
+                      onTap: () {},
                     ),
                     Text(widget.post.countReaction.toString())
                   ],
@@ -121,6 +119,5 @@ class _UserPostState extends State<UserPost> with AutomaticKeepAliveClientMixin{
   }
 
   @override
-
   bool get wantKeepAlive => true;
 }

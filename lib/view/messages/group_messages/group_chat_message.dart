@@ -2,14 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/class/GroupMessage.dart';
 import 'package:gamming_community/hive_models/member.dart';
 import 'package:gamming_community/repository/upload_image.dart';
-import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/display_image.dart';
 import 'package:gamming_community/view/messages/group_messages/group_chat_service.dart';
+import 'package:gamming_community/view/messages/private_message/private_chats.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:optimized_cached_image/widgets.dart';
@@ -17,7 +18,6 @@ import 'package:page_transition/page_transition.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-import '../private_message.dart';
 
 var currentTime = new DateTime.now();
 
