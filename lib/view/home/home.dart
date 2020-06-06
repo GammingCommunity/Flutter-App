@@ -151,6 +151,22 @@ class _HomeState extends State<HomePage>
                       },
                     ),
                     CircleIcon(
+                      icon: FeatherIcons.airplay,
+                      iconSize: 20,
+                      onTap: () {
+                        Navigator.push(context,
+                            PageTransition(child: GameChannel(), type: PageTransitionType.rightToLeft));
+                      },
+                    ),
+                    CircleIcon(
+                      icon: FeatherIcons.search,
+                      iconSize: 20,
+                      onTap: () {
+                        Navigator.push(context,
+                            PageTransition(child: SearchView(), type: PageTransitionType.fade));
+                      },
+                    ),
+                    CircleIcon(
                       icon: FeatherIcons.plus,
                       iconSize: 20,
                       onTap: () {
