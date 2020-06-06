@@ -27,7 +27,7 @@ Future showFriendProfile(BuildContext context, String token, int userID) {
               client: customSubClient(token),
               child: CacheProvider(
                   child: Query(
-                options: QueryOptions(documentNode: gql(query.getUserInfo([userID]))),
+                options: QueryOptions(documentNode: gql(query.getMutliUserInfo([userID]))),
                 builder: (result, {fetchMore, refetch}) {
                   if (result.loading) {
                     // sketlon loading

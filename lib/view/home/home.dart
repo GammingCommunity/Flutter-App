@@ -8,6 +8,7 @@ import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/generated/i18n.dart';
 import 'package:gamming_community/provider/notficationModel.dart';
 import 'package:gamming_community/provider/search_bar.dart';
+import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/notfication_initailization.dart';
 import 'package:gamming_community/view/feeds/feeds.dart';
@@ -18,6 +19,7 @@ import 'package:gamming_community/view/news/news.dart';
 import 'package:gamming_community/view/notfications/notfications.dart';
 import 'package:gamming_community/view/profile/profile.dart';
 import 'package:gamming_community/view/room_manager/room_manager.dart';
+import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:open_iconic_flutter/open_iconic_flutter.dart';
 import 'package:page_transition/page_transition.dart';
@@ -134,7 +136,7 @@ class _HomeState extends State<HomePage>
                       ),
                     ),*/
                     Spacer(),
-                   /* CircleIcon(
+                    /* CircleIcon(
                       icon: FeatherIcons.airplay,
                       iconSize: 20,
                       onTap: () {
@@ -142,20 +144,15 @@ class _HomeState extends State<HomePage>
                             PageTransition(child: GameChannel(), type: PageTransitionType.rightToLeft));
                       },
                     ),*/
-                    CircleIcon(
-                      icon: FeatherIcons.search,
-                      iconSize: 20,
-                      onTap: () {
-                        Navigator.push(context,
-                            PageTransition(child: SearchView(), type: PageTransitionType.fade));
-                      },
-                    ),
+
                     CircleIcon(
                       icon: FeatherIcons.airplay,
                       iconSize: 20,
                       onTap: () {
-                        Navigator.push(context,
-                            PageTransition(child: GameChannel(), type: PageTransitionType.rightToLeft));
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                child: GameChannel(), type: PageTransitionType.rightToLeft));
                       },
                     ),
                     CircleIcon(
@@ -171,14 +168,41 @@ class _HomeState extends State<HomePage>
                       iconSize: 20,
                       onTap: () {
                         //show model bottom sheet
-                        showBottomSheet(
-                            context: context,
-                            builder: (context) => Container(
+                        Get.bottomSheet(
+                            Container(
                                 height: 100,
-                                width: ScreenUtil().uiWidthPx,
-                                child: Column(children: <Widget>[
-                                  Title(color: Colors.red, child: Text("asd"))
-                                ])));
+                                width: Get.width,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(FeatherIcons.minus),
+                                    Row(children: <Widget>[
+                                      Row(
+                                        children: [
+                                          CircleIcon(
+                                            icon: FeatherIcons.package,
+                                            onTap: () {},
+                                          ),
+                                          Text("Create post")
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          CircleIcon(
+                                            icon: FeatherIcons.search,
+                                            onTap: () {},
+                                          ),
+                                          Text("Find room fast")
+                                        ],
+                                      )
+                                    ]),
+                                  ],
+                                )),
+                            useRootNavigator: true,
+                            backgroundColor: Get.isDarkMode ? AppColors.BACKGROUND_COLOR: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(10), topRight: Radius.circular(10))));
                       },
                     ),
                     Stack(
@@ -251,13 +275,10 @@ class _HomeState extends State<HomePage>
                     InkWell(
                       borderRadius: BorderRadius.circular(1000),
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            PageTransition(
-                                child: Profile(
-                                    userID: userID, userName: userName, userProfile: userProfile),
-                                type: PageTransitionType.fade,
-                                alignment: Alignment.center));
+                        Get.to(
+                            Profile(userID: userID, userName: userName, userProfile: userProfile),
+                            transition: Transition.fade,
+                            opaque: false);
                       },
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10000),
@@ -265,7 +286,7 @@ class _HomeState extends State<HomePage>
                         child: CachedNetworkImage(
                           height: 30,
                           width: 30,
-                          imageUrl: userProfile ?? AppConstraint.default_profile,
+                          imageUrl: userProfile == "" ? AppConstraint.default_profile : userProfile,
                           placeholder: (context, url) => Container(
                             height: 30,
                             width: 30,
@@ -366,7 +387,7 @@ class _HomeState extends State<HomePage>
           body: ContainerResponsive(
             height: screenSize.height,
             child: PageView(
-              physics: NeverScrollableScrollPhysics(),
+              //physics: NeverScrollableScrollPhysics(),
               onPageChanged: (index) {
                 setState(() {
                   _currentIndex = index;

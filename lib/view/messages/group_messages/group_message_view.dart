@@ -453,7 +453,7 @@ class _MessagesState extends State<GroupMessageWidget>
       alignment: Alignment.center,
       height: 50,
       decoration: BoxDecoration(
-        color: Color(AppConstraint.searchBackground),
+        color: Color(AppColors.SEARCH_BACKGROUND),
       ),
       child: Stack(
         children: <Widget>[

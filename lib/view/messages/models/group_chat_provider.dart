@@ -41,7 +41,7 @@ class GroupChatProvider extends StatesRebuilder {
   Future initMember(List members, String groupID) async {
     memberBox.clear();
     var getMember =
-        await SubRepo.queryGraphQL(await getToken(), query.getUserInfo(toListInt(members)));
+        await SubRepo.queryGraphQL(await getToken(), query.getMutliUserInfo(toListInt(members)));
     var result = ListUser.fromJson(getMember.data['lookAccount']).listUser;
     for (var item in result) {
       var member = <Member>[]

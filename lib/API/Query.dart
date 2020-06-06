@@ -175,7 +175,7 @@ class GraphQLQuery {
    }
   }
  """;
-  String getUserInfo(List<int> ids) {
+  String getMutliUserInfo(List<int> ids) {
     return """
     query{
       lookAccount (ids:$ids){
@@ -189,7 +189,7 @@ class GraphQLQuery {
    """;
   }
 
-  String getAllPrivateConservation(String userID) => """
+  String getAllPrivateConservation() => """
    query{
       getAllPrivateChat{
         _id
@@ -259,18 +259,19 @@ class GraphQLQuery {
   }
   }
  """;
-  String getPrivateMessges(String currentID) => """
+  String getPrivateChatMessge(String chatID,[int page = 1,int limit = 10]) => """
   query{
-    getPrivateChat(ID:"$currentID"){
-      messages{
-        user{
-          id
-          profile_url
-        }
-        text
-        createAt
-      }
+    getPrivateChatMessage(chatID:"$chatID",page:$page,limit:$limit){
+    id
+    messageType
+    id
+    text{
+      content
+      height
+      width
     }
+    createAt
+  }
   }
   
  """;

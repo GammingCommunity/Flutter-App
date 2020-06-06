@@ -53,7 +53,7 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
         var listInt = List<int>.from(widget.ids.map((e) => int.parse(e)).toList());
         var getUsers = <User>[];
         try {
-          var result = await SubRepo.queryGraphQL(await getToken(), query.getUserInfo(listInt));
+          var result = await SubRepo.queryGraphQL(await getToken(), query.getMutliUserInfo(listInt));
           getUsers = ListUser.fromJson(result.data['lookAccount']).listUser;
         } catch (e) {
           print(e);

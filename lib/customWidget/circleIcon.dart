@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gamming_community/resources/values/app_colors.dart';
+import 'package:get/get.dart';
 
 class CircleIcon extends StatefulWidget {
   final IconData icon;
@@ -23,7 +25,7 @@ class _CircleIconState extends State<CircleIcon> {
         onPressed: () {
           return widget.onTap();
         },
-        color: widget.iconColor ?? Theme.of(context).iconTheme.color ,
+        color: widget.iconColor ?? Get.isDarkMode ? Colors.white : Colors.black,
         iconSize: widget.iconSize,
       ),
     );

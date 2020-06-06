@@ -5,6 +5,7 @@ import 'package:gamming_community/API/Mutation.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/LoginData.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
+import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'login_event.dart';
@@ -42,7 +43,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           refs.setStringList("loginInfo", [email, password]);
           refs.setString("userToken", loginData.token);
           refs.setString("userID", loginData.userID);
-          refs.setString("userProfile", loginData.userProfile);
+          refs.setString("userProfile", loginData.userProfile ?? AppConstraint.default_profile);
           refs.setString("userName", loginData.userName);
           refs.setBool("isLogin", true);
           print(refs.getStringList("loginInfo"));

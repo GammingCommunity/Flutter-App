@@ -1,34 +1,39 @@
-
 class PrivateMessage {
-  Map<String, dynamic> sender;
-  String text;
+  String messageID;
+  List memeber;
   DateTime createAt;
-  PrivateMessage({this.sender, this.createAt, this.text});
+  Message message;
+  
+  PrivateMessage({this.messageID, this.memeber,this.message, this.createAt});
+}
+
+class Message {
+  String sender;
+  String messageType;
+  String status;
+  MessageDetail text;
+  Message({this.sender, this.messageType, this.status, this.text});
+}
+
+class MessageDetail {
+  String content;
+  int height;
+  int width;
+  MessageDetail({this.content, this.height, this.width});
 }
 
 class PrivateMessages {
   List<PrivateMessage> privateMessages;
-  
+
   PrivateMessages({this.privateMessages});
   factory PrivateMessages.fromJson(List json) {
-    var _listPrivateMessage = <PrivateMessage>[]; 
+    var _listPrivateMessage = <PrivateMessage>[];
     try {
       for (var item in json) {
         item['messages'].forEach((e) => {
               _listPrivateMessage.add(PrivateMessage(
                 createAt: DateTime.parse(e['createAt']),
-                sender: e['user'],
-                text: e['text'],
-             
               ))
-                
-               /* ChatMessage(
-                animationController: controller,
-                text: e['text'],
-                sendDate: DateTime.parse(e['createAt']),
-                sender: e['user']
-              )*/
-              
             });
       }
     } catch (e) {

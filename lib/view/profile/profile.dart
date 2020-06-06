@@ -30,7 +30,6 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
 
   Future getInfo() async {
     SharedPreferences refs = await SharedPreferences.getInstance();
-    List<String> res = refs.getStringList("userToken");
     bool isEng = refs.getBool("isEng") == null ? true : false;
     return isEng;
   }
@@ -126,7 +125,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                           image: DecorationImage(
                                               fit: BoxFit.cover, image: imageProvider)),
                                     ),
-                                    imageUrl: widget.userProfile == null
+                                    imageUrl: widget.userProfile == "" || null
                                         ? AppConstraint.sample_proifle_url
                                         : widget.userProfile,
                                     placeholder: (context, url) => ContainerResponsive(

@@ -3,8 +3,8 @@ class Conservation {
   List member;
   Message latestMessage;
   List<Message> message;
-  DateTime createAt;
-  Conservation({this.conservationID, this.member, this.message, this.latestMessage,this.createAt});
+
+  Conservation({this.conservationID, this.member, this.message, this.latestMessage});
 }
 
 class Message {
@@ -12,7 +12,33 @@ class Message {
   String messageType;
   String status;
   TextMessage txtMessage;
-  Message({this.sender, this.messageType, this.status, this.txtMessage});
+  DateTime createAt;
+  Message({this.sender, this.messageType, this.status, this.createAt, this.txtMessage});
+}
+
+class Messages {
+  List<Message> messages;
+  Messages({this.messages});
+  factory Messages.fromJson(List json) {
+    var messages = <Message>[];
+    try {
+      for (var e in json) {
+        messages.add(Message(
+            sender: e['id'],
+            status: e['status'],
+            txtMessage: TextMessage(
+                content: e['text']['content'],
+                height: e['text']['height'],
+                width: e['text']['width']),
+            messageType: e['messageType'],
+            createAt: DateTime.parse(e['createAt']).toLocal()));
+      }
+    } catch (e) {
+      print(e);
+      return Messages(messages: []);
+    }
+    return Messages(messages: messages);
+  }
 }
 
 class TextMessage {
@@ -32,23 +58,20 @@ class PrivateConservations {
         List<Message> _listMesasge = [];
 
         _listConservation.add(Conservation(
-            conservationID: e["_id"],
-            member: e['member'],
-            latestMessage: Message(
-              sender: e['latest_message']['id'],
-              status: e['latest_message']['status'],
-              txtMessage: TextMessage(
+          conservationID: e["_id"],
+          member: e['member'],
+          latestMessage: Message(
+            sender: e['latest_message']['id'],
+            status: e['latest_message']['status'],
+            txtMessage: TextMessage(
                 content: e['latest_message']['text']['content'],
-                height: e['latest_message']['text']['height'] ,
-                width:  e['latest_message']['text']['width']
-              ),
-              messageType:e['latest_message']['messageType'] ,
-            ),
-            createAt: DateTime.parse(e['createAt']).toLocal(),
-            message: _listMesasge,
-
-            
-            ));
+                height: e['latest_message']['text']['height'],
+                width: e['latest_message']['text']['width']),
+            messageType: e['latest_message']['messageType'],
+            createAt: DateTime.parse(e['latest_message']['createAt']).toLocal(),
+          ),
+          message: _listMesasge,
+        ));
       }
     } catch (e) {
       print(e);

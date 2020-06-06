@@ -1,12 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/API/config/subAuth.dart';
 import 'package:gamming_community/class/Conservation.dart';
 import 'package:gamming_community/class/Friend.dart';
+import 'package:gamming_community/class/User.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
@@ -15,13 +14,22 @@ import 'package:gamming_community/utils/skeleton_template.dart';
 import 'package:gamming_community/utils/toListInt.dart';
 import 'package:gamming_community/view/messages/add_convervation.dart';
 import 'package:gamming_community/view/messages/friend_profile.dart';
+import 'package:gamming_community/view/messages/models/private_chat_provider.dart';
+import 'package:gamming_community/view/messages/private_message/private_chat_service.dart';
 import 'package:gamming_community/view/messages/private_message/private_message_detail.dart';
+import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
 
 String formatDate(DateTime dateTime) {
   var formatter = DateFormat('EEE,dd/MM/yyyy');
+  return formatter.format(dateTime);
+}
+
+String formatDateMonth(DateTime dateTime) {
+  var formatter = DateFormat.MMMEd();
   return formatter.format(dateTime);
 }
 
@@ -40,14 +48,11 @@ class Messages extends StatefulWidget {
 class _MessagesState extends State<Messages>
     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  GraphQLQuery query = GraphQLQuery();
   String roomName = "Sample here";
   bool isSubmited = false;
-  final chatController = TextEditingController();
   ScrollController _scrollController;
   AnimationController animationController;
-  // List<Message> item = [];
-  //List<PrivateRoom> listPrivateRoom = [];
+  PrivateChatProvider _privateChatProvider;
 
   void _scrollListener() {
     if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
@@ -60,6 +65,9 @@ class _MessagesState extends State<Messages>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _privateChatProvider.initPrivateConservation();
+    });
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
     animationController = AnimationController(
@@ -76,6 +84,7 @@ class _MessagesState extends State<Messages>
 
   @override
   Widget build(BuildContext context) {
+    _privateChatProvider = Injector.get(context: context);
     super.build(context);
     return Scaffold(
         key: _scaffoldKey,
@@ -130,113 +139,22 @@ class _MessagesState extends State<Messages>
                             ),
                             Expanded(
                                 flex: 6,
-                                child: GraphQLProvider(
-                                    client: customClient(widget.token),
-                                    child: CacheProvider(
-                                      child: Query(
-                                          options: QueryOptions(
-                                              documentNode: gql(
-                                                  query.getAllPrivateConservation(widget.userID))),
-                                          builder: (QueryResult result,
-                                              {VoidCallback refetch, FetchMore fetchMore}) {
-                                            if (result.hasException) {
-                                              return Align(
-                                                alignment: Alignment.center,
-                                                child:
-                                                    SvgPicture.asset("assets/icons/empty_icon.svg"),
-                                              );
-                                            }
-                                            if (result.loading) {
-                                              return Align(
-                                                alignment: Alignment.center,
-                                                child: AppConstraint.loadingIndicator(context, 40),
-                                              );
-                                            } else {
-                                              var privateConservations =
-                                                  PrivateConservations.fromJson(
-                                                          result.data['getAllPrivateChat'])
-                                                      .conservations;
-
-                                              return ListView.builder(
-                                                itemExtent: 100.0,
-                                                itemCount: privateConservations.length,
-                                                controller: _scrollController,
-                                                itemBuilder: (context, index) {
-                                                  /* var animation = Tween(begin: 0.0, end: 1.0)
-                                                      .animate(CurvedAnimation(
-                                                    parent: animationController,
-                                                    curve: Interval(
-                                                        (1 / listPrivateRoom.length) * index, 1.0,
-                                                        curve: Curves.fastOutSlowIn),
-                                                  ));*/
-                                                  // go to message detail + notfiy new message
-                                                  return InkWell(
-                                                    onTap: () {
-                                                      // navigate to convservation_detail
-                                                      Navigator.of(context).push(MaterialPageRoute(
-                                                        maintainState: true,
-                                                        fullscreenDialog: true,
-                                                        builder: (context) => PrivateMessagesDetail(
-                                                            chatID: privateConservations[index]
-                                                                .conservationID,
-                                                            member:
-                                                                privateConservations[index].member),
-                                                      ));
-                                                    },
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.all(8.0),
-                                                      child: Row(
-                                                          mainAxisSize: MainAxisSize.min,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment.center,
-                                                          children: <Widget>[
-                                                            buildProfile(
-                                                              privateConservations[index].member,
-                                                            ),
-                                                            SizedBox(width: 10),
-                                                            /* Wrap(
-                                                              spacing: 10,
-                                                              direction: Axis.vertical,
-                                                              children: <Widget>[
-                                                                // get lastest message here
-                                                                Text(
-                                                                  "${privateConservations[index].latestMessage}",
-                                                                  style: TextStyle(fontSize: 20),
-                                                                ),
-                                                                Row(
-                                                                  mainAxisSize: MainAxisSize.max,
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceBetween,
-                                                                  children: <Widget>[
-                                                                    Text(
-                                                                        "${privateConservations[index].latestMessage}",
-                                                                        style: TextStyle(
-                                                                            fontSize: 15)),
-                                                                    Padding(
-                                                                      padding:
-                                                                          const EdgeInsets.all(6.0),
-                                                                      child: Icon(
-                                                                          Icons.fiber_manual_record,
-                                                                          size: 8),
-                                                                    ),
-                                                                    Text(
-                                                                      "${formatDate(DateTime.now().toLocal())}",
-                                                                      style:
-                                                                          TextStyle(fontSize: 15),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ],
-                                                            ),*/
-                                                          ]),
-                                                    ),
-                                                  );
-                                                },
-                                              );
-                                            }
-                                          }),
-                                    )))
+                                child: _privateChatProvider.countConservation == 0
+                                    ? Align(
+                                        alignment: Alignment.center,
+                                        child: AppConstraint.loadingIndicator(context),
+                                      )
+                                    : ListView.separated(
+                                        separatorBuilder: (ctx, index) => SizedBox(
+                                          height: 10,
+                                        ),
+                                        itemCount: _privateChatProvider.countConservation,
+                                        itemBuilder: (context, index) {
+                                          var coservations = _privateChatProvider.getConservation;
+                                          return buildConvervation(
+                                              _privateChatProvider, coservations[index]);
+                                        },
+                                      ))
                           ],
                         )))
               ],
@@ -247,22 +165,88 @@ class _MessagesState extends State<Messages>
   bool get wantKeepAlive => true;
 }
 
+Widget buildConvervation(PrivateChatProvider prcv, Conservation cv) {
+  return FutureBuilder(
+    future: PrivateChatService.getFriendName(cv.member),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return SkeletonTemplate.chatMessage(80);
+      } else {
+        List<User> users = snapshot.data;
+        return InkWell(
+            onTap: () {
+              Get.to(
+                  PrivateMessagesDetail(
+                    conservationID: cv.conservationID,
+                    user:users[0],
+                    friend: users[1],
+                  ),
+                  opaque: false);
+            },
+            child: Container(
+                height: 80,
+                width: Get.width,
+                child: Row(
+                  children: [
+                    buildProfile(cv.member),
+                    SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          users[1].nickname,
+                          style: TextStyle(fontSize: 15),
+                        ),
+                        SizedBox(height: 5),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            cv.latestMessage.messageType == "media"
+                                ? Text("Send media",
+                                    style: TextStyle(fontSize: 15, color: Colors.white60))
+                                : Text("${cv.latestMessage}",
+                                    style: TextStyle(fontSize: 15, color: Colors.white60)),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: Icon(Icons.fiber_manual_record, size: 8),
+                                ),
+                                Text(
+                                  "${formatDateMonth(DateTime.now().toLocal())}",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  ],
+                )));
+      }
+    },
+  );
+}
+
 Widget buildProfile(List id) {
   var query = GraphQLQuery();
   return FutureBuilder(
       future: (Future(() async {
-        return SubRepo.queryGraphQL(await getToken(), query.getUserInfo(toListInt(id)));
+        return SubRepo.queryGraphQL(await getToken(), query.getMutliUserInfo(toListInt(id)));
       })),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return SkeletonTemplate.image(70, 70,10000);
+          return SkeletonTemplate.image(60, 60, 10000);
         } else {
           var url = snapshot.data.data;
           return ClipRRect(
             borderRadius: BorderRadius.circular(1000),
             child: CachedNetworkImage(
-              height: 70,
-              width: 70,
+              height: 60,
+              width: 60,
               fit: BoxFit.cover,
               placeholder: (context, url) => Container(
                 decoration: BoxDecoration(
@@ -277,7 +261,8 @@ Widget buildProfile(List id) {
 
 Widget buildFriendsActive(String token) {
   var query = GraphQLQuery();
-  return Flexible(
+  return Expanded(
+      flex: 1,
       child: ContainerResponsive(
           height: 200.h,
           width: ScreenUtil().uiWidthPx,

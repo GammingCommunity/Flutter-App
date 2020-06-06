@@ -5,6 +5,7 @@ import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:gamming_community/class/Game.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/provider/search_game.dart';
+import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/brighness_query.dart';
 import 'package:gamming_community/view/room/room_selector/select_num_member.dart';
@@ -108,7 +109,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                               width: screenSize.width,
                               decoration: BoxDecoration(
                                 color: checkBrightness(context)
-                                    ? Color(AppConstraint.searchBackground)
+                                    ? Color(AppColors.SEARCH_BACKGROUND)
                                     : Colors.grey,
                                 borderRadius: BorderRadius.circular(15),
                               ),
@@ -135,7 +136,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                                             child: Text("No values"))
                                         : Material(
                                             color: checkBrightness(context)
-                                                ? Color(AppConstraint.searchBackground)
+                                                ? Color(AppColors.SEARCH_BACKGROUND)
                                                 : Colors.grey,
                                             child: InkWell(
                                               onTap: () {
@@ -226,7 +227,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                                     border: InputBorder.none,
                                     hintText: "Search your game here",
                                     fillColor: checkBrightness(context)
-                                        ? Color(AppConstraint.searchBackground)
+                                        ? Color(AppColors.SEARCH_BACKGROUND)
                                         : Colors.grey,
                                     filled: true,
                                     suffixIcon: Padding(
@@ -360,7 +361,7 @@ class _SelectGameState extends State<SelectGame> with TickerProviderStateMixin {
                           height: 50.h,
                           width: 70.w,
                           decoration: BoxDecoration(
-                              color: checkBrightness(context) ? Color(AppConstraint.searchBackground) : Colors.grey,
+                              color: checkBrightness(context) ? Color(AppColors.SEARCH_BACKGROUND) : Colors.grey,
                               borderRadius: BorderRadius.circular(15)),
                           child: TextField(
                             textAlign: TextAlign.center,

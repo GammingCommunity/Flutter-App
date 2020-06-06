@@ -8,7 +8,7 @@ getUser(List<int> ids) async {
     SharedPreferences refs = await SharedPreferences.getInstance();
     GraphQLQuery query = GraphQLQuery();
     String token = refs.getStringList("userToken")[2];
-    var result = await SubRepo.queryGraphQL(token,query.getUserInfo(ids));
+    var result = await SubRepo.queryGraphQL(token,query.getMutliUserInfo(ids));
     var user = ListUser.fromJson(result.data['lookAccount']);
     return user.listUser;
   } catch (e) {
