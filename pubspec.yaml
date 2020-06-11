@@ -35,7 +35,6 @@ dependencies:
   page_transition: ^1.1.5
   google_nav_bar: ^2.1.0
   tuple: ^1.0.3
-  rxdart: ^0.23.1
   # json webtoken 
   jose: ^0.1.2+1
   palette_generator: ^0.2.2
@@ -46,6 +45,10 @@ dependencies:
   hive_flutter: ^0.3.0+2
   #shorthand for context usage
   get: ^2.10.1
+  #pull-down refresh and pull-up loading
+  frefresh: ^1.1.0
+  # data from url
+  metadata_fetch: ^0.3.1
 dependency_overrides: 
   path: 1.7.0 
 

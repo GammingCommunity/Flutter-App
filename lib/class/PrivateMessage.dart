@@ -3,8 +3,8 @@ class PrivateMessage {
   List memeber;
   DateTime createAt;
   Message message;
-  
-  PrivateMessage({this.messageID, this.memeber,this.message, this.createAt});
+
+  PrivateMessage({this.messageID, this.memeber, this.message, this.createAt});
 }
 
 class Message {
@@ -17,9 +17,14 @@ class Message {
 
 class MessageDetail {
   String content;
+  FileInfo fileInfo;
+  MessageDetail({this.content, this.fileInfo});
+}
+
+class FileInfo {
   int height;
   int width;
-  MessageDetail({this.content, this.height, this.width});
+  FileInfo({this.height = 0, this.width = 0});
 }
 
 class PrivateMessages {

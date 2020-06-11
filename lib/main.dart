@@ -1,13 +1,12 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:gamming_community/API/config/refreshToken.dart';
 import 'package:gamming_community/generated/i18n.dart';
 import 'package:gamming_community/hive_models/connection/hive_connection.dart';
 import 'package:gamming_community/provider/changeProfile.dart';
-import 'package:gamming_community/provider/fetchMore.dart';
 import 'package:gamming_community/provider/search_bar.dart';
 import 'package:gamming_community/provider/search_game.dart';
 import 'package:gamming_community/resources/values/app_theme.dart';
@@ -50,9 +49,10 @@ void main() async {
   Widget defaultHome = Login();
   SharedPreferences ref = await SharedPreferences.getInstance();
   bool isEng = ref.getBool("isEng") ?? true;
+  bool isLogin = ref.getBool('isLogin') == null ?false: true ;
   // check token is not invaild
-
-  if (ref.getBool('isLogin') != null) {
+  
+  if (isLogin) {
     if (await RefreshToken.isVaildSession()) {
       print("vaild session");
       defaultHome = HomePage();
@@ -60,6 +60,8 @@ void main() async {
       await RefreshToken.renewToken();
       defaultHome = HomePage();
     }
+  } else {
+    defaultHome = Login();
   }
 
   runApp(MyApp(home: defaultHome, enLanguage: isEng));
@@ -92,17 +94,17 @@ class MyApp extends StatelessWidget {
             child: SignUp(),
           )
         ],
-        child: MultiBlocProvider(
+        child: bloc.MultiBlocProvider(
           providers: [
-            BlocProvider<LoginBloc>(
+            bloc.BlocProvider<LoginBloc>(
               create: (BuildContext context) => LoginBloc(),
               child: Login(),
             ),
-            BlocProvider<SignUpBloc>(
+            bloc.BlocProvider<SignUpBloc>(
               create: (BuildContext context) => SignUpBloc(),
               child: SignUp(),
             ),
-            BlocProvider<RoomManagerBloc>(
+            bloc.BlocProvider<RoomManagerBloc>(
               create: (BuildContext context) => RoomManagerBloc(),
               child: RoomManager(),
             )
@@ -126,6 +128,7 @@ class MyApp extends StatelessWidget {
               return StateBuilder(
                   models: [],
                   builder: (context, _) => GetMaterialApp(
+                        opaqueRoute: false,
                         localeResolutionCallback: i18n.resolution(fallback: Locale('en', 'US')),
                         supportedLocales: i18n.supportedLocales,
                         locale: enLanguage == true ? Locale('en', 'US') : Locale('vi', 'VI'),
@@ -143,8 +146,24 @@ class MyApp extends StatelessWidget {
                           child: child,
                         ), //1. call BotToastInit
                         navigatorObservers: [BotToastNavigatorObserver()],
-                        //initialRoute: '/',
-                        onGenerateRoute: (RouteSettings settings) {
+                        initialRoute: '/',
+                        namedRoutes: {
+                          '/': GetRoute(page: Login(), transition: Transition.fade),
+                          '/signup': GetRoute(page: SignUp()),
+                          '/forgot': GetRoute(page: ForgotPassword()),
+                          '/homepage': GetRoute(page: HomePage(), transition: Transition.scale),
+                          '/createroom': GetRoute(page: CreateRoom()),
+                          '/profile': GetRoute(page: Profile())
+                        },
+
+                        home: home,
+                      ));
+            },
+          ),
+        ));
+  }
+}
+/*onGenerateRoute: (RouteSettings settings) {
                           List<String> pathElements = settings.name.split("/");
                           if (pathElements[0] != "") return null;
                           switch (pathElements[1]) {
@@ -174,18 +193,11 @@ class MyApp extends StatelessWidget {
                                 );
                               });
                           }
-                        },
-                        /*routes: <String, WidgetBuilder>{
+                        },*/
+/*routes: <String, WidgetBuilder>{
                 '/login': (context) => Login(),
                 '/signup': (context) => SignUp(),
                 '/forgot': (context) => ForgotPassword(),
                 '/homepage': (context) => HomePage(),
                 '/profile': (context) => Profile()
               },*/
-                        home: home,
-                      ));
-            },
-          ),
-        ));
-  }
-}

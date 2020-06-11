@@ -48,14 +48,12 @@ class _ProgressButtonState extends State<ProgressButton> with TickerProviderStat
       );
     } else if (_state == 1) {
       return FutureBuilder(future: Future(() async {
-        print("Hree ${widget.imagePath.path}");
-
-        //GraphQLClient client = authAPI(widget.token);
-        var avatarUrl = await uploadFile(widget.userID, widget.imagePath);
-        return await SubRepo.mutationGraphQL(
+       
+        return uploadFile(widget.userID, widget.imagePath);
+       /* return await SubRepo.mutationGraphQL(
             await getToken(),
             mutation.editAccount(
-                widget.nickname, widget.describe, widget.email, "", "", avatarUrl));
+                widget.nickname, widget.describe, widget.email, "", "", avatarUrl))*/;
       }), builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting)
           return SizedBox(
@@ -120,10 +118,13 @@ class _ProgressButtonState extends State<ProgressButton> with TickerProviderStat
       color: Colors.transparent,
       child: Container(
         margin: EdgeInsets.only(right: 10),
-        height: 28,
+        height: 30,
         key: _globalKey,
         child: RaisedButton(
           padding: EdgeInsets.all(0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10)
+          ),
           animationDuration: Duration(milliseconds: 1000),
           onPressed: () {
             setState(() {

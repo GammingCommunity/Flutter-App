@@ -16,6 +16,7 @@ import 'package:gamming_community/view/room_manager/display_member.dart';
 import 'package:gamming_community/view/room_manager/edit_room.dart';
 import 'package:gamming_community/view/room_manager/logo_room.dart';
 import 'package:gamming_community/view/room_manager/room_detail_v2.dart';
+import 'package:get/get.dart' as gets;
 import 'package:page_transition/page_transition.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 
@@ -144,8 +145,9 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                 heroTag: "addNewGroup",
                 child: Icon(FeatherIcons.plus),
                 onPressed: () {
-                  Navigator.push(context,
-                      PageTransition(child: CreateRoomV2(), type: PageTransitionType.fade));
+                  gets.Get.to(CreateRoomV2(), transition: gets.Transition.fade);
+                  /*Navigator.push(context,
+                      PageTransition(child: , type: PageTransitionType.fade));*/
                 }),
             body: RefreshIndicator(
               onRefresh: () {
@@ -177,14 +179,20 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                           elevation: 2,
                           child: InkWell(
                             onTap: () {
-                              Navigator.push(
+                              gets.Get.to(
+                                  RoomDetailV2(
+                                    room: rooms[index],
+                                    itemTag: rooms[index].id,
+                                  ),
+                                  transition: gets.Transition.fade,opaque: false);
+                              /*Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => RoomDetailV2(
                                             room: rooms[index],
                                             
                                             itemTag: rooms[index].id,
-                                          )));
+                                          )));*/
                             },
                             // long press on each room
                             onLongPress: () {
@@ -231,7 +239,8 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                                             child: Text(
                                               rooms[index].roomName,
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.bold, fontSize: ScreenUtil().setSp(15)),
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: ScreenUtil().setSp(15)),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
@@ -240,7 +249,7 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                                           Padding(
                                             padding: EdgeInsetsResponsive.all(5),
                                             child: DisplayMember(
-                                              showBadged: true,
+                                                showBadged: true,
                                                 borderRadius: 1000,
                                                 size: 30,
                                                 ids: rooms[index].memberID),

@@ -28,8 +28,7 @@ class Messages {
             status: e['status'],
             txtMessage: TextMessage(
                 content: e['text']['content'],
-                height: e['text']['height'],
-                width: e['text']['width']),
+                ),
             messageType: e['messageType'],
             createAt: DateTime.parse(e['createAt']).toLocal()));
       }
@@ -43,9 +42,17 @@ class Messages {
 
 class TextMessage {
   String content;
+  FileInfo fileInfo;
+  TextMessage({this.content, this.fileInfo});
+}
+
+class FileInfo {
+  String publicID;
+  String fileName;
   int height;
   int width;
-  TextMessage({this.content, this.height, this.width});
+
+  FileInfo({this.publicID, this.fileName, this.height = 0, this.width = 0});
 }
 
 class PrivateConservations {
@@ -65,8 +72,11 @@ class PrivateConservations {
             status: e['latest_message']['status'],
             txtMessage: TextMessage(
                 content: e['latest_message']['text']['content'],
-                height: e['latest_message']['text']['height'],
-                width: e['latest_message']['text']['width']),
+                fileInfo: FileInfo(
+                    fileName: e['latest_message']['text']['fileInfo']['fileName'],
+                    publicID: e['latest_message']['text']['fileInfo']['publicID'],
+                    height: e['latest_message']['text']['fileInfo']['height'],
+                    width: e['latest_message']['text']['fileInfo']['width'])),
             messageType: e['latest_message']['messageType'],
             createAt: DateTime.parse(e['latest_message']['createAt']).toLocal(),
           ),

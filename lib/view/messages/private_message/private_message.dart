@@ -1,7 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/class/Conservation.dart';
 import 'package:gamming_community/class/User.dart';
+import 'package:gamming_community/customWidget/urlPreview.dart';
+import 'package:gamming_community/resources/values/app_colors.dart';
+import 'package:gamming_community/utils/display_image.dart';
+import 'package:gamming_community/utils/enum/messageEnum.dart';
+import 'package:gamming_community/utils/generatePalate.dart';
+import 'package:gamming_community/utils/skeleton_template.dart';
+import 'package:get/get.dart';
+import 'package:metadata_fetch/metadata_fetch.dart';
 
 class PrivateMessage extends StatelessWidget {
   final User user, friend;
@@ -22,9 +31,6 @@ class PrivateMessage extends StatelessWidget {
       this.sendDate});
   @override
   Widget build(BuildContext context) {
-    //ThemeModel themeModel = Injector.get(context: context);
-    // bool isMe = themeModel.sender == sender;
-    //print(sender['id']);
     bool isMe = user.id.toString() == sender;
 
     return SizeTransition(
@@ -45,41 +51,85 @@ class PrivateMessage extends StatelessWidget {
                   ),
                 ),
               Flexible(
-                child: messageType == "media"
-                    ? InkWell(
-                      borderRadius: BorderRadius.circular(15),
-                        onTap: () {},
-                        child: Container(
-                          height: text.height.toDouble(),
-                          width: text.width.toDouble(),
-                          child: CachedNetworkImage(
-                            fit: BoxFit.cover,
-                            imageUrl: text.content,
-                            height: text.height.toDouble(),
-                              width: text.width.toDouble(),
-                            placeholder: (context, url) => Container(
-                              height: text.height.toDouble(),
-                              width: text.width.toDouble(),
-                              decoration: BoxDecoration(
-                                  color: Colors.grey, borderRadius: BorderRadius.circular(15)),
+                  child: messageType == MessageEnum.image
+                      ? InkWell(
+                          borderRadius: BorderRadius.circular(15),
+                          onTap: () {
+                            generatePalete(context, text.content, false, messageType);
+                          },
+                          child: Container(
+                            // show image by 50%
+                            height: text.fileInfo.height.toDouble() * 0.5,
+                            width: text.fileInfo.width.toDouble() * 0.5,
+                            child: CachedNetworkImage(
+                              fit: BoxFit.cover,
+                              imageUrl: text.content,
+                              height: text.fileInfo.height.toDouble(),
+                              width: text.fileInfo.width.toDouble(),
+                              placeholder: (context, url) => Container(
+                                height: text.fileInfo.height.toDouble(),
+                                width: text.fileInfo.width.toDouble(),
+                                decoration: BoxDecoration(
+                                    color: Colors.grey, borderRadius: BorderRadius.circular(15)),
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                    : Container(
-                        //alignment: Alignment.center,
-                        padding: EdgeInsets.all(8),
-                        margin: EdgeInsets.symmetric(horizontal: 6),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        child: Text(text.content, style: Theme.of(context).textTheme.bodyText2),
-                      ),
-              ),
+                        )
+                      : messageType == MessageEnum.text
+                          ? Container(
+                              //alignment: Alignment.center,
+                              padding: EdgeInsets.all(8),
+                              margin: EdgeInsets.symmetric(horizontal: 6),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              child:
+                                  Text(text.content, style: Theme.of(context).textTheme.bodyText2),
+                            )
+                          : messageType == MessageEnum.file
+                              ? buildFileMessage("FILE")
+                              : messageType == MessageEnum.gif
+                                  ?
+                                  //loadGif,
+                                  Container()
+                                  : // load url metadata
+                                  UrlPreview(
+                                      url: text.content,
+                                    )),
             ],
           ),
         ) //new
         );
   }
+}
+
+Widget buildFileMessage(String name) {
+  double messageHeight = 55;
+  return Container(
+    height: messageHeight,
+    width: 150,
+    alignment: Alignment.center,
+    decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15), color: Color(AppColors.SEARCH_BACKGROUND)),
+    child: Stack(
+      children: [
+        Positioned(
+            left: 0,
+            child: Container(
+                width: 50,
+                height: messageHeight,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15), bottomLeft: Radius.circular(15)),
+                    color: Colors.indigo),
+                child: Icon(FeatherIcons.file))),
+        Positioned.fill(
+            child: Align(
+          alignment: Alignment.center,
+          child: Text(name),
+        ))
+      ],
+    ),
+  );
 }

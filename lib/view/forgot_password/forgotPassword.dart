@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ForgotPassword extends StatefulWidget {
   @override
@@ -22,7 +23,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 child: IconButton(
                     icon: Icon(Icons.keyboard_arrow_left),
                     onPressed: () {
-                      Navigator.of(context).pushNamed('/login');
+                      Get.toNamed('/');
                     }),
               ),
             ),

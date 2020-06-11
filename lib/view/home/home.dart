@@ -66,12 +66,9 @@ class _HomeState extends State<HomePage>
               userID: userID,
               token: token,
             )
-            //Profile(userID: userID, userName: userName, userProfile: userProfile)
           ]
         });
-    /*controller = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
-    animation = Tween(begin: Offset(0, 1), end: Offset.zero)
-        .animate(CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn));*/
+
     _pageController = PageController(); //(viewportFraction: 0.999);
   }
 
@@ -97,17 +94,15 @@ class _HomeState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
     var notification = Provider.of<NotificationModel>(context);
     super.build(context);
 
-    ResponsiveWidgets.init(context,
-        allowFontScaling: true, height: screenSize.height, width: screenSize.width);
+    ResponsiveWidgets.init(context, allowFontScaling: true, height: Get.height, width: Get.width);
 
     return ResponsiveWidgets.builder(
       allowFontScaling: true,
-      height: screenSize.height,
-      width: screenSize.width,
+      height: Get.height,
+      width: Get.width,
       child: Selector2<SearchProvider, NotificationModel, Tuple2<String, bool>>(
         selector: (context, search, notify) =>
             Tuple2(search.changeContent(_currentIndex), notify.isSeen),
@@ -115,8 +110,8 @@ class _HomeState extends State<HomePage>
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(40),
             child: ContainerResponsive(
-                width: screenSize.width,
-                height: 40,
+                width: Get.width,
+                
                 padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
                 child: Row(
@@ -199,13 +194,15 @@ class _HomeState extends State<HomePage>
                                   ],
                                 )),
                             useRootNavigator: true,
-                            backgroundColor: Get.isDarkMode ? AppColors.BACKGROUND_COLOR: Colors.white,
+                            backgroundColor:
+                                Get.isDarkMode ? AppColors.BACKGROUND_COLOR : Colors.white,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(10), topRight: Radius.circular(10))));
                       },
                     ),
                     Stack(
+                      
                       children: <Widget>[
                         CircleIcon(
                           icon: FeatherIcons.bell,
@@ -286,7 +283,7 @@ class _HomeState extends State<HomePage>
                         child: CachedNetworkImage(
                           height: 30,
                           width: 30,
-                          imageUrl: userProfile == "" ? AppConstraint.default_profile : userProfile,
+                          imageUrl: userProfile != null  ? userProfile :  AppConstraint.default_profile ,
                           placeholder: (context, url) => Container(
                             height: 30,
                             width: 30,
@@ -344,9 +341,29 @@ class _HomeState extends State<HomePage>
                     selectedIndex: _currentIndex,
                   )
                 ],
-              ))
+              )),
+          body: ContainerResponsive(
+            height: Get.height,
+            child: PageView(
+              //physics: NeverScrollableScrollPhysics(),
+              onPageChanged: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              controller: _pageController,
+              children: _listWidget,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
-          /*BottomNavyBar(
+  @override
+  bool get wantKeepAlive => true;
+}
+/*BottomNavyBar(
                   selectedIndex: _currentIndex,
                   onItemSelected: (int index) {
                     setState(() {
@@ -383,25 +400,3 @@ class _HomeState extends State<HomePage>
                         inactiveColor: Colors.white),
                   ],
                 )*/
-          ,
-          body: ContainerResponsive(
-            height: screenSize.height,
-            child: PageView(
-              //physics: NeverScrollableScrollPhysics(),
-              onPageChanged: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
-              controller: _pageController,
-              children: _listWidget,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  bool get wantKeepAlive => true;
-}

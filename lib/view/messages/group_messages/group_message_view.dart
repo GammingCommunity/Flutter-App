@@ -337,11 +337,10 @@ class _MessagesState extends State<GroupMessageWidget>
     chatController = TextEditingController();
     animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 200));
 
-    WidgetsBinding.instance.addPostFrameCallback((d) {
-      groupchatProvider.initSocket();
+    WidgetsBinding.instance.addPostFrameCallback((d) async {
+      await groupchatProvider.initSocket(widget.roomID);
       
       groupchatProvider.initMember(widget.member, widget.roomID);
-      groupchatProvider.joinGroup(widget.roomID);
       loadMessage();
       onRecieveMessage();
       

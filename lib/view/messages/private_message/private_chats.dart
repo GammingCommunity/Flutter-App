@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:frefresh/frefresh.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/API/config/subAuth.dart';
 import 'package:gamming_community/class/Conservation.dart';
@@ -9,6 +12,7 @@ import 'package:gamming_community/class/User.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
+import 'package:gamming_community/utils/enum/messageEnum.dart';
 import 'package:gamming_community/utils/get_token.dart';
 import 'package:gamming_community/utils/skeleton_template.dart';
 import 'package:gamming_community/utils/toListInt.dart';
@@ -17,6 +21,7 @@ import 'package:gamming_community/view/messages/friend_profile.dart';
 import 'package:gamming_community/view/messages/models/private_chat_provider.dart';
 import 'package:gamming_community/view/messages/private_message/private_chat_service.dart';
 import 'package:gamming_community/view/messages/private_message/private_message_detail.dart';
+
 import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
@@ -53,6 +58,9 @@ class _MessagesState extends State<Messages>
   ScrollController _scrollController;
   AnimationController animationController;
   PrivateChatProvider _privateChatProvider;
+  FRefreshController controller;
+
+  String text = "Drop-down to loading";
 
   void _scrollListener() {
     if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
@@ -65,6 +73,7 @@ class _MessagesState extends State<Messages>
   @override
   void initState() {
     super.initState();
+    controller = FRefreshController();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _privateChatProvider.initPrivateConservation();
     });
@@ -139,22 +148,79 @@ class _MessagesState extends State<Messages>
                             ),
                             Expanded(
                                 flex: 6,
-                                child: _privateChatProvider.countConservation == 0
-                                    ? Align(
-                                        alignment: Alignment.center,
-                                        child: AppConstraint.loadingIndicator(context),
-                                      )
-                                    : ListView.separated(
+                                child: Container(
+                                  height: 250,
+                                  child: FRefresh(
+                                      controller: controller,
+                                      headerHeight: 50,
+                                      headerBuilder: (setter, constraints) {
+                                        //await _privateChatProvider.refresh();
+                                        return Container(
+                                            height: 50,
+                                            alignment: Alignment.bottomCenter,
+                                            child: SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child: CircularProgressIndicator(),
+                                            ));
+                                      },
+                                      footerHeight: 50.0,
+                                      footerBuilder: (setter) {
+                                        /// Get refresh status, partially update the content of Footer area
+
+                                        return Container(
+                                            height: 38,
+                                            alignment: Alignment.center,
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                SizedBox(
+                                                  width: 15,
+                                                  height: 15,
+                                                  child: CircularProgressIndicator(
+                                                    backgroundColor: Color(0xfff1f3f6),
+                                                    valueColor: new AlwaysStoppedAnimation<Color>(
+                                                        Color(0xff6c909b)),
+                                                    strokeWidth: 2.0,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 9.0),
+                                                Text(
+                                                  text,
+                                                  style: TextStyle(color: Color(0xff6c909b)),
+                                                ),
+                                              ],
+                                            ));
+                                      },
+                                      onRefresh: () {
+                                        print("on refresgh");
+                                        Timer(Duration(milliseconds: 3000), () {
+                                          controller.finishRefresh();
+                                        });
+                                      },
+                                      onLoad: () {
+                                        print("onLoad");
+                                        Timer(Duration(milliseconds: 3000), () {
+                                          controller.finishLoad();
+                                          print(
+                                              'controller4.position = ${controller.position}, controller4.scrollMetrics = ${controller.scrollMetrics}');
+                                        });
+                                      },
+                                      child: ListView.separated(
                                         separatorBuilder: (ctx, index) => SizedBox(
                                           height: 10,
                                         ),
+                                        physics: NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
                                         itemCount: _privateChatProvider.countConservation,
                                         itemBuilder: (context, index) {
                                           var coservations = _privateChatProvider.getConservation;
                                           return buildConvervation(
                                               _privateChatProvider, coservations[index]);
                                         },
-                                      ))
+                                      )),
+                                ))
                           ],
                         )))
               ],
@@ -178,7 +244,7 @@ Widget buildConvervation(PrivateChatProvider prcv, Conservation cv) {
               Get.to(
                   PrivateMessagesDetail(
                     conservationID: cv.conservationID,
-                    user:users[0],
+                    user: users[0],
                     friend: users[1],
                   ),
                   opaque: false);
@@ -203,10 +269,10 @@ Widget buildConvervation(PrivateChatProvider prcv, Conservation cv) {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            cv.latestMessage.messageType == "media"
+                            isMedia(cv.latestMessage.messageType)
                                 ? Text("Send media",
                                     style: TextStyle(fontSize: 15, color: Colors.white60))
-                                : Text("${cv.latestMessage}",
+                                : Text("${cv.latestMessage.txtMessage}",
                                     style: TextStyle(fontSize: 15, color: Colors.white60)),
                             Row(
                               children: [

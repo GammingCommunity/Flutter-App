@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Mutation.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/User.dart';
+import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/provider/changeProfile.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
@@ -10,6 +11,7 @@ import 'package:gamming_community/utils/get_token.dart';
 import 'package:gamming_community/utils/progress_button.dart';
 import 'package:gamming_community/view/profile/load_image.dart';
 import 'package:gamming_community/view/profile/load_image_network.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +21,7 @@ bool isShownBottomAvatar = false;
 GraphQLMutation mutation = GraphQLMutation();
 
 class EditProfile extends StatefulWidget {
-  final String userID,currentProfile;
+  final String userID, currentProfile;
   EditProfile({this.userID, this.currentProfile});
   @override
   _EditProfileState createState() => _EditProfileState();
@@ -55,7 +57,7 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future getProfileInfo() async {
-    var result= await SubRepo.queryGraphQL(await getToken(), query.getCurrentUserInfo());
+    var result = await SubRepo.queryGraphQL(await getToken(), query.getCurrentUserInfo());
     User user = User.fromJson(result.data["getThisAccount"]);
     if (mounted) {
       setState(() {
@@ -64,7 +66,6 @@ class _EditProfileState extends State<EditProfile> {
         _phone.text = user.phoneNumber;
       });
     }
-
   }
 
   @override
@@ -80,10 +81,8 @@ class _EditProfileState extends State<EditProfile> {
     return (await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Discard change?',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            content:
-                Text("You'll lose any changes you've made to your profile."),
+            title: Text('Discard change?', style: TextStyle(fontWeight: FontWeight.bold)),
+            content: Text("You'll lose any changes you've made to your profile."),
             actions: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -124,21 +123,15 @@ class _EditProfileState extends State<EditProfile> {
         return Scaffold(
             key: scaffoldKey,
             appBar: PreferredSize(
-              preferredSize: Size.fromHeight(30),
+              preferredSize: Size.fromHeight(40),
               child: Container(
-                
                 child: Row(
-                  
                   children: <Widget>[
-                    Material(
-                      color: Colors.transparent,
-                      type: MaterialType.circle,
-                      clipBehavior: Clip.antiAlias,
-                      child: IconButton(
-                          icon: Icon(Icons.chevron_left),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          }),
+                    CircleIcon(
+                      icon: Icons.chevron_left,
+                      onTap: () {
+                        Get.back();
+                      },
                     ),
                     Text(
                       "Edit Profile",
@@ -147,7 +140,7 @@ class _EditProfileState extends State<EditProfile> {
                     Spacer(),
                     ProgressButton(
                       userID: widget.userID,
-                      imagePath:getImage.getFile,
+                      imagePath: getImage.getFile,
                       nickname: _nickname.text,
                       email: "",
                       phone: _phone.text,
@@ -184,14 +177,22 @@ class _EditProfileState extends State<EditProfile> {
                                   setState(() {
                                     isShownBottomAvatar = true;
                                   });
-                                  showBotomSheetAvatar(
-                                      context, screenSize.width, getImage);
+                                  showBotomSheetAvatar(context, screenSize.width, getImage);
                                 },
                                 child: ClipRRect(
                                     borderRadius: BorderRadius.circular(1000),
-                                    child: getImage.isChangeAvatar == false ? Container(height: 100,width: 100,color: Colors.grey,) : widget.currentProfile != null ? loadImageNetwork(widget.currentProfile) :  getImage.getFile != null
-                                        ? loadImage(getImage.getFile)
-                                        : loadImageNetwork(AppConstraint.sample_proifle_url)),
+                                    child: getImage.isChangeAvatar == false
+                                        ? Container(
+                                            height: 100,
+                                            width: 100,
+                                            color: Colors.grey,
+                                          )
+                                        : widget.currentProfile != null
+                                            ? loadImageNetwork(widget.currentProfile)
+                                            : getImage.getFile != null
+                                                ? loadImage(getImage.getFile)
+                                                : loadImageNetwork(
+                                                    AppConstraint.sample_proifle_url)),
                               ),
                             ),
                           ),
@@ -206,11 +207,9 @@ class _EditProfileState extends State<EditProfile> {
                                     controller: _nickname,
                                     decoration: InputDecoration(
                                       hintText: "Enter your nick name",
-                                      labelStyle:
-                                          TextStyle(color: Colors.white),
+                                      labelStyle: TextStyle(color: Colors.white),
                                       focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Colors.white, width: 1)),
+                                          borderSide: BorderSide(color: Colors.white, width: 1)),
                                     ),
                                   ),
                                 ],
@@ -224,13 +223,10 @@ class _EditProfileState extends State<EditProfile> {
                                     focusNode: _personalInfoFocus,
                                     controller: _personalInfo,
                                     decoration: InputDecoration(
-                                      hintText:
-                                          "Enter your personal information",
-                                      labelStyle:
-                                          TextStyle(color: Colors.white),
+                                      hintText: "Enter your personal information",
+                                      labelStyle: TextStyle(color: Colors.white),
                                       focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Colors.white, width: 1)),
+                                          borderSide: BorderSide(color: Colors.white, width: 1)),
                                     ),
                                   ),
                                 ],
@@ -249,17 +245,15 @@ class _EditProfileState extends State<EditProfile> {
                                     },
                                     decoration: InputDecoration(
                                       hintText: "Select your birthday",
-                                      labelStyle:
-                                          TextStyle(color: Colors.white),
+                                      labelStyle: TextStyle(color: Colors.white),
                                       focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Colors.white, width: 1)),
+                                          borderSide: BorderSide(color: Colors.white, width: 1)),
                                     ),
                                   ),
                                 ],
                               ),
                               SizedBox(height: 20),
-                              Row(
+                             /* Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
@@ -283,7 +277,7 @@ class _EditProfileState extends State<EditProfile> {
                                   )
                                 ],
                               ),
-                              SizedBox(height: 20),
+                              SizedBox(height: 20),*/
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -291,8 +285,7 @@ class _EditProfileState extends State<EditProfile> {
                                   Expanded(
                                     flex: 5,
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: <Widget>[
                                         Text("Email"),
                                         TextFormField(
@@ -302,26 +295,16 @@ class _EditProfileState extends State<EditProfile> {
                                           onTap: () {},
                                           decoration: InputDecoration(
                                             hintText: "Your email here",
-                                            labelStyle:
-                                                TextStyle(color: Colors.white),
+                                            labelStyle: TextStyle(color: Colors.white),
                                             focusedBorder: UnderlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1)),
+                                                borderSide:
+                                                    BorderSide(color: Colors.white, width: 1)),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(width: 10),
-                                  Expanded(
-                                      flex: 1,
-                                      child: RaisedButton(
-                                          onPressed: () {},
-                                          child: Text(
-                                            "Not Bind",
-                                            textAlign: TextAlign.center,
-                                          )))
+                                  
                                 ],
                               )
                             ],
@@ -336,8 +319,7 @@ class _EditProfileState extends State<EditProfile> {
   }
 }
 
-showBotomSheetAvatar(
-    BuildContext context, double width, ChangeProfile getImage) {
+showBotomSheetAvatar(BuildContext context, double width, ChangeProfile getImage) {
   return showModalBottomSheet(
       backgroundColor: Colors.white,
       useRootNavigator: true,
@@ -348,14 +330,12 @@ showBotomSheetAvatar(
           height: 50,
           child: FlatButton(
               onPressed: () async {
-                var image =
-                    await ImagePicker.pickImage(source: ImageSource.gallery);
+                var image = await ImagePicker.pickImage(source: ImageSource.gallery);
                 //close modal
                 Navigator.pop(context);
                 //print(image);
                 try {
                   getImage.setFilePath(image);
-                  
                 } catch (e) {}
               },
               child: Text(

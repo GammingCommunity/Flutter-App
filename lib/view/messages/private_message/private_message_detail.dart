@@ -1,13 +1,18 @@
+import 'dart:async';
+
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:frefresh/frefresh.dart';
 import 'package:gamming_community/API/Query.dart';
+import 'package:gamming_community/class/Conservation.dart' as csv;
 import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:gamming_community/class/User.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/iconWithTitle.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
+import 'package:gamming_community/utils/enum/messageEnum.dart';
 import 'package:gamming_community/view/messages/models/private_chat_provider.dart';
 import 'package:gamming_community/view/messages/private_message/private_chat_service.dart';
 import 'package:gamming_community/view/messages/private_message/private_chats.dart';
@@ -35,7 +40,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
   ScrollController scrollController;
   GraphQLQuery query = GraphQLQuery();
   AnimationController animationController;
-
+  FRefreshController fRefreshController;
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
@@ -61,17 +66,16 @@ class _MessagesState extends State<PrivateMessagesDetail>
   }
 
   void onLoadMessage() async {
-    chatProvider.loadMessage(widget.conservationID);
+    await chatProvider.loadMessage(widget.conservationID);
     chatProvider.getMessage.forEach((e) {
       chatProvider.onAddNewMessage(PrivateMessage(
-        animationController: animationController,
-        user: widget.user,
-        friend:widget.friend,
-        sender: e.sender,
-        sendDate: e.createAt,
-        text: e.txtMessage,
-        messageType:e.messageType
-      ));
+          animationController: animationController,
+          user: widget.user,
+          friend: widget.friend,
+          sender: e.sender,
+          sendDate: e.createAt,
+          text: e.txtMessage,
+          messageType: e.messageType));
 
       animateToBottom();
     });
@@ -80,34 +84,34 @@ class _MessagesState extends State<PrivateMessagesDetail>
   void onSendMesasge(String message) {
     if (chatController.text.isEmpty) return;
 
-    /* var chatMessage = PrivateChat(
-      currentID: widget.currentID,
-      sender: {"id": widget.currentID, "profile_url": widget.profileUrl},
-      animationController: animationController,
-      text: chatController.text,
-      sendDate: DateTime.now(),
-    );*/
-
-    sendMessageToSocket();
-    // chatMessage.animationController.forward();
-
-    // add mess to listview
-    // chatProvider.onAddNewMessage(chatMessage);
+    chatProvider.onAddNewMessage(PrivateMessage(
+        animationController: animationController,
+        user: widget.user,
+        friend: widget.friend,
+        sender: widget.user.id.toString(),
+        sendDate: DateTime.now().toLocal(),
+        text: csv.TextMessage(
+          content: chatController.text,
+        ),
+        messageType: MessageEnum.text));
+    PrivateChatService.chatText(
+        chatProvider.socket,
+        widget.conservationID,
+        csv.Message(
+            createAt: DateTime.now().toLocal(),
+            messageType: MessageEnum.text,
+            sender: widget.user.id.toString(),
+            status: "",
+            txtMessage: csv.TextMessage(content: chatController.text)));
 
     chatController.clear();
     animateToBottom();
   }
 
-  void sendMessageToSocket() {
-    PrivateChatService.chatText(chatProvider.socket, chatController.text);
-
-    animateToBottom();
-  }
-
   void onRecieveMessage() {
-    chatProvider.socket.on('message-private', (data) async {
+    chatProvider.socket.on('receive-message-private', (data) async {
       print('recive message' + data.toString());
-      print(data[1]['user']['id']);
+
       notificationAppLaunchDetails =
           await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
 
@@ -147,6 +151,48 @@ class _MessagesState extends State<PrivateMessagesDetail>
     });
   }
 
+  showBottomSheet() {
+    return Get.bottomSheet(
+        Container(
+          height: 100,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  IconWithTitle(
+                    icon: FeatherIcons.image,
+                    color: Color(0xff3282b8),
+                    borderRadius: 20,
+                    title: "Image",
+                    onTap: () {},
+                  ),
+                  IconWithTitle(
+                    icon: FeatherIcons.video,
+                    color: Colors.indigo,
+                    borderRadius: 20,
+                    title: "Video",
+                    onTap: () {},
+                  ),
+                  IconWithTitle(
+                    icon: FeatherIcons.file,
+                    color: Color(0xff543864),
+                    borderRadius: 20,
+                    title: "File",
+                    onTap: () {},
+                  )
+                ],
+              )
+            ],
+          ),
+        ),
+        shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.horizontal(left: Radius.circular(10), right: Radius.circular(10))),
+        backgroundColor: Get.isDarkMode ? AppColors.BACKGROUND_COLOR : Colors.white);
+  }
+
   void animateToBottom() async {
     animationController.forward();
     await scrollController.animateTo(
@@ -161,12 +207,13 @@ class _MessagesState extends State<PrivateMessagesDetail>
     super.initState();
     scrollController = ScrollController();
     chatController = TextEditingController();
+    fRefreshController = FRefreshController();
+
     animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
-    WidgetsBinding.instance.addPostFrameCallback((d) {
-      chatProvider.initSocket();
+    WidgetsBinding.instance.addPostFrameCallback((d) async {
+      await chatProvider.initSocket(widget.conservationID);
       onLoadMessage();
-     // onRecieveMessage();
-      
+      // onRecieveMessage();
     });
   }
 
@@ -175,6 +222,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
     chatController.dispose();
     chatProvider.dispose();
     animationController.dispose();
+    fRefreshController.dispose();
     super.dispose();
   }
 
@@ -209,22 +257,69 @@ class _MessagesState extends State<PrivateMessagesDetail>
         child: Column(
           children: <Widget>[
             Flexible(
-                child: ListView.builder(
-                    padding: EdgeInsets.only(left: 8, right: 8, bottom: 12, top: 12),
-                    itemCount: chatProvider.messages.length,
-                    controller: scrollController,
-                    itemBuilder: (context, index) {
-                      return Column(
-                        children: <Widget>[
-                          if (index == 0) Text(formatDate(chatProvider.messages[index].sendDate)),
-                          if (index != 0 &&
-                              chatProvider.messages[index - 1].sendDate.minute !=
-                                  chatProvider.messages[index].sendDate.minute)
-                            Text(formatDateTime(chatProvider.messages[index].sendDate)),
-                          chatProvider.messages[index],
-                        ],
-                      );
-                    })),
+                child: FRefresh(
+                    controller: fRefreshController,
+                    footerHeight: 50,
+                    footerBuilder: (setter) {
+                      /*fRefreshController.setOnStateChangedCallback((state) {
+                        setter(() {
+                          print(fRefreshController.position);
+                        });
+                      });*/
+
+                      print(fRefreshController.loadState);
+                      return Container(
+                          height: 38,
+                          alignment: Alignment.center,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 15,
+                                height: 15,
+                                child: CircularProgressIndicator(
+                                  backgroundColor: Color(0xfff1f3f6),
+                                  valueColor: new AlwaysStoppedAnimation<Color>(Color(0xff6c909b)),
+                                  strokeWidth: 2.0,
+                                ),
+                              ),
+                              const SizedBox(width: 9.0),
+                              Text(
+                                "asdsadasd",
+                                style: TextStyle(color: Color(0xff6c909b)),
+                              ),
+                            ],
+                          ));
+                    },
+                    onRefresh: () {
+                      print("refresh");
+                    },
+                    onLoad: () {
+                      print("on load");
+                      fRefreshController.finishLoad();
+                    },
+                    child: ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        padding: EdgeInsets.only(left: 8, right: 8, bottom: 12, top: 12),
+                        itemCount: chatProvider.messages.length,
+                        controller: scrollController,
+                        itemBuilder: (context, index) {
+                          return Column(
+                            children: <Widget>[
+                              if (index == 0)
+                                Text(formatDate(chatProvider.messages[index].sendDate)),
+                                SizedBox(height:10),
+                              if (index != 0 &&
+                                  chatProvider.messages[index - 1].sendDate.minute !=
+                                      chatProvider.messages[index].sendDate.minute)
+                                Text(formatDateTime(chatProvider.messages[index].sendDate)),
+                                SizedBox(height:10),
+                              chatProvider.messages[index],
+                            ],
+                          );
+                        }))),
             SizedBox(height: 20),
             Container(
               decoration: BoxDecoration(
@@ -235,46 +330,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
                   CircleIcon(
                     icon: Icons.attach_file,
                     onTap: () {
-                      Get.bottomSheet(
-                          Container(
-                            height: 100,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    IconWithTitle(
-                                      icon: FeatherIcons.image,
-                                      color: Color(0xff3282b8),
-                                      borderRadius: 20,
-                                      title: "Image",
-                                      onTap: () {},
-                                    ),
-                                    IconWithTitle(
-                                      icon: FeatherIcons.video,
-                                      color: Colors.indigo,
-                                      borderRadius: 20,
-                                      title: "Video",
-                                      onTap: () {},
-                                    ),
-                                    IconWithTitle(
-                                      icon: FeatherIcons.file,
-                                      color: Color(0xff543864),
-                                      borderRadius: 20,
-                                      title: "File",
-                                      onTap: () {},
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.horizontal(
-                                  left: Radius.circular(10), right: Radius.circular(10))),
-                          backgroundColor:
-                              Get.isDarkMode ? AppColors.BACKGROUND_COLOR : Colors.white);
+                      showBottomSheet();
                     },
                   ),
                   Flexible(
@@ -286,7 +342,6 @@ class _MessagesState extends State<PrivateMessagesDetail>
                           });
                         },
                         controller: chatController,
-                        
                         decoration:
                             InputDecoration(border: InputBorder.none, hintText: 'Text here')),
                   ),

@@ -77,9 +77,9 @@ class GroupChatProvider extends StatesRebuilder {
 
   void setMember() {}
 
-  void initSocket() async {
+  Future initSocket(String groupID) async {
     var token = await getToken();
-    socket = IO.io('https://socket-chat-io.glitch.me/', <String, dynamic>{
+    socket = IO.io('https://socketchat.glitch.me/', <String, dynamic>{
       'transports': ["websocket"],
       'extraHeaders': {"token": token},
       "autoConnect": false
@@ -90,6 +90,7 @@ class GroupChatProvider extends StatesRebuilder {
     // after get socketid,
     socket.on("get-socket-id", (data) => {this.socketID = data});
 
+    socket.emit("join-group", [groupID]);
     // connect
     socket.on('connection', (_) {
       print('connect');
@@ -98,10 +99,7 @@ class GroupChatProvider extends StatesRebuilder {
     socket.on('disconnect', (_) => print('disconnect'));
   }
 
-  void joinGroup(String roomID) {
-    print("room id $roomID");
-    socket.emit("join-group", [roomID]);
-  }
+  
 
   void dispose() {
     socket.disconnect();

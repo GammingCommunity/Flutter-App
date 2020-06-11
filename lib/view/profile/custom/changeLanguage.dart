@@ -44,7 +44,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
                       //await showChangeLanguageConfirm(context, true);
                     }
                   },
-                  child: Text("EN")),
+                  child: Text("EN",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold))),
             ),
             SizedBoxResponsive(width: 20.w),
             //VerticalDivider(thickness: 2),
@@ -65,7 +65,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
                       }
                     },
                     color: enLang ? Colors.grey : Colors.indigo,
-                    child: Text("VI"))),
+                    child: Text("VI",style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold)))),
           ],
         ),
       ),

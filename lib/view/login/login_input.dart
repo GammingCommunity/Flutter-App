@@ -1,10 +1,13 @@
+import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gamming_community/customWidget/borderIcon.dart';
 import 'package:gamming_community/utils/validators.dart';
 import 'package:gamming_community/view/forgot_password/forgotPassword.dart';
 import 'package:gamming_community/view/login/bloc/bloc/login_bloc.dart';
+import 'package:get/get.dart';
 
 class LoginInput extends StatefulWidget {
   @override
@@ -28,8 +31,8 @@ class _LoginInputState extends State<LoginInput> {
   @override
   void initState() {
     loginBloc = BlocProvider.of<LoginBloc>(context);
-    username.text="jojo195";
-    password.text="hoanglee1998";
+    username.text = "jojo195";
+    password.text = "hoanglee1998";
     super.initState();
   }
 
@@ -56,19 +59,28 @@ class _LoginInputState extends State<LoginInput> {
         }
         if (state is LoginSuccess) {
           //Navigator.pop(context);
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              "/homepage", (Route<dynamic> route) => false);
+
+          Get.offAllNamed("/homepage");
+          // Navigator.of(context)
+          //     .pushNamedAndRemoveUntil("/homepage", (Route<dynamic> route) => false);
         }
         if (state is LoginFailed) {
-          Scaffold.of(context).showSnackBar(SnackBar(
+          Get.snackbar("Forgot your email or username", "Press here", onTap: (snack) {
+            Get.to(ForgotPassword());
+          },
+              duration: Duration(seconds: 5),
+              isDismissible: true,
+              
+              );
+          /* Scaffold.of(context).showSnackBar(SnackBar(
             content: Text("Forgot your email or username "),
             action: SnackBarAction(
                 label: "Press here",
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ForgotPassword()));
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) => ForgotPassword()));
                 }),
-          ));
+          ));*/
         }
       },
       child: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
@@ -80,9 +92,7 @@ class _LoginInputState extends State<LoginInput> {
                   focusNode: _usernameFocus,
                   textInputAction: TextInputAction.next,
                   validator: (text) {
-                    return !Validators.isVaildUsername(username.text)
-                        ? 'Invalid Username'
-                        : null;
+                    return !Validators.isVaildUsername(username.text) ? 'Invalid Username' : null;
                   },
                   onFieldSubmitted: (String val) {
                     FocusScope.of(context).requestFocus(_passwordFocus);
@@ -113,17 +123,14 @@ class _LoginInputState extends State<LoginInput> {
                     focusNode: _passwordFocus,
                     textInputAction: TextInputAction.go,
                     validator: (String text) {
-                     // print(text);
-                      return !Validators.isValidPassword(text)
-                          ? "Invaild password"
-                          : null;
+                      // print(text);
+                      return !Validators.isValidPassword(text) ? "Invaild password" : null;
                     },
                     controller: password,
                     obscureText: showPwd,
                     onFieldSubmitted: (String val) {
                       if (_formKey.currentState.validate()) {
-                        loginBloc.add(Submited(
-                            email: username.text, password: password.text));
+                        loginBloc.add(Submited(email: username.text, password: password.text));
                       }
                       FocusScope.of(context).requestFocus(_loginButton);
                     },
@@ -135,9 +142,7 @@ class _LoginInputState extends State<LoginInput> {
                         size: 20,
                       ),
                       suffixIcon: IconButton(
-                          icon: Icon(showPwd
-                              ? Icons.visibility
-                              : Icons.visibility_off),
+                          icon: Icon(showPwd ? Icons.visibility : Icons.visibility_off),
                           onPressed: () {
                             showPwd = !showPwd;
                           }),
@@ -154,16 +159,14 @@ class _LoginInputState extends State<LoginInput> {
                   child: RaisedButton(
                     focusNode: _loginButton,
                     onPressed: () {
-                     if (_formKey.currentState.validate()) {
-                        loginBloc.add(Submited(
-                            email: username.text, password: password.text));
+                      if (_formKey.currentState.validate()) {
+                        loginBloc.add(Submited(email: username.text, password: password.text));
                       }
 
                       //Navigator.of(context).pushNamed('/homepage');
                     },
                     //borderSide: BorderSide(color: Colors.white, width: 1),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                     child: Stack(
                       alignment: Alignment.center,
                       children: <Widget>[
@@ -239,9 +242,7 @@ class _LoginInputState extends State<LoginInput> {
                                     Navigator.pushNamed(context, "/signup");
                                   },
                                   child: Text(" Sign up now",
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold)),
+                                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                                 ),
                               )
                             ],
@@ -258,12 +259,11 @@ class _LoginInputState extends State<LoginInput> {
 
 Future myDialog(BuildContext context) {
   return showDialog(
-    useRootNavigator: true,
+      useRootNavigator: true,
       context: context,
       builder: (context) {
         return SimpleDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           children: <Widget>[
             SpinKitCircle(
               color: Colors.white,
@@ -273,4 +273,3 @@ Future myDialog(BuildContext context) {
         );
       });
 }
-

@@ -35,16 +35,16 @@ class PrivateChatProvider extends StatesRebuilder {
     rebuildStates();
   }
 
-  void loadMessage(String chatID) async {
+  Future loadMessage(String chatID) async {
     var result = await MainRepo.queryGraphQL(await getToken(), query.getPrivateChatMessge(chatID));
     var messages = Messages.fromJson(result.data['getPrivateChatMessage']).messages;
     _messages.addAll(messages);
     rebuildStates();
   }
 
-  void initSocket() async {
+  Future initSocket(String chatID) async {
     var token = await getToken();
-    socket = IO.io('https://socket-chat-io.glitch.me/', <String, dynamic>{
+    socket = IO.io('https://socketchat.glitch.me/', <String, dynamic>{
       'transports': ["websocket"],
       'extraHeaders': {"token": token},
       "autoConnect": false
@@ -55,6 +55,8 @@ class PrivateChatProvider extends StatesRebuilder {
 
     socket.on("get-socket-id", (data) => {this.socketID = data});
 
+    socket.emit("join-chat-private", [chatID]);
+
     socket.on('connection', (_) {
       print('connect');
     });
@@ -62,9 +64,7 @@ class PrivateChatProvider extends StatesRebuilder {
     socket.on('disconnect', (_) => print('disconnect'));
   }
 
-  void joinRoom(String chatID) {
-    socket.emit("join-chat-private", {"currentSocket": this.socketID, "roomID": chatID});
-  }
+  
 
   void dispose() {
     socket.disconnect();

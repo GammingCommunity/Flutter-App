@@ -8,15 +8,16 @@ import 'package:gamming_community/class/GroupMessage.dart';
 import 'package:gamming_community/hive_models/member.dart';
 import 'package:gamming_community/repository/upload_image.dart';
 import 'package:gamming_community/utils/display_image.dart';
+import 'package:gamming_community/utils/generatePalate.dart';
 import 'package:gamming_community/view/messages/group_messages/group_chat_service.dart';
 import 'package:gamming_community/view/messages/private_message/private_chats.dart';
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:optimized_cached_image/widgets.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-
 
 var currentTime = new DateTime.now();
 
@@ -85,26 +86,7 @@ class _GroupChatMessageState extends State<GroupChatMessage>
     });
   }
 
-  Future _generatePalete(BuildContext context, String imagePath, bool fromStorage) async {
-    //check imagePath is uri or url
-
-    PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(
-        fromStorage == true
-            ? AssetImage(imagePath)
-            : CachedNetworkImageProvider(widget.type == "media" ? widget.text.content : ""),
-        size: Size(110, 150),
-        maximumColorCount: 20);
-
-    Navigator.of(context).push(PageTransition(
-        child: DisplayImage(
-            imageUrl: fromStorage == true ? widget.imageUri : widget.text.content,
-            fromStorage: fromStorage,
-            palate: paletteGenerator),
-        type: PageTransitionType.scale,
-        curve: Curves.fastLinearToSlowEaseIn,
-        alignment: Alignment.center,
-        duration: Duration(milliseconds: 500)));
-  }
+  
 
   @override
   void initState() {
@@ -129,8 +111,9 @@ class _GroupChatMessageState extends State<GroupChatMessage>
     var imageUri = widget.imageUri;
     var imageUrl = widget.text.content;
     // get username for userlist
-    var userProfile = members.get(widget.roomID).members.singleWhere((e) => e.userID == widget.sender);
-   // var userProfile = Member(image: AppConstraint.default_profile, name: "asdsad", userID: "0000");
+    var userProfile =
+        members.get(widget.roomID).members.singleWhere((e) => e.userID == widget.sender);
+    // var userProfile = Member(image: AppConstraint.default_profile, name: "asdsad", userID: "0000");
 
     return SizeTransition(
         sizeFactor: CurvedAnimation(parent: widget.animationController, curve: Curves.easeOut),
@@ -209,7 +192,7 @@ class _GroupChatMessageState extends State<GroupChatMessage>
                       GestureDetector(
                         behavior: HitTestBehavior.deferToChild,
                         onTap: () {
-                          _generatePalete(context, imageUrl, fromStorage);
+                          generatePalete(context, imageUrl, fromStorage,widget.type);
                         },
                         child: Container(
                           color: Colors.grey,

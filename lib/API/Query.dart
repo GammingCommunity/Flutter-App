@@ -200,8 +200,12 @@ class GraphQLQuery {
           status
           text{
             content
-            height
-            width
+            fileInfo{
+              publicID
+              fileName
+              height
+              width
+            }
           }
           createAt
         }
@@ -262,15 +266,18 @@ class GraphQLQuery {
   String getPrivateChatMessge(String chatID,[int page = 1,int limit = 10]) => """
   query{
     getPrivateChatMessage(chatID:"$chatID",page:$page,limit:$limit){
-    id
-    messageType
-    id
-    text{
-      content
-      height
-      width
-    }
-    createAt
+      id
+      messageType
+      text{
+        content
+        fileInfo{
+          fileName
+          publicID
+          height
+          width
+        }
+      }
+      createAt
   }
   }
   
