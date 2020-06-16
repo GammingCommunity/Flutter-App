@@ -126,6 +126,7 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
               ),
               preferredSize: Size.fromHeight(30)),
           body: Material(
+
             child: SingleChildScrollView(
                 controller: scrollController,
                 physics:
@@ -134,6 +135,7 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
                   : NeverScrollableScrollPhysics()*/
                 ,
                 child: ContainerResponsive(
+                  color: AppColors.BACKGROUND_COLOR,
                   padding: EdgeInsetsResponsive.symmetric(horizontal: 20),
                   height: ScreenUtil().uiHeightPx,
                   width: ScreenUtil().uiWidthPx,
@@ -168,7 +170,7 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
                           children: <Widget>[
                             Text("Only admin can change groups name",
                                 style: TextStyle(
-                                    fontFamily: "GoogleSans-Medium", fontWeight: FontWeight.bold)),
+                                    fontFamily: "GoogleSans-Regular", fontWeight: FontWeight.bold)),
                             Checkbox(
                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 value: canChangeName,
@@ -236,12 +238,12 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
                           style: TextStyle(fontSize: setTextSize(20), fontWeight: FontWeight.bold),
                         ),
                         SizedBoxResponsive(
-                          height: 40,
+                          height: 20,
                         ),
                         // select room privacy type
                         ContainerResponsive(
                             alignment: Alignment.center,
-                            height: 100.h,
+                            height: 110.h,
                             child: Row(
                               children: <Widget>[
                                 PrivacyRadio(
@@ -291,7 +293,7 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> {
                           style: TextStyle(fontSize: setTextSize(20), fontWeight: FontWeight.bold),
                         ),
                         SizedBoxResponsive(
-                          height: 20.h,
+                          height: 10.h,
                         ),
                         // select admin type
                         ContainerResponsive(

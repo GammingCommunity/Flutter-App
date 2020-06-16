@@ -13,19 +13,20 @@ import 'package:gamming_community/utils/checkHasConnection.dart';
 import 'package:gamming_community/view/messages/group_messages/group_chat_service.dart';
 import 'package:gamming_community/view/messages/models/group_chat_provider.dart';
 import 'package:gamming_community/view/messages/private_message/private_chats.dart';
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
-import 'group_message.dart';
+import '../../messages/group_messages/group_message.dart';
 
 class GroupMessageWidget extends StatefulWidget {
   final String roomID, currentID;
-  final double silverBarHeight;
+  
   final List member;
-  GroupMessageWidget({this.roomID, this.currentID, this.member, this.silverBarHeight});
+  GroupMessageWidget({this.roomID, this.currentID, this.member,});
   @override
   _MessagesState createState() => _MessagesState();
 }
@@ -263,60 +264,7 @@ class _MessagesState extends State<GroupMessageWidget>
     // get url and push image to other client
   }
 
-  //display choose image and video on chat bar
-  OverlayEntry _createOverlayEntry() {
-    RenderBox renderBox = context.findRenderObject();
-    var size = renderBox.size;
-    var offset = renderBox.localToGlobal(Offset.zero);
 
-    return OverlayEntry(
-      builder: (context) => Positioned(
-        /*left: offset.dx,
-        top: offset.dy + (size.height - offset.dy - 40),*/
-        width: 60,
-        height: 100,
-        child: CompositedTransformFollower(
-          link: this._layerLink,
-          showWhenUnlinked: false,
-          offset: Offset(offset.dx - 10, -offset.dy - 55),
-          child: Material(
-            borderRadius: BorderRadius.circular(15),
-            elevation: 2.0,
-            child: ListView(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.image),
-                  onPressed: () async {
-                    var image = await ImagePicker.pickImage(
-                      source: ImageSource.gallery,
-                    );
-                    try {
-                      if (image.path == null)
-                        return;
-                      else
-                        chatImage(widget.roomID, image.path);
-                    } catch (e) {
-                      return;
-                    }
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.videocam),
-                  onPressed: () async {
-                    var image = await ImagePicker.pickVideo(
-                      source: ImageSource.gallery,
-                    );
-                  },
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   @override
   void initState() {
@@ -378,7 +326,7 @@ class _MessagesState extends State<GroupMessageWidget>
           }
         },
         child: ContainerResponsive(
-          height: screenSize.height,
+          height: Get.height + 100,
           padding: EdgeInsetsResponsive.only(top: 10, left: 0),
           child: Column(
             mainAxisSize: MainAxisSize.max,
@@ -395,10 +343,7 @@ class _MessagesState extends State<GroupMessageWidget>
   }
 
   Widget buildGroupChat() {
-    return groupchatProvider.groupMessage.isEmpty
-        ? Container(
-            width: 20, height: 20, alignment: Alignment.center, child: CircularProgressIndicator())
-        : Expanded(
+    return  Expanded(
             child: ListView.separated(
                 separatorBuilder: (context, index) => SizedBox(
                       height: 10,
@@ -452,7 +397,7 @@ class _MessagesState extends State<GroupMessageWidget>
       alignment: Alignment.center,
       height: 50,
       decoration: BoxDecoration(
-        color: Color(AppColors.SEARCH_BACKGROUND),
+        color: Color(AppColors.SEARCH_BACKGROUND).withOpacity(0.5),
       ),
       child: Stack(
         children: <Widget>[
@@ -492,8 +437,9 @@ class _MessagesState extends State<GroupMessageWidget>
             child: IconButton(
               icon: Icon(Icons.attach_file),
               onPressed: () {
-                print(isTap);
-                setState(() {
+                
+
+                /*setState(() {
                   /*if (_mediaOverlayEntry == null) {
                                 _mediaOverlayEntry = _createOverlayEntry();
                                 isTap = false;
@@ -506,7 +452,7 @@ class _MessagesState extends State<GroupMessageWidget>
                     Overlay.of(context).insert(_mediaOverlayEntry);
                   }
                   isTap = !isTap;
-                });
+                });*/
               },
             ),
           )),
@@ -613,3 +559,59 @@ Future callGroup(BuildContext context, Future getImage) {
             ],
           )));
 }
+
+/*
+  //display choose image and video on chat bar
+  OverlayEntry _createOverlayEntry() {
+    RenderBox renderBox = context.findRenderObject();
+    var size = renderBox.size;
+    var offset = renderBox.localToGlobal(Offset.zero);
+
+    return OverlayEntry(
+      builder: (context) => Positioned(
+        /*left: offset.dx,
+        top: offset.dy + (size.height - offset.dy - 40),*/
+        width: 60,
+        height: 100,
+        child: CompositedTransformFollower(
+          link: this._layerLink,
+          showWhenUnlinked: false,
+          offset: Offset(offset.dx - 10, -offset.dy - 55),
+          child: Material(
+            borderRadius: BorderRadius.circular(15),
+            elevation: 2.0,
+            child: ListView(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.image),
+                  onPressed: () async {
+                    var image = await ImagePicker.pickImage(
+                      source: ImageSource.gallery,
+                    );
+                    try {
+                      if (image.path == null)
+                        return;
+                      else
+                        chatImage(widget.roomID, image.path);
+                    } catch (e) {
+                      return;
+                    }
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.videocam),
+                  onPressed: () async {
+                    var image = await ImagePicker.pickVideo(
+                      source: ImageSource.gallery,
+                    );
+                  },
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }*/

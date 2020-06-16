@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:frefresh/frefresh.dart';
 import 'package:gamming_community/API/Query.dart';
@@ -31,7 +32,7 @@ class PrivateMessagesDetail extends StatefulWidget {
 }
 
 class _MessagesState extends State<PrivateMessagesDetail>
-    with AutomaticKeepAliveClientMixin<PrivateMessagesDetail>, TickerProviderStateMixin {
+    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   String roomName = "Sample here";
   bool isSubmited = false;
@@ -65,9 +66,9 @@ class _MessagesState extends State<PrivateMessagesDetail>
     return sampleUser;
   }
 
-  void onLoadMessage() async {
+  Future onLoadMessage() async {
     await chatProvider.loadMessage(widget.conservationID);
-    chatProvider.getMessage.forEach((e) {
+    chatProvider.getMessage.forEach((e) async {
       chatProvider.onAddNewMessage(PrivateMessage(
           animationController: animationController,
           user: widget.user,
@@ -76,6 +77,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
           sendDate: e.createAt,
           text: e.txtMessage,
           messageType: e.messageType));
+      animationController.forward();
 
       animateToBottom();
     });
@@ -84,7 +86,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
   void onSendMesasge(String message) {
     if (chatController.text.isEmpty) return;
 
-    chatProvider.onAddNewMessage(PrivateMessage(
+    var message = PrivateMessage(
         animationController: animationController,
         user: widget.user,
         friend: widget.friend,
@@ -93,57 +95,56 @@ class _MessagesState extends State<PrivateMessagesDetail>
         text: csv.TextMessage(
           content: chatController.text,
         ),
-        messageType: MessageEnum.text));
+        messageType: MessageEnum.text);
+
+    chatProvider.onAddNewMessage(message);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      message.animationController.forward();
+    });
+
     PrivateChatService.chatText(
         chatProvider.socket,
         widget.conservationID,
+        widget.friend.id.toString(),
         csv.Message(
             createAt: DateTime.now().toLocal(),
             messageType: MessageEnum.text,
             sender: widget.user.id.toString(),
-            status: "",
+            status: "SEND",
             txtMessage: csv.TextMessage(content: chatController.text)));
 
     chatController.clear();
     animateToBottom();
   }
 
+  Future displayNotification(String sender, String message) async {
+    notificationAppLaunchDetails =
+        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+
+    var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+
+    var initializationSettings = InitializationSettings(initializationSettingsAndroid, null);
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: (String payload) async {
+      if (payload != null) {
+        debugPrint('notification payload: ' + payload);
+      }
+      selectNotificationSubject.add(payload);
+    });
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.Max, ticker: 'ticker');
+
+    var platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, null);
+    await flutterLocalNotificationsPlugin.show(0, sender, message, platformChannelSpecifics,
+        payload: message);
+  }
+
   void onRecieveMessage() {
     chatProvider.socket.on('receive-message-private', (data) async {
       print('recive message' + data.toString());
-
-      notificationAppLaunchDetails =
-          await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-
-      var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
-
-      var initializationSettings = InitializationSettings(initializationSettingsAndroid, null);
-
-      await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-          onSelectNotification: (String payload) async {
-        if (payload != null) {
-          debugPrint('notification payload: ' + payload);
-        }
-        selectNotificationSubject.add(payload);
-      });
-      var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-          'your channel id', 'your channel name', 'your channel description',
-          importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
-
-      var platformChannelSpecifics = NotificationDetails(androidPlatformChannelSpecifics, null);
-      await flutterLocalNotificationsPlugin.show(
-          0, data[1]['user']['id'], data[1]['text'], platformChannelSpecifics,
-          payload: 'item x');
-
-      /* var chatMessage = PrivateChat(
-          sender: {"id": data[1]['user']['id'], "profile_url": widget.profileUrl},
-          text: data[1]['text'],
-          animationController: animationController,
-          sendDate: DateTime.now());*/
-      //add message to end
-      //chatMessage.animationController.forward();
-      // add message to list and update UI
-      //   chatProvider.onAddNewMessage(chatMessage);
+      await displayNotification(data[0].id, data[1].text.content);
 
       await Future.delayed(Duration(milliseconds: 100));
 
@@ -194,7 +195,6 @@ class _MessagesState extends State<PrivateMessagesDetail>
   }
 
   void animateToBottom() async {
-    animationController.forward();
     await scrollController.animateTo(
       scrollController.position.maxScrollExtent,
       curve: Curves.linear,
@@ -212,7 +212,8 @@ class _MessagesState extends State<PrivateMessagesDetail>
     animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     WidgetsBinding.instance.addPostFrameCallback((d) async {
       await chatProvider.initSocket(widget.conservationID);
-      onLoadMessage();
+      await onLoadMessage();
+
       // onRecieveMessage();
     });
   }
@@ -286,7 +287,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
                               ),
                               const SizedBox(width: 9.0),
                               Text(
-                                "asdsadasd",
+                                "Loading",
                                 style: TextStyle(color: Color(0xff6c909b)),
                               ),
                             ],
@@ -310,12 +311,12 @@ class _MessagesState extends State<PrivateMessagesDetail>
                             children: <Widget>[
                               if (index == 0)
                                 Text(formatDate(chatProvider.messages[index].sendDate)),
-                                SizedBox(height:10),
+                              SizedBox(height: 10),
                               if (index != 0 &&
                                   chatProvider.messages[index - 1].sendDate.minute !=
                                       chatProvider.messages[index].sendDate.minute)
                                 Text(formatDateTime(chatProvider.messages[index].sendDate)),
-                                SizedBox(height:10),
+                              SizedBox(height: 10),
                               chatProvider.messages[index],
                             ],
                           );

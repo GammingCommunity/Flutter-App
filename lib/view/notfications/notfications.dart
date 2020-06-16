@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Subscription.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/repository/room_repo.dart';
+import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/view/notfications/notificationProvider.dart';
 import 'package:gamming_community/view/notfications/notifications_service.dart';
 import 'package:gamming_community/view/notfications/roomInfo_widget.dart';
@@ -54,34 +55,47 @@ class _NotficationsState extends State<Notfications> with TickerProviderStateMix
                           ),
                         ],
                       ),
-                      TabBar(
-                        indicatorSize: TabBarIndicatorSize.label,
-                        controller: tabController,
-                        tabs: [
-                          Tab(
-                            child: Stack(children: <Widget>[
-                              Positioned(top: 10, right: 10, child: dotNotify()),
-                              Align(alignment: Alignment.center, child: Text("Notification"))
-                            ]),
-                          ),
-                          Tab(
-                            child: Stack(children: <Widget>[
-                              //Positioned(top: 10, right: 20, child: dotNotify()),
-                              Align(alignment: Alignment.center, child: Text("Pending"))
-                            ]),
-                          ),
-                          Tab(
-                            child: Stack(children: <Widget>[
-                              Positioned(top: 10, right: 0, child: dotNotify()),
-                              Align(alignment: Alignment.center, child: Text("Friends Request"))
-                            ]),
-                          ),
-                        ],
+                      Theme(
+                        data: ThemeData(
+                          fontFamily: "GoogleSans-Regular",
+                          highlightColor: Colors.transparent,
+                          splashColor: Colors.transparent,
+                        ),
+                        child: TabBar(
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          indicatorColor: Colors.transparent,
+                          indicator: BoxDecoration(
+
+                              color:Colors.indigo,
+                              borderRadius: BorderRadius.circular(15),
+                              ),
+                          controller: tabController,
+                          tabs: [
+                            Tab(
+                              child: Stack(children: <Widget>[
+                                Positioned(top: 10, right: 5, child: dotNotify()),
+                                Align(alignment: Alignment.center, child: Text("Notification"))
+                              ]),
+                            ),
+                            Tab(
+                              child: Stack(children: <Widget>[
+                                //Positioned(top: 10, right: 20, child: dotNotify()),
+                                Align(alignment: Alignment.center, child: Text("Pending"))
+                              ]),
+                            ),
+                            Tab(
+                              child: Stack(children: <Widget>[
+                                Positioned(top: 10, right: -2, child: dotNotify()),
+                                Align(alignment: Alignment.center, child: Text("Friends Request"))
+                              ]),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-                preferredSize: Size.fromHeight(80)),
+                preferredSize: Size.fromHeight(100)),
             body: Padding(
               padding: EdgeInsetsResponsive.all(10),
               child: Container(
@@ -120,9 +134,8 @@ class _NotficationsState extends State<Notfications> with TickerProviderStateMix
                                   child: Row(
                                     children: <Widget>[
                                       RoomInfo(
-                                        future: RoomRepo.loadingRoomInfo(pendings[index].roomID),
-                                        joinTime: pendings[index].joinTime
-                                      ),
+                                          future: RoomRepo.loadingRoomInfo(pendings[index].roomID),
+                                          joinTime: pendings[index].joinTime),
                                       Spacer(),
                                       ContainerResponsive(
                                         height: 30.h,

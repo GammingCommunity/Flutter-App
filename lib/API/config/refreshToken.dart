@@ -7,9 +7,10 @@ import 'package:http/http.dart' as http;
 import '../../repository/sub_repo.dart';
 import '../../API/Query.dart';
 import '../../API/config/env.dart';
+import '../URLEndpoint.dart';
 
 class RefreshToken {
-  static String url = "https://auth-service.glitch.me/auth";
+  static String url = URLEndpoint.authService;
   static var query = GraphQLQuery();
 
   static Future<bool> isVaildSession() async {

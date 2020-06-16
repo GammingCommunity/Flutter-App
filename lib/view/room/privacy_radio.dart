@@ -35,7 +35,7 @@ class PrivacyRadio extends StatelessWidget {
         },
         child: Container(
           
-          height: 110,
+          height: 120,
           width: screenSize.width / 2 - 30,
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
@@ -70,7 +70,7 @@ class PrivacyRadio extends StatelessWidget {
               Text(content,
                   textAlign: TextAlign.justify,
                   overflow: TextOverflow.fade,
-                  maxLines: 2,style: TextStyle(fontFamily: "GoogleSans-Medium"))
+                  maxLines: 2,style: TextStyle(fontFamily: "GoogleSans-Regular"))
             ],
           ),
         ),

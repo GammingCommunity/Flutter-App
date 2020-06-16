@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:optimized_cached_image/widgets.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 

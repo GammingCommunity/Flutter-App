@@ -3,7 +3,7 @@ import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/GroupChat.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/view/messages/group_messages/group_message.dart';
-import 'package:gamming_community/view/messages/group_messages/group_message_view.dart';
+import 'package:gamming_community/view/group_dashboard/group_page/group_message.dart';
 import 'package:gamming_community/view/messages/models/group_chat_provider.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -165,7 +165,6 @@ class _RoomDetailState extends State<RoomDetailV2> with TickerProviderStateMixin
                   child: TabBarView(controller: tabController, children: <Widget>[
                     // tab 1 : message group
                     GroupMessageWidget(
-                      silverBarHeight: silverAppBarHeight,
                       roomID: widget.room.id,
                       member: widget.room.memberID,
                       currentID: userID,

@@ -5,5 +5,9 @@ toListString(List<Friend> friends) {
 }
 
 toListInt(List friends) {
-  return List<int>.from(friends.map((e) => int.parse(e))).toList();
+  try {
+    return List<int>.from(friends.map((e) => int.parse(e))).toList();
+  } catch (e) {
+    return [] as int;
+  }
 }

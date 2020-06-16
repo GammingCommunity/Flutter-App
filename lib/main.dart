@@ -12,6 +12,7 @@ import 'package:gamming_community/provider/search_game.dart';
 import 'package:gamming_community/resources/values/app_theme.dart';
 import 'package:gamming_community/view/feeds/provider/feedsProvider.dart';
 import 'package:gamming_community/view/forgot_password/forgotPassword.dart';
+import 'package:gamming_community/view/group_dashboard/provider/group_post_provider.dart';
 import 'package:gamming_community/view/home/home.dart';
 import 'package:gamming_community/view/home/provider/search_friend_provider.dart';
 import 'package:gamming_community/view/login/bloc/bloc/login_bloc.dart';
@@ -121,7 +122,8 @@ class MyApp extends StatelessWidget {
               Inject(() => NewsProvider()),
               Inject(() => FeedsProvider()),
               Inject(() => ExploreProvider()),
-              Inject(() => SearchFriendsProvider())
+              Inject(() => SearchFriendsProvider()),
+               Inject(() => GroupPostProvider())
             ],
             builder: (context) {
               settingProvider = Injector.get(context: context);

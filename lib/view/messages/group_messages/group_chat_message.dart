@@ -61,7 +61,7 @@ class _GroupChatMessageState extends State<GroupChatMessage>
   //for upload image from local
   Future showProgress() async {
     print("roomID ${widget.roomID}");
-    http.StreamedResponse upload = await ImageService.chatImage(widget.roomID, widget.imageUri);
+    http.StreamedResponse upload = await ImageService.chatMedia("group",widget.roomID, widget.imageUri);
     // upload complete and send to other client
     _total = upload.contentLength;
 

@@ -11,21 +11,40 @@ class ImageService {
     print(result);
   }
 
-  static chatImage(String groupID, String imagePath) async {
-    var httpLink = "https://image-service.glitch.me/chat-image/$groupID";
+  static Future changeAvatar()async{
+    
+  }
+
+  static Future chatMedia(String type,String id, String imagePath) async {
+    var httpLink = "https://file-management.glitch.me/chat-media/$type/$id";
+
+    var request = http.MultipartRequest(
+      'POST',
+
+      Uri.parse(httpLink),
+    )..fields['receive_id'] = id
+    ..headers['token']=await getToken()
+    ..files.add(await http.MultipartFile.fromPath("media", imagePath));
+
+    var res = await request.send();
+    return res;
+  }
+  static Future chatFile(String type,String id,String filePath)async{
+    var httpLink = "https://file-management.glitch.me/chat-file/$type/$id";
 
     var request = http.MultipartRequest(
       'POST',
       Uri.parse(httpLink),
-    )..files.add(await http.MultipartFile.fromPath("image", imagePath));
+    )..fields['receive_id'] = id
+    ..files.add(await http.MultipartFile.fromPath("files", filePath));
 
     var res = await request.send();
     return res;
   }
 
   static editGroupImage(String type, String roomID, String imagePath) async {
-    if (type == "bg") {
-      var httpLink = "https://image-service.glitch.me/edit-room/$roomID/bg";
+    if (type == "cover") {
+      var httpLink = "https://file-management.glitch.me/edit-room/cover/$roomID";
 
       try {
         var request = http.MultipartRequest(
@@ -37,7 +56,7 @@ class ImageService {
         if (response.statusCode == 200) {
           var result = await response.stream.bytesToString();
           Map valueMap = json.decode(result);
-          return valueMap['url'];
+          return valueMap['data'];
         } else
           return "";
       } catch (e) {
@@ -45,7 +64,7 @@ class ImageService {
         return "";
       }
     } else {
-      var httpLink = "https://image-service.glitch.me/edit-room/$roomID/logo";
+      var httpLink = "https://file-management.glitch.me/edit-room/profile/$roomID";
 
       try {
         var request = http.MultipartRequest(
@@ -57,7 +76,7 @@ class ImageService {
         if (response.statusCode == 200) {
           var result = await response.stream.bytesToString();
           Map valueMap = json.decode(result);
-          return valueMap['url'];
+          return valueMap['data'];
         } else
           return "";
       } catch (e) {

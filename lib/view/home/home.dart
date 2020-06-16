@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gamming_community/API/Subscription.dart';
+import 'package:gamming_community/customWidget/borderIcon.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
+import 'package:gamming_community/customWidget/iconWithTitle.dart';
 import 'package:gamming_community/generated/i18n.dart';
 import 'package:gamming_community/provider/notficationModel.dart';
 import 'package:gamming_community/provider/search_bar.dart';
@@ -59,9 +61,7 @@ class _HomeState extends State<HomePage>
             Explorer(
               token: token,
             ),
-            RoomManager(
-              token: token,
-            ),
+            RoomManager(),
             Messages(
               userID: userID,
               token: token,
@@ -111,7 +111,6 @@ class _HomeState extends State<HomePage>
             preferredSize: Size.fromHeight(40),
             child: ContainerResponsive(
                 width: Get.width,
-                
                 padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
                 child: Row(
@@ -165,31 +164,47 @@ class _HomeState extends State<HomePage>
                         //show model bottom sheet
                         Get.bottomSheet(
                             Container(
-                                height: 100,
+                                height: 150,
                                 width: Get.width,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(FeatherIcons.minus),
-                                    Row(children: <Widget>[
-                                      Row(
-                                        children: [
-                                          CircleIcon(
-                                            icon: FeatherIcons.package,
-                                            onTap: () {},
-                                          ),
-                                          Text("Create post")
-                                        ],
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: <Widget>[
+                                      IconWithTitle(
+                                        icon: FeatherIcons.package,
+                                        iconColor: Colors.black,
+                                        iconSize: 20,
+                                        color: Color(0xff3282b8),
+                                        borderRadius: 20,
+                                        titlePosition:Position.bottom,
+                                        title: "Create post",
+                                        onTap: () {},
                                       ),
-                                      Row(
-                                        children: [
-                                          CircleIcon(
-                                            icon: FeatherIcons.search,
-                                            onTap: () {},
-                                          ),
-                                          Text("Find room fast")
-                                        ],
-                                      )
+                                      IconWithTitle(
+                                        icon: FeatherIcons.search,
+                                        iconColor: Colors.black,
+                                        iconSize: 20,
+                                        color: Colors.purple[200],
+                                        borderRadius: 20,
+                                        title: "Search room",
+                                        titlePosition:Position.bottom,
+                                        onTap: () {},
+                                      ),
+                                      IconWithTitle(
+                                        icon: FeatherIcons.user,
+                                        iconSize: 20,
+                                        iconColor: Colors.black,
+                                        color: Colors.blue[200],
+                                        borderRadius: 20,
+                                        title: "Search friend",
+                                        titlePosition:Position.bottom,
+                                        onTap: () {
+                                          
+                                        },
+                                      ),
                                     ]),
                                   ],
                                 )),
@@ -202,7 +217,6 @@ class _HomeState extends State<HomePage>
                       },
                     ),
                     Stack(
-                      
                       children: <Widget>[
                         CircleIcon(
                           icon: FeatherIcons.bell,
@@ -283,7 +297,8 @@ class _HomeState extends State<HomePage>
                         child: CachedNetworkImage(
                           height: 30,
                           width: 30,
-                          imageUrl: userProfile != null  ? userProfile :  AppConstraint.default_profile ,
+                          imageUrl:
+                              userProfile != null ? userProfile : AppConstraint.default_profile,
                           placeholder: (context, url) => Container(
                             height: 30,
                             width: 30,

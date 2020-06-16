@@ -98,10 +98,8 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                         child: Stack(
                           alignment: Alignment.bottomCenter,
                           children: <Widget>[
-                           
                             // profile image
                             Positioned.fill(
-                              
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -248,10 +246,26 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
 
 void loggout(BuildContext context) async {
   SharedPreferences ref = await SharedPreferences.getInstance();
-  ref.setBool('isLogin', false);
-  Get.offAllNamed(
-    '/',
-    predicate: (route) => false,
+
+  Get.defaultDialog(
+    title: "Log out",
+    middleText: "Are you sure you want to log out?",
+    actions: [
+      FlatButton(
+          onPressed: () {
+            Get.back();
+          },
+          child: Text("Cancel")),
+      RaisedButton(
+          onPressed: () {
+            ref.setBool('isLogin', false);
+            Get.offAllNamed(
+              '/',
+              predicate: (route) => false,
+            );
+          },
+          child: Text("Log Out")),
+    ],
   );
 
   //Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);

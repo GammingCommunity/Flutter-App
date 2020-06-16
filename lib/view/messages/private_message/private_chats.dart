@@ -74,8 +74,8 @@ class _MessagesState extends State<Messages>
   void initState() {
     super.initState();
     controller = FRefreshController();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _privateChatProvider.initPrivateConservation();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await _privateChatProvider.initPrivateConservation();
     });
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
@@ -103,10 +103,7 @@ class _MessagesState extends State<Messages>
             heroTag: "addnewMessage",
             child: Icon(Icons.add),
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  fullscreenDialog: true,
-                  maintainState: true,
-                  builder: (context) => AddConservation()));
+              Get.to(AddConservation(), opaque: false, transition: Transition.upToDown);
             }),
         body: Container(
             padding: EdgeInsets.all(10),
@@ -193,11 +190,10 @@ class _MessagesState extends State<Messages>
                                               ],
                                             ));
                                       },
-                                      onRefresh: () {
+                                      onRefresh: () async {
                                         print("on refresgh");
-                                        Timer(Duration(milliseconds: 3000), () {
-                                          controller.finishRefresh();
-                                        });
+                                        await _privateChatProvider.initPrivateConservation();
+                                        controller.finishRefresh();
                                       },
                                       onLoad: () {
                                         print("onLoad");
@@ -271,7 +267,9 @@ Widget buildConvervation(PrivateChatProvider prcv, Conservation cv) {
                           children: <Widget>[
                             isMedia(cv.latestMessage.messageType)
                                 ? Text("Send media",
-                                    style: TextStyle(fontSize: 15, color: Colors.white60))
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        color: Get.isDarkMode ? Colors.white60 : Colors.black54))
                                 : Text("${cv.latestMessage.txtMessage}",
                                     style: TextStyle(fontSize: 15, color: Colors.white60)),
                             Row(

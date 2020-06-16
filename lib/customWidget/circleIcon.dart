@@ -7,7 +7,7 @@ class CircleIcon extends StatefulWidget {
   final double iconSize;
   final Color iconColor;
   final Function onTap;
-  CircleIcon({this.icon, this.iconColor, this.iconSize = 20, this.onTap});
+  CircleIcon({@required this.icon, this.iconColor, this.iconSize = 20,@required this.onTap});
 
   @override
   _CircleIconState createState() => _CircleIconState();
@@ -21,11 +21,11 @@ class _CircleIconState extends State<CircleIcon> {
       color: Colors.transparent,
       type: MaterialType.circle,
       child: IconButton(
-        icon: Icon(widget.icon),
+        icon: Icon(widget.icon,color: widget.iconColor,),
         onPressed: () {
           return widget.onTap();
         },
-        color: widget.iconColor ?? Get.isDarkMode ? Colors.white : Colors.black,
+        color: widget.iconColor == null ? Get.isDarkMode ? Colors.white : Colors.black : widget.iconColor,
         iconSize: widget.iconSize,
       ),
     );

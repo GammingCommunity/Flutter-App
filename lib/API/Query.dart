@@ -268,10 +268,12 @@ class GraphQLQuery {
     getPrivateChatMessage(chatID:"$chatID",page:$page,limit:$limit){
       id
       messageType
+      status
       text{
         content
         fileInfo{
           fileName
+          fileSize
           publicID
           height
           width
@@ -339,8 +341,13 @@ class GraphQLQuery {
         messageType
         text{
           content
-          height
-          width
+          fileInfo{
+            fileName
+            fileSize
+            publicID
+            height
+           width
+          }
         }
         createAt
       }
@@ -368,7 +375,7 @@ class GraphQLQuery {
   """;
   String getPendingJoinRoom(String userID) => """
     query{
-      getPendingJoinRoom_User(userID:"$userID"){
+      getPendingJoinRoom_User{
         userID
         roomID
         isApprove

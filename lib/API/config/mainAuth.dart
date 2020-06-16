@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
+import 'package:gamming_community/API/URLEndpoint.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 GraphQLClient mainAPI(String token) {
   HttpLink httpLink =
-      HttpLink(uri: "https://gmgraphql.glitch.me/graphql", headers: {"token": token});
+      HttpLink(uri: URLEndpoint.mainService, headers: {"token": token});
 
   return GraphQLClient(
     cache: NormalizedInMemoryCache(dataIdFromObject: typenameDataIdFromObject),
@@ -13,7 +14,7 @@ GraphQLClient mainAPI(String token) {
 
 GraphQLClient postAPI(String token) {
   HttpLink httpLink =
-      HttpLink(uri: "https://post-service.glitch.me/graphql", headers: {"token": token});
+      HttpLink(uri: URLEndpoint.postService, headers: {"token": token});
 
   return GraphQLClient(
     cache: NormalizedInMemoryCache(dataIdFromObject: typenameDataIdFromObject),
@@ -22,7 +23,7 @@ GraphQLClient postAPI(String token) {
 }
 
 ValueNotifier<GraphQLClient> customClient(String token) {
-  Link httpLink = HttpLink(uri: "https://gmgraphql.glitch.me/graphql", headers: {"token": token});
+  Link httpLink = HttpLink(uri: URLEndpoint.mainService, headers: {"token": token});
   var client = ValueNotifier(GraphQLClient(
       cache: NormalizedInMemoryCache(dataIdFromObject: typenameDataIdFromObject), link: httpLink));
   return client;
@@ -34,13 +35,13 @@ ValueNotifier<GraphQLClient> subscriptionClient(String token) {
      headers: {"token": token}
     );*/
   WebSocketLink socketLink = WebSocketLink(
-    url: 'ws://gmgraphql.glitch.me/graphql',
+    url: URLEndpoint.wsMainService,
     config: SocketClientConfig(
       autoReconnect: true,
       inactivityTimeout: Duration(seconds: 30),
       initPayload: () {
         return {
-          "headers": {"token": ""}
+          "headers": {"token": token}
         };
       },
     ),

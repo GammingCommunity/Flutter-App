@@ -146,8 +146,8 @@ Widget buildSearchFriend(BuildContext cxt, User user) {
         RequestButton(
           child: Container(),
           setCircle: true,
-          buttonHeight: 30,
-          buttonWidth: 30,
+          buttonHeight: 50,
+          buttonWidth: 50,
           onSuccess: (data) {
             data == 1
                 ? BotToast.showText(text: "Send request success.")

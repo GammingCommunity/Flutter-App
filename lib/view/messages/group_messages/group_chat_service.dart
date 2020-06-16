@@ -1,4 +1,5 @@
 import 'package:gamming_community/class/Conservation.dart';
+import 'package:gamming_community/utils/enum/messageEnum.dart';
 
 class GroupChatService{
   static textMessage(String roomID,String currentID,String text){
@@ -8,27 +9,24 @@ class GroupChatService{
           },
           {
             "messageType": "text",
-            "id": currentID,
+            "sender": currentID,
             "text": {
               "content":text,
-              "height":0,
-              "width":0
             },
           }
         ];
   }
-  static mediaMessage(String roomID,String currentID,String url,int height,int width){
+  static mediaMessage(String roomID,String currentID,String url,String messageType, FileInfo fileInfo){
     return [
           {
             "groupID": roomID,
           },
           {
-            "messageType": "media",
-            "id": currentID,
+            "messageType": messageType,
+            "sender": currentID,
             "text": {
               "content":url,
-              "height":height,
-              "width":width
+              "media":fileInfo
             },
           }
         ];

@@ -13,6 +13,7 @@ class BorderIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      borderRadius: BorderRadius.circular(borderSize),
       onTap:canPress ? () => onTap : null,
       child: Container(
         height: size,

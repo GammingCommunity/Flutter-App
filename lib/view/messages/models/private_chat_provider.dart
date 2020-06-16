@@ -21,12 +21,18 @@ class PrivateChatProvider extends StatesRebuilder {
   List<Message> get getMessage => _messages;
   int get countConservation => _conservations.length;
 
-  void onAddNewMessage(PrivateMessage chatMessage) {
-    this._messagesW.add(chatMessage);
+  void onAddNewMessage(PrivateMessage chatMessage,[bool loadOldMessage = false]) {
+        loadOldMessage  ?  _messagesW.insert(0, chatMessage)  :  this._messagesW.add(chatMessage);
     rebuildStates();
   }
 
-  void initPrivateConservation() async {
+  Future refresh() async{
+    _conservations.clear();
+    rebuildStates();
+    await initPrivateConservation();
+  }
+
+  Future initPrivateConservation() async {
     var result = await MainRepo.queryGraphQL(await getToken(), query.getAllPrivateConservation());
     var conservations =
         PrivateConservations.fromJson(result.data['getAllPrivateChat']).conservations;
@@ -36,10 +42,14 @@ class PrivateChatProvider extends StatesRebuilder {
   }
 
   Future loadMessage(String chatID) async {
-    var result = await MainRepo.queryGraphQL(await getToken(), query.getPrivateChatMessge(chatID));
-    var messages = Messages.fromJson(result.data['getPrivateChatMessage']).messages;
-    _messages.addAll(messages);
-    rebuildStates();
+    try {
+      var result =
+          await MainRepo.queryGraphQL(await getToken(), query.getPrivateChatMessge(chatID));
+      var messages = Messages.fromJson(result.data['getPrivateChatMessage']).messages;
+      _messages.addAll(messages);
+      rebuildStates();
+    } catch (e) {}
+    
   }
 
   Future initSocket(String chatID) async {
@@ -63,8 +73,6 @@ class PrivateChatProvider extends StatesRebuilder {
 
     socket.on('disconnect', (_) => print('disconnect'));
   }
-
-  
 
   void dispose() {
     socket.disconnect();

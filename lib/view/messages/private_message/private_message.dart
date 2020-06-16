@@ -88,15 +88,25 @@ class PrivateMessage extends StatelessWidget {
                                   Text(text.content, style: Theme.of(context).textTheme.bodyText2),
                             )
                           : messageType == MessageEnum.file
-                              ? buildFileMessage("FILE")
+                              ? buildFileMessage(text.fileInfo)
                               : messageType == MessageEnum.gif
                                   ?
                                   //loadGif,
-                                  Container()
+                                  CachedNetworkImage(
+                                      placeholder: (context, url) => SkeletonTemplate.image(
+                                          text.fileInfo.height.toDouble() * 0.5,
+                                          text.fileInfo.width.toDouble() * 0.5,
+                                          15),
+                                      imageBuilder: (context, imageProvider) => Container(
+                                            height: text.fileInfo.height.toDouble() * 0.5,
+                                            width: text.fileInfo.width.toDouble() * 0.5,
+                                            decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(15),
+                                                image: DecorationImage(image: imageProvider)),
+                                          ),
+                                      imageUrl: text.content)
                                   : // load url metadata
-                                  UrlPreview(
-                                      url: text.content,
-                                    )),
+                                  UrlPreview(url: text.content)),
             ],
           ),
         ) //new
@@ -104,31 +114,32 @@ class PrivateMessage extends StatelessWidget {
   }
 }
 
-Widget buildFileMessage(String name) {
-  double messageHeight = 55;
+Widget buildFileMessage(FileInfo file) {
+  double messageHeight = 60;
   return Container(
     height: messageHeight,
-    width: 150,
+    width: 200,
     alignment: Alignment.center,
     decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15), color: Color(AppColors.SEARCH_BACKGROUND)),
-    child: Stack(
+    child: Row(
       children: [
-        Positioned(
-            left: 0,
-            child: Container(
-                width: 50,
-                height: messageHeight,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(15), bottomLeft: Radius.circular(15)),
-                    color: Colors.indigo),
-                child: Icon(FeatherIcons.file))),
-        Positioned.fill(
-            child: Align(
-          alignment: Alignment.center,
-          child: Text(name),
-        ))
+        Container(
+            width: 50,
+            height: messageHeight,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15), bottomLeft: Radius.circular(15)),
+                color: Colors.indigo),
+            child: Icon(FeatherIcons.file)),
+        SizedBox(width: 10),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [Text(file.fileName), Text(file.fileSize)],
+        ),
+        SizedBox(width: 10),
+        Icon(Icons.file_download)
       ],
     ),
   );

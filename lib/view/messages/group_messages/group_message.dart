@@ -4,10 +4,12 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:gamming_community/class/Conservation.dart';
 import 'package:gamming_community/class/GroupMessage.dart';
 import 'package:gamming_community/hive_models/member.dart';
 import 'package:gamming_community/repository/upload_image.dart';
 import 'package:gamming_community/utils/display_image.dart';
+import 'package:gamming_community/utils/enum/messageEnum.dart';
 import 'package:gamming_community/utils/generatePalate.dart';
 import 'package:gamming_community/view/messages/group_messages/group_chat_service.dart';
 import 'package:gamming_community/view/messages/private_message/private_chats.dart';
@@ -61,7 +63,8 @@ class _GroupChatMessageState extends State<GroupChatMessage>
   //for upload image from local
   Future showProgress() async {
     print("roomID ${widget.roomID}");
-    http.StreamedResponse upload = await ImageService.chatImage(widget.roomID, widget.imageUri);
+    http.StreamedResponse upload =
+        await ImageService.chatMedia("group", widget.roomID, widget.imageUri);
     // upload complete and send to other client
     _total = upload.contentLength;
 
@@ -78,22 +81,28 @@ class _GroupChatMessageState extends State<GroupChatMessage>
 
       var convertByte = utf8.decode(_bytes);
       var result = json.decode(convertByte);
-      print(result[0]['url']);
+      String messageType = result;
+      //TODO: fix data group message
       widget.socket.emit('chat-group', [
-        GroupChatService.mediaMessage(widget.roomID, widget.currentID, result[0]['url'],
-            result[0]['height'], result[0]['width'])
+        GroupChatService.mediaMessage(
+            widget.roomID,
+            widget.currentID,
+            result[0]['url'],
+            messageType == MessageEnum.image ? MessageEnum.image : MessageEnum.file,
+            FileInfo(fileName: "", fileSize: "", height: 0, width: 0, publicID: ""))
       ]);
     });
   }
-
-  
 
   @override
   void initState() {
     super.initState();
     widget.fromStorage ?? showProgress();
     controller = AnimationController(vsync: this, duration: Duration(milliseconds: 200));
-    animation = Tween(begin: 0, end: 1).animate(controller);
+    animation = Tween(begin: 0, end: 1).animate(controller)
+      ..addListener(() {
+        controller.forward();
+      });
     print("U add new mess ");
   }
 
@@ -111,8 +120,11 @@ class _GroupChatMessageState extends State<GroupChatMessage>
     var imageUri = widget.imageUri;
     var imageUrl = widget.text.content;
     // get username for userlist
+    members.get(widget.roomID).members.forEach((element) {
+      print(element.userID);
+    });
     var userProfile =
-        members.get(widget.roomID).members.singleWhere((e) => e.userID == widget.sender);
+        members.get(widget.roomID).members.firstWhere((e) => e.userID == widget.sender);
     // var userProfile = Member(image: AppConstraint.default_profile, name: "asdsad", userID: "0000");
 
     return SizeTransition(
@@ -192,7 +204,7 @@ class _GroupChatMessageState extends State<GroupChatMessage>
                       GestureDetector(
                         behavior: HitTestBehavior.deferToChild,
                         onTap: () {
-                          generatePalete(context, imageUrl, fromStorage,widget.type);
+                          generatePalete(context, imageUrl, fromStorage, widget.type);
                         },
                         child: Container(
                           color: Colors.grey,

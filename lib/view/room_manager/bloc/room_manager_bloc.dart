@@ -16,6 +16,7 @@ class RoomManagerBloc extends Bloc<RoomManagerEvent, RoomManagerState> {
   var query = GraphQLQuery();
   var mutation = GraphQLMutation();
   List<GroupChat> room = [];
+  String currentID = "";
   Box<GroupChatAdapter> groupChatBox;
   @override
   RoomManagerState get initialState => RoomManagerInitial();
@@ -42,9 +43,11 @@ class RoomManagerBloc extends Bloc<RoomManagerEvent, RoomManagerState> {
 
     if (event is InitLoading) {
       try {
+        var userInfo = await getUserInfo();
         var result =
             await MainRepo.queryGraphQL(await getToken(), query.getRoomCurrentUser(info['userID']));
         var rooms = GroupChats.fromJson(result.data['roomManager']).rooms;
+        this.currentID = userInfo['userID'];
         room.addAll(rooms);
         yield InitSuccess();
       } catch (e) {

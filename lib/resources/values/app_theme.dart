@@ -3,14 +3,17 @@ import 'package:gamming_community/resources/values/app_colors.dart';
 
 class AppTheme {
   static ThemeData darkTheme = ThemeData(
-      scaffoldBackgroundColor: Color(0xff322E2E),
+      scaffoldBackgroundColor:AppColors.BACKGROUND_COLOR,
+      
+      //backgroundColor: AppColors.BACKGROUND_COLOR,
       brightness: Brightness.dark,
       fontFamily: "GoogleSans-Regular",
       primarySwatch: Colors.indigo,
       accentColor: Colors.indigo,
       cursorColor: Colors.amber,
       toggleableActiveColor: Colors.amber, //color cho switch, cac kieu
-      appBarTheme: AppBarTheme(color: Color(0xff322E2E)),
+      //appBarTheme: AppBarTheme(color: Color(0xff322E2E)),
+      appBarTheme: AppBarTheme(color: AppColors.BACKGROUND_COLOR),
       indicatorColor: AppColors.PRIMARY_COLOR,
       inputDecorationTheme: InputDecorationTheme(
           labelStyle: TextStyle(
@@ -24,13 +27,27 @@ class AppTheme {
         bodyColor: Colors.white,
         displayColor: Colors.blue,
       ),
+      bottomSheetTheme: BottomSheetThemeData(
+        modalBackgroundColor: AppColors.BACKGROUND_COLOR,
+        backgroundColor: AppColors.BACKGROUND_COLOR,
+        clipBehavior: Clip.antiAlias,
+        
+      ),
       accentIconTheme: IconThemeData(color: Colors.white),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        hoverElevation: 0,
+       elevation: 0,
+       highlightElevation: 0,
+       focusElevation: 0,
+       disabledElevation: 0,
+
+      ),
       tabBarTheme: TabBarTheme(labelColor: Colors.white),
       chipTheme: ChipThemeData(
-          backgroundColor: AppColors.BACKGROUND_COLOR,
+          backgroundColor: AppColors.BACKGROUND_COLOR.withOpacity(0.12),
           disabledColor: Colors.grey,
-          selectedColor: Colors.black,
-          secondarySelectedColor: Colors.black,
+          selectedColor: AppColors.BACKGROUND_COLOR.withOpacity(0.5),
+          secondarySelectedColor: AppColors.BACKGROUND_COLOR.withOpacity(0.5),
           labelPadding: EdgeInsets.all(0),
           padding: EdgeInsets.symmetric(horizontal: 20),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -55,6 +72,14 @@ class AppTheme {
       ),
       tabBarTheme: TabBarTheme(
         labelColor: Colors.black,
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        hoverElevation: 0,
+       elevation: 0,
+       highlightElevation: 0,
+       focusElevation: 0,
+       disabledElevation: 0,
+
       ),
       chipTheme: ChipThemeData(
           backgroundColor: Colors.grey[400],

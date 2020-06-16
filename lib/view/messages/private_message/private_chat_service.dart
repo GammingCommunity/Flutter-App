@@ -31,18 +31,36 @@ class PrivateChatService {
     }
   }
 
-  static void chatText(Socket socket, String conservationID, Message message) async {
+  static void chatText(Socket socket, String conservationID, String receiverID,Message message) async {
     socket.emit('chat-private', [
       [
         {'chatID': conservationID},
         {
           "sender": message.sender,
-          "messageType": message.messageType,
-          "text": message.txtMessage.content,
+          "receiver":receiverID,
+          "messageType": "text",
+          "text": {
+              "content":message.txtMessage.content,
+          },
         }
       ]
     ]);
   }
 
-  static void chatMedia() async {}
+  static void chatMedia(Socket socket, String conservationID, String receiverID,Message message,FileInfo fileInfo) async {
+    socket.emit('chat-private', [
+      [
+        {'chatID': conservationID},
+        {
+          "sender": message.sender,
+          "receiver":receiverID,
+          "messageType": message.messageType,
+          "text": {
+              "content":message.txtMessage.content,
+              "media":fileInfo
+          },
+        }
+      ]
+    ]);
+  }
 }

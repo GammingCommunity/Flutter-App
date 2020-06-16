@@ -10,6 +10,7 @@ import 'package:gamming_community/customWidget/PVScaleFactor.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
+import 'package:gamming_community/view/group_dashboard/group_dashboard.dart';
 import 'package:gamming_community/view/room/create_room_v2.dart';
 import 'package:gamming_community/view/room_manager/bloc/room_manager_bloc.dart';
 import 'package:gamming_community/view/room_manager/display_member.dart';
@@ -17,12 +18,12 @@ import 'package:gamming_community/view/room_manager/edit_room.dart';
 import 'package:gamming_community/view/room_manager/logo_room.dart';
 import 'package:gamming_community/view/room_manager/room_detail_v2.dart';
 import 'package:get/get.dart' as gets;
+import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 
 class RoomManager extends StatefulWidget {
-  final String token;
-  RoomManager({this.token});
+
   @override
   _RoomManagerState createState() => _RoomManagerState();
 }
@@ -95,6 +96,7 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
     final double itemHeight = (ScreenUtil().uiHeightPx - kToolbarHeight) / 2.5.h;
     final double itemWidth = ScreenUtil().uiWidthPx / 2.w;
     var rooms = roomManagerBloc.room;
+    var currentID = roomManagerBloc.currentID;
     super.build(context);
     return BlocListener<RoomManagerBloc, RoomManagerState>(
       condition: (previous, current) {
@@ -180,10 +182,13 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                           child: InkWell(
                             onTap: () {
                               gets.Get.to(
-                                  RoomDetailV2(
+                                  /*RoomDetailV2(
                                     room: rooms[index],
                                     itemTag: rooms[index].id,
-                                  ),
+                                  ),*/
+                                  GroupDashboard(
+                                    room: rooms[index],
+                                    currenID: currentID,),
                                   transition: gets.Transition.fade,opaque: false);
                               /*Navigator.push(
                                   context,
@@ -224,6 +229,7 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                                             )
                                           : CachedNetworkImage(
                                               imageUrl: rooms[index].roomBackground,
+                                              width: Get.width,
                                               fit: BoxFit.cover,
                                               height: 100.h,
                                             ),
