@@ -21,6 +21,7 @@ import 'package:gamming_community/view/news/news.dart';
 import 'package:gamming_community/view/notfications/notfications.dart';
 import 'package:gamming_community/view/profile/profile.dart';
 import 'package:gamming_community/view/room_manager/room_manager.dart';
+import 'package:gamming_community/view/user_post/userPost.dart';
 import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:open_iconic_flutter/open_iconic_flutter.dart';
@@ -171,41 +172,43 @@ class _HomeState extends State<HomePage>
                                   children: [
                                     Icon(FeatherIcons.minus),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                      IconWithTitle(
-                                        icon: FeatherIcons.package,
-                                        iconColor: Colors.black,
-                                        iconSize: 20,
-                                        color: Color(0xff3282b8),
-                                        borderRadius: 20,
-                                        titlePosition:Position.bottom,
-                                        title: "Create post",
-                                        onTap: () {},
-                                      ),
-                                      IconWithTitle(
-                                        icon: FeatherIcons.search,
-                                        iconColor: Colors.black,
-                                        iconSize: 20,
-                                        color: Colors.purple[200],
-                                        borderRadius: 20,
-                                        title: "Search room",
-                                        titlePosition:Position.bottom,
-                                        onTap: () {},
-                                      ),
-                                      IconWithTitle(
-                                        icon: FeatherIcons.user,
-                                        iconSize: 20,
-                                        iconColor: Colors.black,
-                                        color: Colors.blue[200],
-                                        borderRadius: 20,
-                                        title: "Search friend",
-                                        titlePosition:Position.bottom,
-                                        onTap: () {
-                                          
-                                        },
-                                      ),
-                                    ]),
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          IconWithTitle(
+                                            icon: FeatherIcons.package,
+                                            iconColor: Colors.black,
+                                            iconSize: 20,
+                                            color: Color(0xff3282b8),
+                                            borderRadius: 20,
+                                            titlePosition: Position.bottom,
+                                            title: "Create post",
+                                            onTap: () {
+                                              Get.to(UserPost());
+                                            },
+                                          ),
+                                          IconWithTitle(
+                                            icon: FeatherIcons.search,
+                                            iconColor: Colors.black,
+                                            iconSize: 20,
+                                            color: Colors.purple[200],
+                                            borderRadius: 20,
+                                            title: "Search room",
+                                            titlePosition: Position.bottom,
+                                            onTap: () {},
+                                          ),
+                                          IconWithTitle(
+                                            icon: FeatherIcons.user,
+                                            iconSize: 20,
+                                            iconColor: Colors.black,
+                                            color: Colors.blue[200],
+                                            borderRadius: 20,
+                                            title: "Search friend",
+                                            titlePosition: Position.bottom,
+                                            onTap: () {
+                                              Get.to(SearchView());
+                                            },
+                                          ),
+                                        ]),
                                   ],
                                 )),
                             useRootNavigator: true,

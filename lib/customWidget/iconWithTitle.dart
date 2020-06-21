@@ -27,7 +27,9 @@ class IconWithTitle extends StatelessWidget {
       fit: BoxFit.contain,
       child: InkWell(
         borderRadius: BorderRadius.circular(borderRadius),
-        onTap: () => onTap,
+        onTap: () {
+          return onTap();
+        },
         child: Padding(
           padding: EdgeInsets.all(10),
           child: titlePosition == Position.right
@@ -49,7 +51,6 @@ class IconWithTitle extends StatelessWidget {
                     Container(
                         height: 50,
                         width: 50,
-            
                         decoration:
                             BoxDecoration(color: color, borderRadius: BorderRadius.circular(10)),
                         child: Icon(
