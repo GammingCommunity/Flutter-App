@@ -54,7 +54,9 @@ class AppTheme {
           labelStyle: TextStyle(color: Colors.white),
           secondaryLabelStyle: TextStyle(color: Colors.white),
           brightness: Brightness.dark),
-      snackBarTheme: SnackBarThemeData(backgroundColor: ColorScheme.light().background));
+          dialogBackgroundColor: AppColors.BACKGROUND_COLOR,
+      snackBarTheme: SnackBarThemeData(backgroundColor: ColorScheme.light().background),);
+      
   static ThemeData lightTheme = ThemeData(
       backgroundColor: Colors.white,
       fontFamily: "GoogleSans-Regular",

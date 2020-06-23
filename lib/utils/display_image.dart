@@ -5,14 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:palette_generator/palette_generator.dart';
 
-
 class DisplayImage extends StatelessWidget {
   final String imageUrl;
+  final int imageWidth;
+  final int imageHeight;
   final bool fromStorage;
   final PaletteGenerator palate;
-  DisplayImage({this.imageUrl, this.fromStorage = true, this.palate});
+  DisplayImage({@required this.imageUrl, @required this.imageWidth, @required this.imageHeight,this.fromStorage = true, this.palate});
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
         body: Container(
             height: Get.height,
@@ -30,9 +32,10 @@ class DisplayImage extends StatelessWidget {
                     child: fromStorage
                         ? Image.file(
                             File(imageUrl),
-                            height: 200,
-                            width: Get.width,
-                            fit: BoxFit.cover,
+                            height: imageHeight.toDouble(),
+                            
+                            width: imageWidth.toDouble(),
+                            
                           )
                         : CachedNetworkImage(
                             fit: BoxFit.cover,

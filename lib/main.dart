@@ -34,6 +34,7 @@ import 'package:gamming_community/view/room_manager/room_manager.dart';
 import 'package:gamming_community/view/sign_up/bloc/bloc/signup_bloc.dart';
 import 'package:gamming_community/view/sign_up/provider/sign_up_provider.dart';
 import 'package:gamming_community/view/sign_up/sign_up.dart';
+import 'package:gamming_community/view/user_post/post_provider.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,9 +51,9 @@ void main() async {
   Widget defaultHome = Login();
   SharedPreferences ref = await SharedPreferences.getInstance();
   bool isEng = ref.getBool("isEng") ?? true;
-  bool isLogin = ref.getBool('isLogin') == null ?false: true ;
+  bool isLogin = ref.getBool('isLogin') == null ? false : true;
   // check token is not invaild
-  
+
   if (isLogin) {
     if (await RefreshToken.isVaildSession()) {
       print("vaild session");
@@ -123,7 +124,8 @@ class MyApp extends StatelessWidget {
               Inject(() => FeedsProvider()),
               Inject(() => ExploreProvider()),
               Inject(() => SearchFriendsProvider()),
-               Inject(() => GroupPostProvider())
+              Inject(() => GroupPostProvider()),
+              Inject(() => PostProvider())
             ],
             builder: (context) {
               settingProvider = Injector.get(context: context);

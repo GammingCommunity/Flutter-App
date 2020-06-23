@@ -29,7 +29,7 @@ dependencies:
   intl: ^0.16.1
   video_player: ^0.10.8+1
   chewie: ^0.9.10
-  image_picker: ^0.6.3+4
+  image_picker: ^0.6.7+2
   dotted_border: ^1.0.5
   flutter_local_notifications: ^1.4.1
   page_transition: ^1.1.5
@@ -52,6 +52,8 @@ dependencies:
   # launch url
   url_launcher: ^5.4.10
   google_sign_in: ^4.5.1
+  # photo_manager 
+  photo_manager: ^0.5.3+1
 dependency_overrides: 
   path: 1.7.0 
 
