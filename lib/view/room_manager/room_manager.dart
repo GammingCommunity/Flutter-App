@@ -23,7 +23,6 @@ import 'package:page_transition/page_transition.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 
 class RoomManager extends StatefulWidget {
-
   @override
   _RoomManagerState createState() => _RoomManagerState();
 }
@@ -93,7 +92,7 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    final double itemHeight = (ScreenUtil().uiHeightPx - kToolbarHeight) / 2.5.h;
+    final double itemHeight = (Get.height- kToolbarHeight) / 2.6.h;
     final double itemWidth = ScreenUtil().uiWidthPx / 2.w;
     var rooms = roomManagerBloc.room;
     var currentID = roomManagerBloc.currentID;
@@ -111,7 +110,7 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
         }
         if (state is AddRoomFail) {
           Navigator.pop(context);
-          openLoadingDialog(context, "create fail.");
+          openLoadingDialog(context, "Create fail.");
         }
 
         if (state is RefreshSuccess) {
@@ -140,6 +139,9 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
         }
         if (state is InitFail) {
           return buildException(context);
+        }
+        if (state is AddRoomFail) {
+          
         }
 
         return Scaffold(
@@ -188,16 +190,11 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                                   ),*/
                                   GroupDashboard(
                                     room: rooms[index],
-                                    currenID: currentID,),
-                                  transition: gets.Transition.fade,opaque: false);
-                              /*Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => RoomDetailV2(
-                                            room: rooms[index],
-                                            
-                                            itemTag: rooms[index].id,
-                                          )));*/
+                                    currenID: roomManagerBloc.currentID,
+                                    member: rooms[index].memberID
+                                  ),
+                                  transition: gets.Transition.cupertino,
+                                  opaque: false);
                             },
                             // long press on each room
                             onLongPress: () {
@@ -294,60 +291,60 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
     );
   }
 
+  Widget buildException(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        FlatButton.icon(
+            onPressed: () {
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                //(context as Element).reassemble();
+                roomManagerBloc.add(InitLoading());
+              });
+            },
+            icon: Icon(Icons.refresh),
+            label: Text("Refresh"))
+      ],
+    );
+  }
+
+  Future buildAddRoomFail(BuildContext context, String message) async {
+    return Get.dialog(Center(child: Container(
+      color: Colors.black,
+      height: 50, width: 50, child: Text("Create room fail"))));
+  }
+
+  Future openLoadingDialog(BuildContext context, String message) {
+    return Get.dialog(
+      message == ""
+          ? Center(child: Container(height: 50, width: 50, child: CircularProgressIndicator()))
+          : Text(message),
+    );
+  }
+
+  Widget showOptionMenu() {
+    return PopupMenuButton<int>(
+      tooltip: "Menu",
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          child: Text("Edit room"),
+          value: 1,
+        ),
+        PopupMenuDivider(
+          height: 10,
+        ),
+        PopupMenuItem(
+          child: Text("Remove room"),
+          value: 2,
+        )
+      ],
+      onSelected: (value) {
+        print("value:$value");
+      },
+    );
+  }
+
   @override
   bool get wantKeepAlive => true;
-}
-
-Widget buildException(BuildContext context) {
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: <Widget>[
-      Image.asset('assets/images/no_image.png'),
-      FlatButton.icon(
-          onPressed: () {
-            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              (context as Element).reassemble();
-            });
-          },
-          icon: Icon(Icons.refresh),
-          label: Text("Refresh"))
-    ],
-  );
-}
-
-Future openLoadingDialog(BuildContext context, String message) {
-  return showDialog(
-    barrierDismissible: false,
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: message == ""
-            ? Container(height: 50, width: 50, child: CircularProgressIndicator())
-            : Text(message),
-      );
-    },
-  );
-}
-
-Widget showOptionMenu() {
-  return PopupMenuButton<int>(
-    tooltip: "Menu",
-    itemBuilder: (context) => [
-      PopupMenuItem(
-        child: Text("Edit room"),
-        value: 1,
-      ),
-      PopupMenuDivider(
-        height: 10,
-      ),
-      PopupMenuItem(
-        child: Text("Remove room"),
-        value: 2,
-      )
-    ],
-    onSelected: (value) {
-      print("value:$value");
-    },
-  );
 }

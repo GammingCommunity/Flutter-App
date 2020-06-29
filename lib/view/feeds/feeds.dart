@@ -2,9 +2,12 @@
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
+import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/feeds/provider/feedsProvider.dart';
 import 'package:gamming_community/view/feeds/userPost.dart';
+import 'package:gamming_community/view/recomemend_friend/recommendFriend.dart';
+import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
@@ -53,49 +56,65 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
                   onWaiting: () => AppConstraint.loadingIndicator(context),
                   onError: (error) => buildException(context),
                   onData: (data) {
-                    var posts = data.posts;
-                    return posts.isEmpty ? Center(child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("You have not post. Follow some friend."),
-                        RaisedButton(child: Text("Check here"),onPressed: (){},)
-                      ],
-                    ),)  : SmartRefresher(
-                      enablePullDown: true,
-                      enablePullUp: true,
-                      header: WaterDropHeader(),
-                      footer: CustomFooter(
-                        builder: (BuildContext context, LoadStatus mode) {
-                          Widget body;
-                          if (mode == LoadStatus.idle) {
-                            body = Text("pull up load");
-                          } else if (mode == LoadStatus.loading) {
-                            body = CircularProgressIndicator();
-                          } else if (mode == LoadStatus.failed) {
-                            body = Text("Load Failed!Click retry!");
-                          } else if (mode == LoadStatus.canLoading) {
-                            body = Text("release to load more");
-                          } else {
-                            body = Text("No more Data");
-                          }
-                          return Container(
-                            height: 55.0,
-                            child: Center(child: body),
+                    var posts = model.value.posts;
+                    return posts.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text("You have not post. Follow some friend."),
+                                RaisedButton(
+                                  child: Text("Check here"),
+                                  onPressed: () {
+                                    Get.to(RecommendFriends(),
+                                        opaque: false, transition: Transition.rightToLeftWithFade);
+                                  },
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15)),
+                                )
+                              ],
+                            ),
+                          )
+                        : SmartRefresher(
+                            enablePullDown: true,
+                            enablePullUp: true,
+                            header: WaterDropHeader(),
+                            footer: CustomFooter(
+                              builder: (BuildContext context, LoadStatus mode) {
+                                Widget body;
+                                if (mode == LoadStatus.idle) {
+                                  body = Text("pull up load");
+                                } else if (mode == LoadStatus.loading) {
+                                  body = CircularProgressIndicator();
+                                } else if (mode == LoadStatus.failed) {
+                                  body = Text("Load Failed!Click retry!");
+                                } else if (mode == LoadStatus.canLoading) {
+                                  body = Text("release to load more");
+                                } else {
+                                  body = Text("No more Data");
+                                }
+                                return Container(
+                                  height: 55.0,
+                                  child: Center(child: body),
+                                );
+                              },
+                            ),
+                            controller: _refreshController,
+                            onRefresh: () => _onRefresh(data),
+                            onLoading: () => _onLoading(),
+                            child: ListView.separated(
+                              separatorBuilder: (context, index) => SizedBox(height: 10),
+                              itemBuilder: (c, i) {
+                                return FaSlideAnimation.slideUp(
+                                    delayed: 300,
+                                    show: true,
+                                    child: UserPost(
+                                      post: posts[i],
+                                    ));
+                              },
+                              itemCount: posts.length,
+                            ),
                           );
-                        },
-                      ),
-                      controller: _refreshController,
-                      onRefresh: () => _onRefresh(data),
-                      onLoading: ()=> _onLoading(),
-                      child: ListView.builder(
-                        itemBuilder: (c, i) {
-                          return UserPost(
-                            post: posts[i],
-                          );
-                        },
-                        itemCount: posts.length,
-                      ),
-                    );
                   });
             },
           )),
@@ -122,7 +141,8 @@ Widget buildException(BuildContext context) {
               el.markNeedsBuild();
               el.visitChildren(rebuild);
             }
-             (context as Element).visitChildren(rebuild);
+
+            (context as Element).visitChildren(rebuild);
           },
         )
       ],

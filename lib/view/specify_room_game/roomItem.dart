@@ -54,7 +54,7 @@ class _RoomItemState extends State<RoomItem> with AutomaticKeepAliveClientMixin 
                               fadeInDuration: Duration(seconds: 2),
                               imageUrl: rooms.roomLogo,
                               placeholder: (context, url) =>
-                                  SkeletonTemplate.image(60.h, 60.w, 1000, Colors.grey),
+                                  SkeletonTemplate.image(60.h, 60.w, 15, Colors.grey),
                               errorWidget: (context, url, error) => Icon(Icons.error),
                             ),
                           ),
@@ -67,20 +67,20 @@ class _RoomItemState extends State<RoomItem> with AutomaticKeepAliveClientMixin 
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Wrap(
-                              direction: Axis.vertical,
-                              spacing: 10,
-                              runAlignment: WrapAlignment.start,
+                            Column(
+                             mainAxisAlignment: MainAxisAlignment.start,
+                             crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
                                   rooms.roomName ?? "Room name",
                                   style: TextStyle(fontSize: ScreenUtil().setSp(18)),
                                 ),
-                                Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text("${v.inHours} hours ago")),
+                                SizedBox(height:5),
+                                Text("${v.inHours} hours ago"),
+                                SizedBox(height:5),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     DisplayMember(
                                       borderRadius: 1000,
@@ -103,7 +103,7 @@ class _RoomItemState extends State<RoomItem> with AutomaticKeepAliveClientMixin 
                             decoration: BoxDecoration(
                                 color: Colors.indigo, borderRadius: BorderRadius.circular(15)),
                             child: Text(
-                                "${rooms.memberID.length}/ ${rooms.maxOfMember}",style: TextStyle(color: !checkBrightness(context) ? Colors.white : Colors.black,)),)
+                                "${rooms.memberID.length}/ ${rooms.maxOfMember}",style: TextStyle(color:  Colors.white )),)
                       )
                     ],
                   ),

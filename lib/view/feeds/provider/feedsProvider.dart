@@ -18,14 +18,29 @@ class FeedsProvider {
   final posts = <Post>[];
   Future fetchPost() async {
     //fetch friends
+    var userInfo = await getUserInfo();
     var results = await SubRepo.queryGraphQL(await getToken(), _query.getAllFriend());
 
-    var friends = ListFriends.fromJson(results.data['getFriends']).listFriend;
+    List<Friend> friends = ListFriends.fromJson(results.data['getFriends']).listFriend;
+    friends.add(Friend(
+        id: int.parse(userInfo['userID']),
+        name: userInfo['userName'],
+        profileUrl: userInfo['profileUrl']));
     var mapped = toListString(friends);
+
     var datas =
         await PostRepo.queryGraphQL(await getToken(), _query.fetchPost(json.encode(mapped)));
     var result = Posts.fromJson(datas.data['fetchPost']).posts;
     posts.addAll(result);
+  }
+
+  Future addPost(Post post) async {
+    try {
+      posts.add(post);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future refresh() async {}
@@ -37,7 +52,7 @@ class FeedsProvider {
         await getToken(), _mutation.reaction(commentTo, reactType, postID, commentID));
   }
 
-  void init() async {
-    await fetchPost();
+  void init() {
+    fetchPost();
   }
 }

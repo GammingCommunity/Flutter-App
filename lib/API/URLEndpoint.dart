@@ -4,7 +4,7 @@ class URLEndpoint {
   static String authService = "https://auth-service.glitch.me/auth";
   static String chatService = "";
   static String postService = "https://post-service.glitch.me/graphql";
-  static String fileManagerService = "";
+  static String fileManagerService = "https://file-management.glitch.me";
   static String fastJoinService = "";
   static String feedBackService = "";
   static String mailService = "";

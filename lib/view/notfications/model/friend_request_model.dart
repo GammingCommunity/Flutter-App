@@ -14,7 +14,7 @@ class FriendsRequest {
     try {
       for (var item in json) {
         requests.add(FriendRequest(
-          senderID: item['sender']['id'],
+          senderID: item['sender']['id'].toString(),
             name: item['sender']['name'],
             avatarUrl: item['sender']['avatar_url'],
             updatedAt: item['updated_at']));

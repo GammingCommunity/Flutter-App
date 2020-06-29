@@ -20,7 +20,7 @@ class NotificationProvider extends StatesRebuilder {
     var result = await SubRepo.queryGraphQL(await getToken(), _query.getFriendRequest());
     var request = FriendsRequest.fromJson(result.data['getFriendRequests']).friendsRequest;
     if (request.isEmpty) {
-      hasValue = false;
+      
       rebuildStates();
     } else {
       friendsRequest.addAll(request);

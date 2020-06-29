@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/GroupMessage.dart';
 import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
+import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/checkHasConnection.dart';
@@ -23,10 +25,16 @@ import 'package:states_rebuilder/states_rebuilder.dart';
 import '../../messages/group_messages/group_message.dart';
 
 class GroupMessageWidget extends StatefulWidget {
-  final String roomID, currentID;
-  
+  final String roomID;
+  final String currentID;
+  final String roomName;
   final List member;
-  GroupMessageWidget({this.roomID, this.currentID, this.member,});
+  GroupMessageWidget({
+    this.roomID,
+    this.roomName,
+    this.currentID,
+    this.member,
+  });
   @override
   _MessagesState createState() => _MessagesState();
 }
@@ -77,7 +85,7 @@ class _MessagesState extends State<GroupMessageWidget>
     return sampleUser;
   }
 
-  void loadMessage() async {
+  Future loadMessage() async {
     var animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
 
@@ -97,45 +105,46 @@ class _MessagesState extends State<GroupMessageWidget>
         var grMessageData = await groupchatProvider.initLoadMessage(widget.roomID);
 
         grMessageData.forEach((e) {
-          addNewMessage(e,false);
+          addNewMessage(e, false);
         });
 
         break;
       case false:
-      
         break;
       default:
     }
-    
   }
 
-  addNewMessage(GroupMessage e,bool loadOldMessage) {
-    groupchatProvider.onAddNewMessage(GroupChatMessage(
-        fromStorage: false,
-        imageUri: "",
-        roomID: widget.roomID,
-        type: e.messageType,
-        currentID: widget.currentID,
-        sender: e.sender,
-        animationController: animationController,
-        text: e.text,
-        sendDate: e.createAt.toLocal()),loadOldMessage);
+  addNewMessage(GroupMessage e, bool loadOldMessage) {
+    groupchatProvider.onAddNewMessage(
+        GroupChatMessage(
+            fromStorage: false,
+            imageUri: "",
+            roomID: widget.roomID,
+            type: e.messageType,
+            currentID: widget.currentID,
+            sender: e.sender,
+            animationController: animationController,
+            text: e.text,
+            sendDate: e.createAt.toLocal()),
+        loadOldMessage);
     // update to save to cache
     groupchatProvider.onAddNewMessage2(e);
 
-     animationController.forward();
-    loadOldMessage ? null : Timer(Duration(seconds: 2), () {
-      animateToBottom();
-    });
+    animationController.forward();
+    loadOldMessage
+        ? null
+        : Timer(Duration(seconds: 2), () {
+            animateToBottom();
+          });
   }
 
   // update cache
   void onSendMesasge(String message, String type) {
     //print(widget.profileUrl);
-    if (chatController.text.isEmpty) return;
-
     var animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    if (chatController.text.isEmpty) return;
 
     var groupMessage = GroupChatMessage(
       roomID: widget.roomID,
@@ -154,7 +163,7 @@ class _MessagesState extends State<GroupMessageWidget>
     groupMessage.animationController.forward();
 
     // add mess to listview
-    groupchatProvider.onAddNewMessage(groupMessage,false);
+    groupchatProvider.onAddNewMessage(groupMessage, false);
     // add mess to list model
     groupchatProvider.onAddNewMessage2(GroupMessage(
         messageType: "text",
@@ -188,7 +197,7 @@ class _MessagesState extends State<GroupMessageWidget>
     groupMessage.animationController.forward();
 
     // add mess to listview
-    groupchatProvider.onAddNewMessage(groupMessage,false);
+    groupchatProvider.onAddNewMessage(groupMessage, false);
 
     chatController.clear();
     animateToBottom();
@@ -237,7 +246,7 @@ class _MessagesState extends State<GroupMessageWidget>
       //add message to end
       chatMessage.animationController.forward();
       // add message to list and update UI
-      groupchatProvider.onAddNewMessage(chatMessage,false);
+      groupchatProvider.onAddNewMessage(chatMessage, false);
 
       await Future.delayed(Duration(milliseconds: 100));
 
@@ -245,8 +254,8 @@ class _MessagesState extends State<GroupMessageWidget>
     });
   }
 
-  void animateToBottom() async {
-    await scrollController.animateTo(
+  void animateToBottom() {
+    scrollController.animateTo(
       scrollController.position.maxScrollExtent,
       curve: Curves.linear,
       duration: Duration(milliseconds: 200),
@@ -264,8 +273,6 @@ class _MessagesState extends State<GroupMessageWidget>
     // get url and push image to other client
   }
 
-
-
   @override
   void initState() {
     super.initState();
@@ -277,7 +284,7 @@ class _MessagesState extends State<GroupMessageWidget>
             var messages =
                 await groupchatProvider.fechMoreMessage(roomID: widget.roomID, limit: 10);
             for (var item in messages) {
-              addNewMessage(item,true);
+              addNewMessage(item, true);
             }
           });
         }
@@ -287,11 +294,9 @@ class _MessagesState extends State<GroupMessageWidget>
 
     WidgetsBinding.instance.addPostFrameCallback((d) async {
       await groupchatProvider.initSocket(widget.roomID);
-      
-      groupchatProvider.initMember(widget.member, widget.roomID);
-      loadMessage();
+      await groupchatProvider.initMember(widget.member, widget.roomID);
+      await loadMessage();
       onRecieveMessage();
-      
     });
   }
 
@@ -304,7 +309,6 @@ class _MessagesState extends State<GroupMessageWidget>
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
     groupchatProvider = Injector.get(context: context);
 
     super.build(context);
@@ -312,6 +316,14 @@ class _MessagesState extends State<GroupMessageWidget>
       key: scaffoldKey,
       // pass chat id here
       // endDrawer: ListUserDrawer(chatID: widget.chatID),
+      appBar: CustomAppBar(
+          child: [Text(widget.roomName)],
+          height: 50,
+          onNavigateOut: () {
+            Get.back();
+          },
+          padding: EdgeInsets.all(0),
+          backIcon: FeatherIcons.arrowLeft),
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
@@ -343,31 +355,30 @@ class _MessagesState extends State<GroupMessageWidget>
   }
 
   Widget buildGroupChat() {
-    return  Expanded(
-            child: ListView.separated(
-                separatorBuilder: (context, index) => SizedBox(
-                      height: 10,
-                    ),
-                addAutomaticKeepAlives: true,
-                padding: EdgeInsets.only(left: 8, right: 8, bottom: 12, top: 12),
-                itemCount: groupchatProvider.messages.length,
-                controller: scrollController,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: <Widget>[
-                      if (index == 0)
-                        buildDateTimeSeparate(groupchatProvider.messages[index].sendDate),
-                      SizedBox(height: 5),
-                      if (index != 0 &&
-                          groupchatProvider.messages[index - 1].sendDate.day !=
-                              groupchatProvider.messages[index].sendDate.day)
-                        buildDateTimeSeparate(groupchatProvider.messages[index].sendDate),
-                      //Text(formatDateTime(groupchatProvider.messages[index].sendDate)),
-                      //SizedBox(height: 10),
-                      groupchatProvider.messages[index],
-                    ],
-                  );
-                }));
+    return Expanded(
+        child: ListView.separated(
+            separatorBuilder: (context, index) => SizedBox(
+                  height: 10,
+                ),
+            addAutomaticKeepAlives: true,
+            padding: EdgeInsets.only(left: 8, right: 8, bottom: 12, top: 12),
+            itemCount: groupchatProvider.messages.length,
+            controller: scrollController,
+            itemBuilder: (context, index) {
+              return Column(
+                children: <Widget>[
+                  if (index == 0) buildDateTimeSeparate(groupchatProvider.messages[index].sendDate),
+                  SizedBox(height: 5),
+                  if (index != 0 &&
+                      groupchatProvider.messages[index - 1].sendDate.day !=
+                          groupchatProvider.messages[index].sendDate.day)
+                    buildDateTimeSeparate(groupchatProvider.messages[index].sendDate),
+                  //Text(formatDateTime(groupchatProvider.messages[index].sendDate)),
+                  //SizedBox(height: 10),
+                  groupchatProvider.messages[index],
+                ],
+              );
+            }));
   }
 
   Widget buildDateTimeSeparate(DateTime datetime) {
@@ -437,8 +448,6 @@ class _MessagesState extends State<GroupMessageWidget>
             child: IconButton(
               icon: Icon(Icons.attach_file),
               onPressed: () {
-                
-
                 /*setState(() {
                   /*if (_mediaOverlayEntry == null) {
                                 _mediaOverlayEntry = _createOverlayEntry();

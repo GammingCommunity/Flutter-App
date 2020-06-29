@@ -8,7 +8,9 @@ import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/utils/color_utility.dart';
 import 'package:gamming_community/view/group_dashboard/group_page/group_message.dart';
 import 'package:gamming_community/view/group_dashboard/group_page/group_post.dart';
+import 'package:gamming_community/view/messages/models/group_chat_provider.dart';
 import 'package:get/get.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
 
 import 'group_create_post/group_create_post.dart';
 
@@ -25,6 +27,7 @@ class GroupDashboard extends StatefulWidget {
 
 class _GroupDashboardState extends State<GroupDashboard> {
   PageController pageController;
+  GroupChatProvider groupChatProvider;
   int _pageIndex = 0;
   @override
   void initState() {
@@ -32,7 +35,10 @@ class _GroupDashboardState extends State<GroupDashboard> {
       ..addListener(() {
         print(pageController.page);
       });
-
+    WidgetsBinding.instance.addPostFrameCallback((d) async {
+      await groupChatProvider.initMember(widget.member, widget.room.id);
+     
+    });
     super.initState();
   }
 
@@ -55,8 +61,10 @@ class _GroupDashboardState extends State<GroupDashboard> {
                       onTap: () {
                         print("create post");
                         Get.to(
-                          GroupCreatePost(roomID: widget.room.id,),transition: Transition.downToUp
-                        );
+                            GroupCreatePost(
+                              roomID: widget.room.id,
+                            ),
+                            transition: Transition.downToUp);
                       }),
                   IconWithTitle(
                     icon: FeatherIcons.barChart2,
@@ -79,6 +87,7 @@ class _GroupDashboardState extends State<GroupDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    groupChatProvider = Injector.get(context: context);
     return Scaffold(
         bottomNavigationBar: Container(
           height: _pageIndex == 1 ? 0 : 100,
@@ -114,6 +123,7 @@ class _GroupDashboardState extends State<GroupDashboard> {
                           icon: FeatherIcons.messageCircle,
                           onTap: () {
                             Get.to(GroupMessageWidget(
+                              roomName: widget.room.roomName,
                               roomID: widget.room.id,
                               currentID: widget.currenID,
                               member: widget.room.memberID,

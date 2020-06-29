@@ -14,6 +14,7 @@ import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/notfication_initailization.dart';
 import 'package:gamming_community/view/feeds/feeds.dart';
+import 'package:gamming_community/view/finding_room/finding_room.dart';
 import 'package:gamming_community/view/game_channel/game_channel.dart';
 import 'package:gamming_community/view/home/search_view.dart';
 import 'package:gamming_community/view/messages/private_message/private_chats.dart';
@@ -194,7 +195,9 @@ class _HomeState extends State<HomePage>
                                             borderRadius: 20,
                                             title: "Search room",
                                             titlePosition: Position.bottom,
-                                            onTap: () {},
+                                            onTap: () {
+                                              Get.to(FindingRoom());
+                                            },
                                           ),
                                           IconWithTitle(
                                             icon: FeatherIcons.user,

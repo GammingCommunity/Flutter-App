@@ -2,7 +2,7 @@ class Post {
   String postId;
   String title;
   String content;
-  String media;
+  List media;
   List tag;
   String permission;
   DateTime createdTime;
@@ -18,6 +18,18 @@ class Post {
       this.createdTime,
       this.countComment,
       this.countReaction});
+  factory Post.fromJson(Map data) {
+    return Post(
+        postId: data['post_id'],
+        title: data['title'],
+        content: data['content'],
+        media: data['media'],
+        permission: data['permission'],
+        tag: data['tag'],
+        createdTime: DateTime.parse(data['created_time']).toLocal(),
+        countComment: data['countComment'],
+        countReaction: data['countReaction']);
+  }
 }
 
 class Posts {

@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:gamming_community/view/user_post/post_provider.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
 
 class ImageHover extends StatefulWidget {
   final File file;
@@ -20,6 +22,7 @@ class _ImageHoverState extends State<ImageHover>
   Animation animation;
   AnimationController animationController;
   bool isLongPress = false;
+  PostProvider postProvider;
   @override
   void initState() {
     super.initState();
@@ -28,13 +31,18 @@ class _ImageHoverState extends State<ImageHover>
 
   @override
   Widget build(BuildContext context) {
+    postProvider = Injector.get(context: context);
     super.build(context);
     return InkWell(
+      borderRadius: BorderRadius.circular(15),
       onLongPress: () {
+        // has choose image
         setState(() {
-          isLongPress = !isLongPress;
-        });
-        return widget.onLongPress(widget.file);
+            isLongPress = !isLongPress;
+            //  isLongPress = !postProvider.isImagesChoose;
+          });
+
+        return widget.onLongPress(!isLongPress && postProvider.isImagesChoose? null : widget.file);
       },
       onTap: () => widget.onClick(),
       child: Container(

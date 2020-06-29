@@ -17,9 +17,9 @@ class MemberAdapter extends TypeAdapter<Member> {
       for (var i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Member(
-      image: fields[2] as String,
       userID: fields[0] as String,
       name: fields[1] as String,
+      image: fields[2] as String,
     );
   }
 

@@ -98,17 +98,16 @@ class _GroupChatMessageState extends State<GroupChatMessage>
   void initState() {
     super.initState();
     widget.fromStorage ?? showProgress();
-    controller = AnimationController(vsync: this, duration: Duration(milliseconds: 200));
+    /* controller = AnimationController(vsync: this, duration: Duration(milliseconds: 200));
     animation = Tween(begin: 0, end: 1).animate(controller)
       ..addListener(() {
         controller.forward();
-      });
+      });*/
     print("U add new mess ");
   }
 
   @override
   void dispose() {
-    controller.dispose();
     super.dispose();
   }
 
@@ -120,11 +119,10 @@ class _GroupChatMessageState extends State<GroupChatMessage>
     var imageUri = widget.imageUri;
     var imageUrl = widget.text.content;
     // get username for userlist
-    members.get(widget.roomID).members.forEach((element) {
-      print(element.userID);
-    });
-    var userProfile =
-        members.get(widget.roomID).members.firstWhere((e) => e.userID == widget.sender);
+    
+    var membersByGroupID = members.get(widget.roomID).members;
+    var userProfile = membersByGroupID.singleWhere((e) => e.userID == widget.sender);
+    print(userProfile);
     // var userProfile = Member(image: AppConstraint.default_profile, name: "asdsad", userID: "0000");
 
     return SizeTransition(

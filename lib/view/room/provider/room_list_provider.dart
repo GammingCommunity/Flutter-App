@@ -24,6 +24,7 @@ class RoomsProvider extends StatesRebuilder {
     this.groupSize = groupSize;
   }
 
+
   /*--------------------------------------------------------------------------------- */
   Future initLoad(String gameID, String groupSize) async {
     this.gameID = gameID;
@@ -31,7 +32,7 @@ class RoomsProvider extends StatesRebuilder {
     var info = await getUserInfo();
     this.userID = info['userID'];
 
-    var room = await queryRoom(gameID, userID, limit, nextPage, groupSize);
+    var room = await queryRoom(gameID,limit, nextPage, groupSize);
     if (room.isEmpty) {
       hasNoValue = true;
       rebuildStates();
@@ -49,10 +50,10 @@ class RoomsProvider extends StatesRebuilder {
 
 /*--------------------------------------------------------------------------------- */
   Future<List<GroupChat>> queryRoom(
-      String gameID, String userID, int limit, int nextPage, String groupSize) async {
+      String gameID, int limit, int nextPage, String groupSize) async {
     try {
       var result = await MainRepo.queryGraphQL(
-          await getToken(), query.getListRoomByID(gameID, userID, limit, nextPage, groupSize));
+          await getToken(), query.getListRoomByID(gameID,limit, nextPage, groupSize));
 
       return GroupChats.fromJson(result.data['getRoomByGame']).rooms;
     } catch (e) {
@@ -64,7 +65,7 @@ class RoomsProvider extends StatesRebuilder {
   Future loadMore() async {
     print("load more");
     nextPage += 1;
-    var rooms = await queryRoom(gameID, userID, limit, nextPage, groupSize);
+    var rooms = await queryRoom(gameID,limit, nextPage, groupSize);
     _rooms.addAll(rooms);
     rebuildStates();
   }

@@ -9,6 +9,33 @@ class RoomManagerInitial extends RoomManagerState {
   List<Object> get props => [];
 }
 
+class AddMemberSuccess extends RoomManagerState{
+  @override
+  List<Object> get props => [];
+}
+
+
+class RemoveMemberSuccess extends RoomManagerState{
+  @override
+  List<Object> get props => [];
+}
+
+class SetAvatarSuccess extends RoomManagerState{
+  @override
+  List<Object> get props => [];
+}
+class UnsetAvatarSuccess extends RoomManagerState{
+  @override
+  List<Object> get props => [];
+}
+class SetCoverSuccess extends RoomManagerState{
+  @override
+  List<Object> get props => [];
+}
+class UnSetCoverSuccess extends RoomManagerState{
+  @override
+  List<Object> get props => [];
+}
 class RefreshSuccess extends RoomManagerState {
   @override
   List<Object> get props => [];
@@ -25,6 +52,11 @@ class InitSuccess extends RoomManagerState {
 }
 
 class InitFail extends RoomManagerState {
+  @override
+  List<Object> get props => [];
+}
+
+class AddMemberDialog extends RoomManagerState {
   @override
   List<Object> get props => [];
 }

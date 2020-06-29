@@ -5,9 +5,11 @@ import 'package:gamming_community/API/Subscription.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/repository/room_repo.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
+import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/notfications/notificationProvider.dart';
 import 'package:gamming_community/view/notfications/notifications_service.dart';
 import 'package:gamming_community/view/notfications/roomInfo_widget.dart';
+import 'package:get/get.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
@@ -25,9 +27,9 @@ class _NotficationsState extends State<Notfications> with TickerProviderStateMix
   void initState() {
     super.initState();
     tabController = TabController(length: 3, vsync: this);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      notificationProvider.loadFriendRequest();
-      notificationProvider.loadPendingRequest();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await notificationProvider.loadFriendRequest();
+      await notificationProvider.loadPendingRequest();
     });
   }
 
@@ -61,35 +63,37 @@ class _NotficationsState extends State<Notfications> with TickerProviderStateMix
                           highlightColor: Colors.transparent,
                           splashColor: Colors.transparent,
                         ),
-                        child: TabBar(
-                          indicatorSize: TabBarIndicatorSize.tab,
-                          indicatorColor: Colors.transparent,
-                          indicator: BoxDecoration(
-
-                              color:Colors.indigo,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 5),
+                          child: TabBar(
+                            indicatorSize: TabBarIndicatorSize.tab,
+                            indicatorColor: Colors.transparent,
+                            indicator: BoxDecoration(
+                              color: Colors.black87,
                               borderRadius: BorderRadius.circular(15),
+                            ),
+                            controller: tabController,
+                            tabs: [
+                              Tab(
+                                child: Stack(children: <Widget>[
+                                  Positioned(top: 10, right: 5, child: dotNotify()),
+                                  Align(alignment: Alignment.center, child: Text("Notification"))
+                                ]),
                               ),
-                          controller: tabController,
-                          tabs: [
-                            Tab(
-                              child: Stack(children: <Widget>[
-                                Positioned(top: 10, right: 5, child: dotNotify()),
-                                Align(alignment: Alignment.center, child: Text("Notification"))
-                              ]),
-                            ),
-                            Tab(
-                              child: Stack(children: <Widget>[
-                                //Positioned(top: 10, right: 20, child: dotNotify()),
-                                Align(alignment: Alignment.center, child: Text("Pending"))
-                              ]),
-                            ),
-                            Tab(
-                              child: Stack(children: <Widget>[
-                                Positioned(top: 10, right: -2, child: dotNotify()),
-                                Align(alignment: Alignment.center, child: Text("Friends Request"))
-                              ]),
-                            ),
-                          ],
+                              Tab(
+                                child: Stack(children: <Widget>[
+                                  //Positioned(top: 10, right: 20, child: dotNotify()),
+                                  Align(alignment: Alignment.center, child: Text("Pending"))
+                                ]),
+                              ),
+                              Tab(
+                                child: Stack(children: <Widget>[
+                                  Positioned(top: 10, right: -2, child: dotNotify()),
+                                  Align(alignment: Alignment.center, child: Text("Friends Request"))
+                                ]),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -153,59 +157,70 @@ class _NotficationsState extends State<Notfications> with TickerProviderStateMix
                             )),
                   ),
                   //Friends Request
-                  notificationProvider.hasValue
-                      ? Center(child: CircularProgressIndicator())
-                      : Container(
-                          child: notificationProvider.checkFriendsRequest
-                              ? Text("No friends request now.")
-                              : RefreshIndicator(
-                                  onRefresh: () {
-                                    return notificationProvider.refresh(3);
-                                  },
-                                  child: ListView.separated(
-                                    separatorBuilder: (context, index) => Divider(),
-                                    itemCount: requests.length,
-                                    itemBuilder: (context, index) {
-                                      return ContainerResponsive(
-                                        height: 100,
-                                        child: Column(
-                                          children: <Widget>[
-                                            Row(children: <Widget>[
-                                              ClipRRect(
-                                                  borderRadius: BorderRadius.circular(10000),
-                                                  child: CachedNetworkImage(
-                                                    imageUrl: requests[index].avatarUrl,
-                                                    height: 50,
-                                                    width: 50,
-                                                  )),
-                                              SizedBoxResponsive(width: 10),
-                                              Text(requests[index].name)
-                                            ]),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.end,
-                                              children: <Widget>[
-                                                FlatButton(
-                                                    onPressed: () {
-                                                      notificationServices.acceptRequest(
-                                                          int.parse(requests[index].senderID),
-                                                          true);
-                                                    },
-                                                    child: Text("Accept")),
-                                                FlatButton(
-                                                    onPressed: () {
-                                                      notificationServices.acceptRequest(
-                                                          int.parse(requests[index].senderID),
-                                                          false);
-                                                    },
-                                                    child: Text("Dismiss"))
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  )),
+                  if (requests.isEmpty)
+                    Center(child: CircularProgressIndicator())
+                  else
+                    Column(
+                      children: [
+                        Container(
+                          height: 50,
+                          width: Get.width,
+                          child: Text("2 request"),
                         ),
+                        Expanded(
+                          child: RefreshIndicator(
+                              onRefresh: () {
+                                return notificationProvider.refresh(3);
+                              },
+                              child: notificationProvider.checkFriendsRequest
+                                  ? Text("No friends request now.")
+                                  : ListView.separated(
+                                      separatorBuilder: (context, index) => Divider(),
+                                      itemCount: requests.length,
+                                      itemBuilder: (context, index) {
+                                        return ContainerResponsive(
+                                          height: 100,
+                                          child: Column(
+                                            children: <Widget>[
+                                              Row(children: <Widget>[
+                                                ClipRRect(
+                                                    borderRadius: BorderRadius.circular(15),
+                                                    child: CachedNetworkImage(
+                                                      imageUrl: requests[index].avatarUrl ??
+                                                          AppConstraint.default_profile,
+                                                      height: 50,
+                                                      width: 50,
+                                                    )),
+                                                SizedBoxResponsive(width: 10),
+                                                Text(requests[index].name)
+                                              ]),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                children: <Widget>[
+                                                  FlatButton(
+                                                      onPressed: () {
+                                                        notificationServices.acceptRequest(
+                                                            int.parse(requests[index].senderID),
+                                                            true);
+                                                      },
+                                                      child: Text("Accept")),
+                                                  FlatButton(
+                                                      onPressed: () {
+                                                        notificationServices.acceptRequest(
+                                                            int.parse(requests[index].senderID),
+                                                            false);
+                                                      },
+                                                      child: Text("Dismiss"))
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    )),
+                        ),
+                      ],
+                    ),
                 ]),
               ),
             )));

@@ -23,7 +23,7 @@ class GroupChatAdapter extends TypeAdapter<GroupChat> {
       memberID: (fields[4] as List)?.cast<dynamic>(),
       gameInfo: fields[7] as GameInfo,
       maxOfMember: fields[5] as int,
-      isPrivate: fields[6] as bool,
+      roomType: fields[6] as String,
       roomLogo: fields[9] as String,
       roomBackground: fields[10] as String,
       isJoin: fields[11] as bool,
@@ -49,7 +49,7 @@ class GroupChatAdapter extends TypeAdapter<GroupChat> {
       ..writeByte(5)
       ..write(obj.maxOfMember)
       ..writeByte(6)
-      ..write(obj.isPrivate)
+      ..write(obj.roomType)
       ..writeByte(7)
       ..write(obj.gameInfo)
       ..writeByte(8)

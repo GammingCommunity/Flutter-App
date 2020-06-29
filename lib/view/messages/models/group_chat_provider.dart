@@ -25,7 +25,9 @@ class GroupChatProvider extends StatesRebuilder {
   void onAddNewMessage(GroupChatMessage groupchatMessage, bool loadOldMessage) {
     // true -> load old message
     // false -> load new message
-    loadOldMessage  == true ? messages.insert(0, groupchatMessage) : this.messages.add(groupchatMessage);
+    loadOldMessage == true
+        ? messages.insert(0, groupchatMessage)
+        : this.messages.add(groupchatMessage);
     rebuildStates();
   }
 
@@ -36,18 +38,19 @@ class GroupChatProvider extends StatesRebuilder {
 
   void clearAndUpdate() {
     groupMessageBox.clear();
+    rebuildStates();
   }
 
   Future initMember(List members, String groupID) async {
+    var member = <Member>[];
     memberBox.clear();
     var getMember =
         await SubRepo.queryGraphQL(await getToken(), query.getMutliUserInfo(toListInt(members)));
     var result = ListUser.fromJson(getMember.data['lookAccount']).listUser;
     for (var item in result) {
-      var member = <Member>[]
-        ..add(Member(image: item.profileUrl, name: item.nickname, userID: item.id.toString()));
-      memberBox.put(groupID, Members(groupID: groupID, members: member));
+        member.add(Member(image: item.profileUrl, name: item.nickname, userID: item.id.toString()));      
     }
+    memberBox.put(groupID, Members(groupID: groupID, members: member));
   }
 
   Future<List<GroupMessage>> initLoadMessage(
@@ -62,7 +65,6 @@ class GroupChatProvider extends StatesRebuilder {
   }
 
   Future<List<GroupMessage>> fechMoreMessage({String roomID, int limit}) async {
-    
     var result = await MainRepo.queryGraphQL(
         await getToken(), query.getRoomMessage(roomID: roomID, limit: limit, page: page));
     var listMessage = GroupMessages.listFromJson(result.data['getRoomMessage']).groupMessages;
@@ -70,7 +72,7 @@ class GroupChatProvider extends StatesRebuilder {
       return [];
     } else {
       this.page++;
-     print(page);
+      print(page);
       return listMessage;
     }
   }
@@ -98,8 +100,6 @@ class GroupChatProvider extends StatesRebuilder {
     // disconnect
     socket.on('disconnect', (_) => print('disconnect'));
   }
-
-  
 
   void dispose() {
     socket.disconnect();

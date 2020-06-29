@@ -9,6 +9,7 @@ class User {
   String phoneNumber;
   String profileUrl;
   String relationship;
+  int numOfFollower;
   User(
       {this.id,
       this.birthday,
@@ -17,6 +18,7 @@ class User {
       this.nickname,
       this.phoneNumber,
       this.relationship,
+      this.numOfFollower,
       this.profileUrl});
   factory User.fromJson(json) {
     var user = User();
@@ -29,6 +31,7 @@ class User {
           phoneNumber: json['phone'] ??= '',
           describe: json['describe'],
           relationship: json['relationship'],
+          numOfFollower: json['count_followers'],
           profileUrl: json['avatar_url'] ??= AppConstraint.default_profile);
     } catch (e) {
       print(e);
@@ -44,16 +47,17 @@ class ListUser {
   factory ListUser.fromJson(List json) {
     var _list = <User>[];
     try {
-      json.forEach((element) {
+      json.forEach((e) {
         _list.add(User(
-            id: element['account']['id'],
-            email: element['account']['email'] ??= '',
+            id: e['account']['id'],
+            email: e['account']['email'] ??= '',
             birthday: '',
-            nickname: element['account']['name'] ??= '',
-            phoneNumber: element['account']['phone'] ??= '',
-            describe: element['account']['describe'],
-            relationship: element['relationship'],
-            profileUrl: element['account']['avatar_url']));
+            nickname: e['account']['name'] ??= '',
+            phoneNumber: e['account']['phone'] ??= '',
+            describe: e['account']['describe'],
+            relationship: e['relationship'],
+            numOfFollower: e['count_followers'],
+            profileUrl: e['account']['avatar_url']));
       });
     } catch (e) {
       return ListUser(listUser: []);

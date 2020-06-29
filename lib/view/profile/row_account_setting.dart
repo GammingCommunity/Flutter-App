@@ -24,7 +24,7 @@ class RowProfileSetting extends StatelessWidget {
         height: 50,
         width: ScreenUtil().uiWidthPx,
         child: Padding(
-          padding: EdgeInsetsResponsive.only(left: 30),
+          padding: EdgeInsetsResponsive.only(left: 20),
           child: Row(
             children: <Widget>[
               Container(
@@ -32,10 +32,10 @@ class RowProfileSetting extends StatelessWidget {
                 width: 40,
                 alignment: Alignment.center,
                 decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(10), color: Get.isDarkMode ? Colors.white : Colors.black),
+                    BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.white),
                 child: Icon(
                   icon,
-                  color: Get.isDarkMode ? Colors.black : Colors.white,
+                  color: Get.isDarkMode ? Colors.black : Colors.black,
                   size: iconSize,
                 ),
               ),

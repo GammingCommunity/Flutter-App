@@ -1,25 +1,19 @@
 class GraphQLMutation {
-  String addRoom(String hostID, String roomName, bool isPrivate, int numofMember, String gameID,
-          String gameName, String roomLogo, String roomBackground) =>
+  String addRoom(String hostID, String roomName, String roomType, int numofMember, String gameID,
+          String friendIds, String roomLogo, String roomBackground,bool needApprove) =>
       """
         mutation{
-            createRoom(userID:"$hostID",roomInput:{
+            createRoom(roomInput:{
             roomName:"$roomName"
-            isPrivate:$isPrivate,
-            hostID:"$hostID"
-            member:["$hostID"]
+            roomType:$roomType,
+            member:$friendIds
             maxOfMember:$numofMember
             game:{
               gameID:"$gameID"
-              gameName:"$gameName"
             }
             roomLogo:"$roomLogo",
             roomBackground:"$roomBackground"
-          },roomChatInput:{
-              roomID:""
-              member:["$hostID"]
-              messages:[]
-          }){
+          },needApproved:$needApprove){
             status
             success
             message
@@ -71,6 +65,16 @@ class GraphQLMutation {
     """;
   }
 
+  String changeGroupImage({String groupID,String avatar,String cover}) => """
+    mutation{
+      changeGroupImage(groupID:"$groupID",avatar:"$avatar",cover:"$cover"){
+        status
+        success
+      }
+    }
+
+  """;
+
   String editRoom(
       String roomID,
       String hostID,
@@ -88,7 +92,7 @@ class GraphQLMutation {
         editRoom(roomID:"$roomID",hostID:"$hostID",newData:{
           roomName:"$roomName"
           hostID:"$hostID"
-          isPrivate:$isPrivate
+          
           member:$member,
           description:"$descrp"
           maxOfMember:$numofMember

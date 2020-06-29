@@ -1,9 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/class/Post.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/displayAvatar.dart';
 import 'package:gamming_community/utils/customDateTime.dart';
+import 'package:gamming_community/utils/skeleton_template.dart';
+import 'package:get/get.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,10 +40,10 @@ class _UserPostState extends State<UserPost> with AutomaticKeepAliveClientMixin 
   Widget build(BuildContext context) {
     super.build(context);
     return Container(
-      height: widget.post.media == "" ? 155 : 200,
+      height: widget.post.media.isEmpty ? 155 : 400,
       width: ScreenUtil().uiWidthPx,
       padding: EdgeInsets.only(top: 20, bottom: 10, left: 20, right: 20),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), boxShadow: [
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), boxShadow: [
         BoxShadow(blurRadius: 0.1, color: Colors.grey.withOpacity(0.1), offset: Offset(0, 1))
       ]),
       child: Column(
@@ -85,25 +89,56 @@ class _UserPostState extends State<UserPost> with AutomaticKeepAliveClientMixin 
               children: <Widget>[Text(widget.post.content)],
             ),
           ),
+          Container(
+            
+            width: Get.width,
+            child: CarouselSlider.builder(
+              options: CarouselOptions(
+                height: 200,
+                enableInfiniteScroll: false
+              ),
+              itemCount: widget.post.media.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: EdgeInsets.symmetric(horizontal: 5),
+                  
+                  
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: CachedNetworkImage(
+                      fit: BoxFit.cover,
+                      width: Get.width,
+                      imageUrl: widget.post.media[index],
+                      fadeInCurve: Curves.fastOutSlowIn,
+                      placeholder: (context, url) => SkeletonTemplate.image(100, Get.width, 15),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+
           Align(
             alignment: Alignment.bottomCenter,
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Row(
                   children: <Widget>[
                     CircleIcon(
                       icon: FeatherIcons.thumbsUp,
-                      iconSize: 15,
+                      iconSize: 20,
                       onTap: () {},
                     ),
                     Text(widget.post.countReaction.toString())
                   ],
                 ),
+                SizedBox(width: 10),
                 Row(
                   children: <Widget>[
                     CircleIcon(
                       icon: FeatherIcons.messageCircle,
-                      iconSize: 15,
+                      iconSize: 20,
                       onTap: () {},
                     ),
                     Text(widget.post.countComment.toString())
@@ -111,7 +146,8 @@ class _UserPostState extends State<UserPost> with AutomaticKeepAliveClientMixin 
                 ),
               ],
             ),
-          )
+          ),
+
           // content
         ],
       ),

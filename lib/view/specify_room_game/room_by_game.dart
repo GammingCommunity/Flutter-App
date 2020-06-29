@@ -100,7 +100,7 @@ class _RoomByGameState extends State<RoomByGame> with TickerProviderStateMixin {
                 children: <Widget>[
                   Container(
                       height: 50,
-                      color: Colors.grey,
+                      color: Colors.black,
                       child: SortChip(onSelected: (value) {
                         if (value == "small")
                           return roomsProvider.refresh("small");
@@ -116,9 +116,7 @@ class _RoomByGameState extends State<RoomByGame> with TickerProviderStateMixin {
                         color:
                             settingProvider.darkTheme ? AppColors.BACKGROUND_COLOR : Colors.white,
                         child: rooms.isEmpty
-                            ? Center(
-                                child: AppConstraint.spinKitCubeGrid(context),
-                              )
+                            ? AppConstraint.loadingIndicator(context)
                             : ListView.separated(
                                 addAutomaticKeepAlives: true,
                                 controller: scrollController,

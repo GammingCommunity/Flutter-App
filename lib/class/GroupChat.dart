@@ -3,7 +3,7 @@ part 'GroupChat.g.dart';
 // add to hive db
 
 @HiveType(typeId: 10)
-class GroupChat extends HiveObject{
+class GroupChat extends HiveObject {
   @HiveField(0)
   String id;
   @HiveField(1)
@@ -17,7 +17,7 @@ class GroupChat extends HiveObject{
   @HiveField(5)
   int maxOfMember;
   @HiveField(6)
-  bool isPrivate;
+  String roomType;
   @HiveField(7)
   GameInfo gameInfo;
   @HiveField(8)
@@ -37,7 +37,7 @@ class GroupChat extends HiveObject{
       this.memberID,
       this.gameInfo,
       this.maxOfMember,
-      this.isPrivate,
+      this.roomType,
       this.roomLogo,
       this.roomBackground,
       this.isJoin,
@@ -49,26 +49,26 @@ class GroupChat extends HiveObject{
         hostID: json['hostID'],
         roomName: json['roomName'],
         gameInfo: GameInfo(gameID: json['game']['gameID'], gameName: json['game']['gameName']),
-        isPrivate: json['isPrivate'],
+        roomType: json['roomType'],
         maxOfMember: json['maxOfMember'],
         memberID: json['member'],
         createAt: json['createAt'],
         roomLogo: json['roomLogo'],
         roomBackground: json['roomBackground'],
         isJoin: json['isJoin'],
-        isRequest: json['isRequest']
-        
-        );
+        isRequest: json['isRequest']);
   }
 }
+
 @HiveType(typeId: 11)
-class GameInfo extends HiveObject{
+class GameInfo extends HiveObject {
   @HiveField(0)
   String gameID;
   @HiveField(1)
   String gameName;
   GameInfo({this.gameID, this.gameName});
 }
+
 @HiveType(typeId: 12)
 class GroupChats extends HiveObject {
   @HiveField(0)
@@ -88,16 +88,14 @@ class GroupChats extends HiveObject {
                 ? GameInfo()
                 : GameInfo(gameID: item['game']['gameID'], gameName: item['game']['gameName']),
             //gameInfo: item['game'] ??= item['game'],
-            isPrivate: item['isPrivate'],
+            roomType: item['roomType'],
             maxOfMember: item['maxOfMember'],
             memberID: item['member'],
             createAt: item['createAt'],
             roomBackground: item['roomBackground'],
             roomLogo: item['roomLogo'],
             isJoin: item['isJoin'],
-            isRequest: item['isRequest']
-            
-            ));
+            isRequest: item['isRequest']));
       }
     } catch (e) {
       print(e);

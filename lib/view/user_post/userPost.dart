@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +8,13 @@ import 'package:flutter/services.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/customWidget/imageHover.dart';
+import 'package:gamming_community/repository/file_upload_repo.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/color_utility.dart';
 import 'package:gamming_community/utils/display_image.dart';
 import 'package:gamming_community/utils/generatePalate.dart';
+import 'package:gamming_community/view/feeds/provider/feedsProvider.dart';
 import 'package:gamming_community/view/user_post/content_widget/imageContent.dart';
 import 'package:gamming_community/view/user_post/post_provider.dart';
 import 'package:get/get.dart';
@@ -28,12 +31,15 @@ class _UserPostState extends State<UserPost> {
   TextEditingController txtContent = TextEditingController();
   ImagePicker imagePicker = ImagePicker();
   PostProvider postProvider;
+  FeedsProvider feedsProvider;
   PickedFile _imageFile;
   ScrollController imageGalery;
   MethodChannel _channel = const MethodChannel('image_gallery');
+
   bool isContentEmpty = true;
   bool selected = true;
   bool isKeyboardShowing = false;
+
   @override
   void initState() {
     imageGalery = ScrollController()
@@ -75,6 +81,7 @@ class _UserPostState extends State<UserPost> {
   Widget build(BuildContext context) {
     postProvider = Injector.get(context: context);
     isKeyboardShowing = MediaQuery.of(context).viewInsets.vertical > 0;
+    feedsProvider = Injector.get();
     return WillPopScope(
       onWillPop: () => _onWillPop(),
       child: Scaffold(
@@ -83,12 +90,41 @@ class _UserPostState extends State<UserPost> {
               Spacer(),
               RaisedButton(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                onPressed: isContentEmpty ? null : () {},
+                onPressed: isContentEmpty
+                    ? null
+                    : () async {
+                        //List result = await FileUploadRepo.getMediaUpload(postProvider.postContent);
+                        //print(result);
+                        if (isContentEmpty) {
+                          return BotToast.showText(text: "Content must not empty.");
+                        } else {
+                          try {
+                            var result = await feedsProvider
+                                .addPost(await postProvider.post(txtContent.text));
+                            Get.dialog(Center(
+                              child: Container(
+                                height: 50,
+                                width: 50,
+                                child: CircularProgressIndicator(),
+                              ),
+                            ));
+                            if (result) {
+                              BotToast.showText(text: "Create post success");
+                              Get.offAndToNamed("homepage");
+                            }
+                            Get.back();
+                          } catch (e) {
+                            print(e);
+                            return BotToast.showText(text: "Try again");
+                          }
+                        }
+                      },
                 child: Text("Post"),
               )
             ],
             height: 50,
-            onNavigateOut: () {
+            onNavigateOut: () async {
+              await _onWillPop();
               postProvider.clear();
               Get.back();
             },
@@ -107,6 +143,7 @@ class _UserPostState extends State<UserPost> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // avatar
                       CachedNetworkImage(
                           fit: BoxFit.fill,
                           imageBuilder: (context, imageProvider) => Container(
@@ -169,12 +206,13 @@ class _UserPostState extends State<UserPost> {
               // load image from device
               AnimatedContainer(
                 duration: Duration(milliseconds: 200),
+                alignment: Alignment.topRight,
                 height: isKeyboardShowing ? 0 : 150,
                 width: Get.width,
                 child: Column(
                   children: [
                     Visibility(
-                      visible: !postProvider.images.isEmpty,
+                      visible: postProvider.images.isNotEmpty,
                       maintainAnimation: true,
                       maintainState: true,
                       maintainSize: true,
@@ -219,7 +257,10 @@ class _UserPostState extends State<UserPost> {
                                     Get.dialog(previewImage(images[index]));
                                   },
                                   onLongPress: (File file) {
-                                    postProvider.selectImage(file);
+                                    print(file == null);
+                                    file == null
+                                        ? postProvider.deselectImage(index)
+                                        : postProvider.selectImage(index, file);
                                   }));
                         },
                       ),
@@ -228,8 +269,7 @@ class _UserPostState extends State<UserPost> {
                 ),
               ),
               Container(
-             
-                width: Get.width,
+                  width: Get.width,
                   padding: EdgeInsets.all(5),
                   color: brighten(AppColors.BACKGROUND_COLOR, 4),
                   child: Column(
@@ -247,6 +287,7 @@ class _UserPostState extends State<UserPost> {
                                 //print(image);
                                 try {
                                   //getImage.setFilePath(image);
+                                  await postProvider.addPickImage(File(image.path));
                                 } catch (e) {}
                               }),
                           CircleIcon(

@@ -1,7 +1,10 @@
+import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/view/room/provider/navigateNextPage.dart';
 import 'package:gamming_community/view/room/room_selector/selectGame.dart';
 import 'package:gamming_community/view/room/room_selector/selectPrivacy.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class CreateRoomV2 extends StatefulWidget {
@@ -22,17 +25,19 @@ class _CreateRoomV2State extends State<CreateRoomV2> {
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-    return Container(
-      width: screenSize.width,
-      height: screenSize.height,
-      child: PageView(
-        controller: _pageController,
-        physics: NeverScrollableScrollPhysics(),
-        onPageChanged: (value) => currentPage = value,
-        children: <Widget>[
-          SelectGame(pageController: _pageController),
-          SelectRoomPrivacy(pageController: _pageController)
-        ],
+    return Scaffold(
+      body: Container(
+        width: screenSize.width,
+        height: screenSize.height,
+        child: PageView(
+          controller: _pageController,
+          physics: NeverScrollableScrollPhysics(),
+          onPageChanged: (value) => currentPage = value,
+          children: <Widget>[
+            SelectGame(pageController: _pageController),
+            SelectRoomPrivacy(pageController: _pageController)
+          ],
+        ),
       ),
     );
   }

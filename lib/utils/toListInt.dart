@@ -1,6 +1,6 @@
 import 'package:gamming_community/class/Friend.dart';
 
-toListString(List<Friend> friends) {
+toListString(List friends) {
   return List<String>.from(friends.map((e) => e.id.toString()).toList());
 }
 

@@ -77,18 +77,19 @@ class GraphQLQuery {
       }
     """;
   }*/
-  String getRoomCurrentUser(String currentUserID) => """
+  String getRoomCurrentUser() => """
     query{
       roomManager{
           _id
           hostID
           roomName
-          isPrivate
+          roomType
           game{
             gameID
             gameName
           }
           maxOfMember
+          countMember
           member
           description
           createAt
@@ -169,6 +170,7 @@ class GraphQLQuery {
       avatar_url
       email
       phone
+      count_followers
       birthmonth
       birthyear
       describe
@@ -189,9 +191,9 @@ class GraphQLQuery {
    """;
   }
 
-  String getAllPrivateConservation() => """
+  String getAllPrivateConservation([int page = 1 ,int limit = 10]) => """
    query{
-      getAllPrivateChat{
+      getAllPrivateChat(page:$page,limit:$limit){
         _id
         member
         latest_message{
@@ -244,20 +246,25 @@ class GraphQLQuery {
     }
   }
  """;
-  String getListRoomByID(String id, String userID, int limit, int page,
-          [String groupSize = "none"]) =>
+  String getListRoomByID(String gameId, int limit, int page,
+          [String groupSize = "none",bool hideJoined = false]) =>
       """
   query{
-    getRoomByGame(gameID:"$id",limit:$limit,page:$page,groupSize:$groupSize){
-      _id
-      member
+    getRoomByGame(gameID:"$gameId",limit:$limit,page:$page,groupSize:$groupSize,,hideJoined:$hideJoined){
+       _id
       roomName
+      roomType
       hostID
-      isPrivate
-      maxOfMember
+      game{
+        gameID
+        gameName
+      }
       createAt
-      roomBackground
       roomLogo
+      roomBackground
+      member
+      maxOfMember 
+      countMember
       isJoin
       isRequest
   }
@@ -399,13 +406,14 @@ class GraphQLQuery {
       }
     }
   """;
-  String searchFriend(String str) => """
+  String searchFriend(String str,String ids) => """
     query{
-      searchAccounts(key:"$str"){
+      searchAccounts(key:"$str",exclude_ids:$ids){
           account{
             id
             name
-            avatar_url 
+            avatar_url
+            describe
           }
           relationship
         }

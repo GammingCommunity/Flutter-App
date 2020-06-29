@@ -4,10 +4,12 @@ import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/class/User.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
+import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/customWidget/requestButton.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/enum/relationship_enum.dart';
 import 'package:gamming_community/view/home/provider/search_friend_provider.dart';
+import 'package:get/get.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 class SearchView extends StatefulWidget {
@@ -20,59 +22,67 @@ class _SearchViewState extends State<SearchView> {
 
   String get inputValue => searchEditText.text;
   void clearInput() => searchEditText.clear();
+  @override
+  void dispose() {
+    super.dispose();
+    searchEditText.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     var schFrProvider = RM.get<SearchFriendsProvider>();
     return Scaffold(
-      appBar: PreferredSize(
-          child:  Row(
-              children: [
-                CircleIcon(
-                  icon: FeatherIcons.x,
-                  onTap: () {
-                    // clear data before navigate out
-                    schFrProvider.setState((currentState) => currentState.clearSearchResult());
-                    Navigator.pop(context);
-                  },
+      appBar: CustomAppBar(
+          child: [
+            Expanded(
+              child: Container(
+                height: 50,
+                width: screenSize.width,
+                child: TextField(
+                  controller: searchEditText,
+                  onSubmitted: (value) => inputValue == ""
+                      ? null
+                      : schFrProvider
+                          .setState((currentState) => currentState.searchFriend(inputValue,[])),
+                  /* onChanged: (String value) => schFrProvider.setState(
+                      (currentState) => currentState.changeText(value == "" ? false : true)),*/
+                  decoration: InputDecoration(
+                      filled: true,
+                      hintText: "Type your name, or IDs",
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      suffixIcon: Visibility(
+                          visible: !schFrProvider.state.isChangTxt,
+                          child: CircleIcon(
+                              icon: FeatherIcons.x,
+                              onTap: () {
+                                clearInput();
+                                schFrProvider
+                                    .setState((currentState) => currentState.clearSearchResult());
+                              })),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10)),
                 ),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 5,horizontal: 5),
-                    height: 50,
-                    width: screenSize.width,
-                    child: TextField(
-                      controller: searchEditText,
-                      onSubmitted: (value) => inputValue == ""
-                          ? null
-                          : schFrProvider
-                              .setState((currentState) => currentState.searchFriend(inputValue)),
-                      decoration: InputDecoration(
-                          filled: true,
-                          hintText: "Type your name, or IDs",
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          suffixIcon: InkWell(
-                            onTap: () {
-                              clearInput();
-                            },
-                            child: Icon(FeatherIcons.x),
-                          ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10)),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          
-          preferredSize: Size.fromHeight(50)),
+              ),
+            )
+          ],
+          height: 50,
+          onNavigateOut: () {
+            schFrProvider.setState((currentState) => currentState.clearSearchResult());
+            Get.back();
+          },
+          padding: EdgeInsets.all(5),
+          backIcon: FeatherIcons.arrowLeft),
       body: Container(
         margin: EdgeInsets.only(top: 10),
         height: screenSize.height,
@@ -122,6 +132,16 @@ Widget buildSearchFriend(BuildContext cxt, User user) {
                 color: Colors.grey,
                 shape: BoxShape.circle,
               )),
+          errorWidget: (context, url, error) {
+            return Container(
+              height: 50,
+              width: 50,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                shape: BoxShape.circle,
+              ),
+            );
+          },
           imageBuilder: (context, imageProvider) {
             return Container(
               height: 50,
@@ -135,19 +155,21 @@ Widget buildSearchFriend(BuildContext cxt, User user) {
         SizedBox(width: 10),
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
               user.nickname,
               style: TextStyle(fontWeight: FontWeight.bold),
-            )
+            ),
+            Text(user.describe)
           ],
         ),
         Spacer(),
         RequestButton(
           child: Container(),
           setCircle: true,
-          buttonHeight: 50,
-          buttonWidth: 50,
+          buttonHeight: 40,
+          buttonWidth: 40,
           onSuccess: (data) {
             data == 1
                 ? BotToast.showText(text: "Send request success.")

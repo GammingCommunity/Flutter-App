@@ -28,8 +28,6 @@ class DisplayAvatar extends StatelessWidget {
     return Container(
         height: size,
         width: size,
-        decoration: BoxDecoration(
-            borderRadius: isCircle ? BorderRadius.circular(10000) : BorderRadius.circular(radius)),
         child: FutureBuilder(
           future: getUserID(),
           builder: (context, snapshot) {
@@ -38,7 +36,18 @@ class DisplayAvatar extends StatelessWidget {
                   size, size, isCircle ? 10000 : BorderRadius.circular(radius));
             } else {
               var profileUrl = snapshot.data;
-              return CachedNetworkImage(fit: BoxFit.cover, imageUrl: profileUrl);
+              return CachedNetworkImage(
+                height: size,
+                width: size,
+                imageUrl: profileUrl,
+                imageBuilder: (context, imageProvider) => CircleAvatar(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10000),
+                        image: DecorationImage(image: imageProvider, fit: BoxFit.cover)),
+                  ),
+                ),
+              );
             }
           },
         ));

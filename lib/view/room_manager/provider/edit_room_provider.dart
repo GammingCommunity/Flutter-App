@@ -36,7 +36,7 @@ class EditRoomProvider extends StatesRebuilder {
     this.roomID = roomInfo.id;
     this.maxofMember = roomInfo.maxOfMember;
     this.roomName = roomInfo.roomName;
-    this.isPrivate = roomInfo.isPrivate;
+   // this.isPrivate = roomInfo.isPrivate;
     this.game = roomInfo.gameInfo;
 
     this.roomLogo = roomInfo.roomLogo;

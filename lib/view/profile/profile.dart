@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
+import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/profile/custom/changeLanguage.dart';
@@ -26,7 +27,6 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
   final backgroundColor = Color(0xff322E2E);
   final usernameStyle = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
   final nickNameStyle = TextStyle(fontWeight: FontWeight.w200);
-  final borderRadius = BorderRadius.circular(15);
   bool changeTheme = false;
   SettingProvider settingProvider;
 
@@ -39,7 +39,6 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
-    getInfo();
   }
 
   @override
@@ -47,39 +46,24 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
     settingProvider = Injector.get(context: context);
     super.build(context);
     return Scaffold(
-      appBar: PreferredSize(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Align(
-                  alignment: Alignment.topLeft,
-                  child: CircleIcon(
-                    icon: FeatherIcons.chevronLeft,
-                    iconSize: 25,
-                    onTap: () {
-                      Get.back();
-                    },
-                  )),
-              Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: EdgeInsetsResponsive.only(right: 10),
-                  child: RaisedButton.icon(
-                      onPressed: () {
-                        Get.to(
-                            EditProfile(userID: widget.userID, currentProfile: widget.userProfile),
-                            opaque: false,
-                            transition: Transition.leftToRightWithFade);
-                      },
-                      shape: RoundedRectangleBorder(borderRadius: borderRadius),
-                      icon: Icon(Icons.wb_iridescent),
-                      label: Text("Edit")),
-                ),
-              )
-            ],
-          ),
-          preferredSize: Size.fromHeight(50)),
+      appBar: CustomAppBar(
+          child: [
+            Spacer(),
+            RaisedButton.icon(
+                onPressed: () {
+                  Get.to(EditProfile(userID: widget.userID, currentProfile: widget.userProfile),
+                      opaque: false, transition: Transition.leftToRightWithFade);
+                },
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                icon: Icon(Icons.wb_iridescent),
+                label: Text("Edit")),
+          ],
+          height: 50,
+          onNavigateOut: () {
+            Get.back();
+          },
+          padding: EdgeInsets.only(right: 10),
+          backIcon: FeatherIcons.arrowLeft),
       body: ContainerResponsive(
           width: Get.width,
           child: FutureBuilder(
@@ -87,7 +71,7 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Align(
-                    alignment: Alignment.center, child: AppConstraint.spinKitCubeGrid(context));
+                    alignment: Alignment.center, child: AppConstraint.loadingIndicator(context));
               } else {
                 bool isEng = snapshot.data;
                 return Column(
@@ -108,8 +92,8 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                                     fadeInCurve: Curves.easeIn,
                                     fadeInDuration: Duration(seconds: 1),
                                     imageBuilder: (context, imageProvider) => ContainerResponsive(
-                                      height: 80.h,
-                                      width: 80.w,
+                                      height: 100.h,
+                                      width: 100.w,
                                       decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(1000),
                                           border: Border.all(
@@ -165,9 +149,9 @@ class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin {
                     Expanded(
                       flex: 3,
                       child: Padding(
-                          padding: EdgeInsetsResponsive.symmetric(horizontal: 10, vertical: 10),
+                          padding: EdgeInsetsResponsive.symmetric(horizontal: 0, vertical: 10),
                           child: Wrap(
-                            runSpacing: 10,
+                            runSpacing: 15,
                             spacing: 20,
                             children: <Widget>[
                               RowProfileSetting(
@@ -257,6 +241,7 @@ void loggout(BuildContext context) async {
           },
           child: Text("Cancel")),
       RaisedButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           onPressed: () {
             ref.setBool('isLogin', false);
             Get.offAllNamed(
