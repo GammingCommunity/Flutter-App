@@ -1,9 +1,12 @@
+import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/view/sign_up/step_sign_up/email.dart';
 import 'package:gamming_community/view/sign_up/step_sign_up/gender.dart';
 import 'package:gamming_community/view/sign_up/step_sign_up/password.dart';
 import 'package:gamming_community/view/sign_up/step_sign_up/profile.dart';
 import 'package:gamming_community/view/sign_up/step_sign_up/username.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 import 'provider/sign_up_provider.dart';
@@ -32,31 +35,29 @@ class _SignUpState extends State<SignUp> {
     return Consumer<SignUpProvider>(builder: (context, value, child) {
       int pageIndex = value.getPageIndex;
       return Scaffold(
-        appBar: PreferredSize(
-            child: Stack(
-              fit: StackFit.loose,
-              children: <Widget>[
-                IconButton(
-                    icon: Icon(Icons.arrow_left),
-                    onPressed: () {
-                      value.getPageIndex > 0
+        appBar: CustomAppBar(
+          child: [
+           Align(
+                  alignment: Alignment.center,
+                  child: Text("Sign Up"),
+                )
+          ],
+          height: 50,
+          onNavigateOut: () {
+             value.getPageIndex > 0
                           ? {
                             pageController.animateToPage(pageIndex - 1,
                               duration: Duration(milliseconds: 200), curve: Curves.fastOutSlowIn),
                               value.setPageIndex(pageIndex - 1)
                           }
-                          : Navigator.pop(context);
-                    }),
-                Align(
-                  alignment: Alignment.center,
-                  child: Text("Sign Up"),
-                )
-              ],
-            ),
-            preferredSize: Size.fromHeight(30)),
+                          : Get.back();
+          },
+          padding: EdgeInsets.all(0),
+          backIcon: FeatherIcons.arrowLeft),
+        
         body: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
+            height: Get.height,
+            width: Get.width,
             child: PageView(
               controller: pageController,
               physics: NeverScrollableScrollPhysics(),

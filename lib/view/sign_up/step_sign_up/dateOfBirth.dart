@@ -1,5 +1,9 @@
+import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:gamming_community/customWidget/customAppBar.dart';
+import 'package:gamming_community/customWidget/customInput.dart';
 import 'package:gamming_community/view/sign_up/provider/sign_up_provider.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class DateOfBirth extends StatefulWidget {
@@ -42,34 +46,38 @@ class _DateOfBirthState extends State<DateOfBirth> {
     var pageProvider = Provider.of<SignUpProvider>(context);
 
     return Scaffold(
+
       body: Container(
-        height: screenSize.height,
-        width: screenSize.width,
+        height: Get.height,
+        width: Get.width,
+        padding: EdgeInsets.symmetric(vertical: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Text(
+             Text(
               "When is your birthday ?",
               style: TextStyle(fontSize: 30),
             ),
             Container(
               padding: EdgeInsets.all(20),
               height: 100,
-              child: TextField(
+              child: CustomInput(
+                controller: dateofBirthController, 
+                readOnly: true, 
+                onSubmited: (){}, 
                 onTap: () {
                   _selectDate(context);
-                },
-                readOnly: true,
-                controller: dateofBirthController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-              ),
+                }, 
+                hintText: "Select your date of birth", 
+                borderSideColor: Colors.black87, 
+                borderRadius: 10, 
+                onClearText: (){})
             ),
             ButtonTheme(
                 minWidth: 200,
                 height: 50,
                 child: RaisedButton(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                   onPressed: () {
                     //show dialog type code to complete register
                     pageProvider.setPageIndex(1);
