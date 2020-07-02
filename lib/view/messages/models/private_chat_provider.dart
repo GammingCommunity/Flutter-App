@@ -1,11 +1,10 @@
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/Conservation.dart';
-import 'package:gamming_community/class/User.dart';
 import 'package:gamming_community/repository/main_repo.dart';
-import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/utils/get_token.dart';
-import 'package:states_rebuilder/states_rebuilder.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:states_rebuilder/states_rebuilder.dart';
+
 import '../private_message/private_message.dart';
 
 class PrivateChatProvider extends StatesRebuilder {

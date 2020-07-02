@@ -16,10 +16,8 @@ import 'package:gamming_community/view/room_manager/bloc/room_manager_bloc.dart'
 import 'package:gamming_community/view/room_manager/display_member.dart';
 import 'package:gamming_community/view/room_manager/edit_room.dart';
 import 'package:gamming_community/view/room_manager/logo_room.dart';
-import 'package:gamming_community/view/room_manager/room_detail_v2.dart';
 import 'package:get/get.dart' as gets;
 import 'package:get/get.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 
 class RoomManager extends StatefulWidget {
@@ -62,13 +60,11 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
   void doWork(int type, int roomIndex, String roomID) {
     switch (type) {
       case 1:
-        Navigator.push(
-            context,
-            PageTransition(
-                child: EditRoom(
-                  roomID: roomID,
-                ),
-                type: PageTransitionType.leftToRightWithFade));
+        Get.to(
+            EditRoom(
+              roomID: roomID,
+            ),
+            transition: gets.Transition.leftToRightWithFade);
         break;
       case 2:
         roomManagerBloc.add(RemoveRoom(index: roomIndex));
@@ -92,7 +88,7 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    final double itemHeight = (Get.height- kToolbarHeight) / 2.6.h;
+    final double itemHeight = (Get.height - kToolbarHeight) / 2.6.h;
     final double itemWidth = ScreenUtil().uiWidthPx / 2.w;
     var rooms = roomManagerBloc.room;
     var currentID = roomManagerBloc.currentID;
@@ -140,9 +136,7 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
         if (state is InitFail) {
           return buildException(context);
         }
-        if (state is AddRoomFail) {
-          
-        }
+        if (state is AddRoomFail) {}
 
         return Scaffold(
             floatingActionButton: FloatingActionButton(
@@ -189,10 +183,9 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                                     itemTag: rooms[index].id,
                                   ),*/
                                   GroupDashboard(
-                                    room: rooms[index],
-                                    currenID: roomManagerBloc.currentID,
-                                    member: rooms[index].memberID
-                                  ),
+                                      room: rooms[index],
+                                      currenID: roomManagerBloc.currentID,
+                                      member: rooms[index].memberID),
                                   transition: gets.Transition.cupertino,
                                   opaque: false);
                             },
@@ -310,9 +303,9 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
   }
 
   Future buildAddRoomFail(BuildContext context, String message) async {
-    return Get.dialog(Center(child: Container(
-      color: Colors.black,
-      height: 50, width: 50, child: Text("Create room fail"))));
+    return Get.dialog(Center(
+        child: Container(
+            color: Colors.black, height: 50, width: 50, child: Text("Create room fail"))));
   }
 
   Future openLoadingDialog(BuildContext context, String message) {

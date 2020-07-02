@@ -28,9 +28,8 @@ class SearchProvider with ChangeNotifier {
         return content = "Search friends";
         break;
       default:
-        
+        return "";
     }
-    notifyListeners();
   }
 
   void setCurrentScrollOffset(double offset) {

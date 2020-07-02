@@ -6,18 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/GroupMessage.dart';
-import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
-import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/checkHasConnection.dart';
 import 'package:gamming_community/view/messages/group_messages/group_chat_service.dart';
 import 'package:gamming_community/view/messages/models/group_chat_provider.dart';
 import 'package:gamming_community/view/messages/private_message/private_chats.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
@@ -55,8 +52,8 @@ class _MessagesState extends State<GroupMessageWidget>
 
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
-      BehaviorSubject<ReceivedNotification>();
+  // var didReceiveLocalNotificationSubject =
+  //     BehaviorSubject<ReceivedNotification>();
 
   BehaviorSubject<String> selectNotificationSubject = BehaviorSubject<String>();
   NotificationAppLaunchDetails notificationAppLaunchDetails;
@@ -132,11 +129,10 @@ class _MessagesState extends State<GroupMessageWidget>
     groupchatProvider.onAddNewMessage2(e);
 
     animationController.forward();
-    loadOldMessage
-        ? null
-        : Timer(Duration(seconds: 2), () {
+    loadOldMessage ?? Timer(Duration(seconds: 2), () {
             animateToBottom();
           });
+
   }
 
   // update cache
@@ -309,7 +305,7 @@ class _MessagesState extends State<GroupMessageWidget>
 
   @override
   Widget build(BuildContext context) {
-    groupchatProvider = Injector.get(context: context);
+    groupchatProvider = Injector.get();
 
     super.build(context);
     return Scaffold(

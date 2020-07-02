@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Mutation.dart';
-import 'package:gamming_community/repository/sub_repo.dart';
-import 'package:gamming_community/utils/get_token.dart';
 import 'package:gamming_community/utils/uploadFile.dart';
 
 class ProgressButton extends StatefulWidget {
@@ -53,7 +52,7 @@ class _ProgressButtonState extends State<ProgressButton> with TickerProviderStat
        /* return await SubRepo.mutationGraphQL(
             await getToken(),
             mutation.editAccount(
-                widget.nickname, widget.describe, widget.email, "", "", avatarUrl))*/;
+                widget.nickname, widget.describe, widget.email, "", "", avatarUrl))*/
       }), builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting)
           return SizedBox(

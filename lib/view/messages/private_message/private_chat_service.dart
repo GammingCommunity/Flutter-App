@@ -3,7 +3,6 @@ import 'package:gamming_community/class/Conservation.dart';
 import 'package:gamming_community/class/User.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/utils/get_token.dart';
-import 'package:gamming_community/view/messages/models/private_chat_provider.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class PrivateChatService {

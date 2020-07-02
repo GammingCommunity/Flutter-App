@@ -1,10 +1,65 @@
-
 import 'package:flutter/material.dart';
+import 'package:gamming_community/customWidget/customInput.dart';
 import 'package:gamming_community/utils/validators.dart';
+import 'package:gamming_community/view/sign_up/controller/signUpController.dart';
 import 'package:gamming_community/view/sign_up/provider/sign_up_provider.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
-class UserName extends StatefulWidget {
+class UserName extends StatelessWidget {
+  final SignUpController s = Get.find();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            height: Get.height,
+            width: Get.width,
+            child: Column(children: <Widget>[
+              Text(
+                "How we can call you ? ",
+                style: TextStyle(fontSize: 30),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              GetX<SignUpController>(
+                builder: (v) => Container(
+                    height: 100,
+                    child: CustomInput(
+                        controller: v.userNameController,
+                        readOnly: false,
+                        onSubmited: () {},
+                        onTap: () {},
+                        errorText: v.isUsernameVaild.value ? null : "Username not vaild",
+                        onChange: (value) => v.checkUsernameVaild(value),
+                        hintText: "Tell me your username",
+                        borderSideColor: Colors.black87,
+                        borderRadius: 15,
+                        onClearText: () {
+                          v.userNameController.clear();
+                        })),
+              ),
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text("Note: Username limit to 8 characters.")),
+              SizedBox(
+                height: 30,
+              ),
+              GetX<SignUpController>(
+                  builder: (v) => ButtonTheme(
+                      minWidth: 200,
+                      height: 50,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                        onPressed: v.isUsernameVaild.value ? () => v.checkUserName() : null ,
+                        child: Text("Next"),
+                      )))
+            ])));
+  }
+}
+
+/*class UserName extends StatefulWidget {
   final PageController controller;
   UserName({this.controller});
   @override
@@ -21,6 +76,7 @@ class _UserNameState extends State<UserName> with AutomaticKeepAliveClientMixin 
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     var pageProvider = Provider.of<SignUpProvider>(context);
+    super.build(context);
     return Scaffold(
         body: Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
@@ -35,38 +91,40 @@ class _UserNameState extends State<UserName> with AutomaticKeepAliveClientMixin 
                 height: 20,
               ),
               Container(
-                height: 100,
-                child: TextField(
-                  controller: userNameController,
-                  onChanged: (value) {
-                    if (Validators.isVaildUsername(value)) {
-                      setState(() {
-                        hasError = false;
-                      });
-                      return;
-                    } else {
-                      setState(() {
-                        hasError = true;
-                      });
-                    }
-                  },
-                  decoration: InputDecoration(
-                    hintText: "Tell me your username",
-                    errorText: hasError ? "Username not vaild " : null,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
-              ),
+                  height: 100,
+                  child: CustomInput(
+                      controller: userNameController,
+                      readOnly: false,
+                      onSubmited: () {},
+                      onTap: () {},
+                      errorText: hasError ? "Username not vaild" : null,
+                      onChange: (value) {
+                        if (Validators.isVaildUsername(value)) {
+                          setState(() {
+                            hasError = false;
+                          });
+                          return;
+                        } else {
+                          setState(() {
+                            hasError = true;
+                          });
+                        }
+                      },
+                      hintText: "Tell me your username",
+                      borderSideColor: Colors.black87,
+                      borderRadius: 15,
+                      onClearText: () {})),
               Align(
                   alignment: Alignment.centerLeft,
                   child: Text("Note: Username limit to 8 characters.")),
               SizedBox(
-                height: 20,
+                height: 30,
               ),
               ButtonTheme(
                   minWidth: 200,
                   height: 50,
                   child: RaisedButton(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                     onPressed: isEmpty
                         ? null
                         : () {
@@ -83,3 +141,4 @@ class _UserNameState extends State<UserName> with AutomaticKeepAliveClientMixin 
   @override
   bool get wantKeepAlive => true;
 }
+*/

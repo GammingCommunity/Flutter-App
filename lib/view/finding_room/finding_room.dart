@@ -30,7 +30,7 @@ class _FindingRoomState extends State<FindingRoom> {
 
   @override
   Widget build(BuildContext context) {
-    findingRoomProvider = Injector.get(context: context);
+    findingRoomProvider = Injector.get();
 
     return Scaffold(
       appBar: CustomAppBar(

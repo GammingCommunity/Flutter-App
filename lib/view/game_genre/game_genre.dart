@@ -9,8 +9,8 @@ import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/brighness_query.dart';
 import 'package:gamming_community/view/dashboard/categories_detail/categories_detail.dart';
+import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 
 class GameGenre extends StatefulWidget {
@@ -84,9 +84,8 @@ class _GameGenreState extends State<GameGenre> {
                   builder: (result, {fetchMore, refetch}) {
                     if (result.loading) {
                       return Align(
-                        alignment: Alignment.center,
-                        child: AppConstraint.spinKitCubeGrid(context)
-                      );
+                          alignment: Alignment.center,
+                          child: AppConstraint.spinKitCubeGrid(context));
                     }
                     if (result.hasException || result.data == null) {
                       AnimatedContainer(
@@ -110,14 +109,10 @@ class _GameGenreState extends State<GameGenre> {
                               elevation: 2,
                               child: InkWell(
                                 onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      PageTransition(
-                                          type: PageTransitionType.rightToLeft,
-                                          child: CategoriesDetail(
-                                            itemTag: listGame[index].name,
-                                            gameDetail: listGame[index],
-                                          )));
+                                  Get.to(CategoriesDetail(
+                                    itemTag: listGame[index].name,
+                                    gameDetail: listGame[index],
+                                  ));
                                 },
                                 child: ContainerResponsive(
                                     height: 100.h,
@@ -168,7 +163,11 @@ class _GameGenreState extends State<GameGenre> {
                                               TextResponsive(
                                                 listGame[index].name,
                                                 style: TextStyle(
-                                                    fontWeight: FontWeight.bold, fontSize: 18,color: checkBrightness(context)? Colors.black :Colors.white  ),
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18,
+                                                    color: checkBrightness(context)
+                                                        ? Colors.black
+                                                        : Colors.white),
                                               ),
                                               SizedBox(
                                                 height: 10,

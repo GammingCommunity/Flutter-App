@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Mutation.dart';
-import 'package:gamming_community/repository/sub_repo.dart';
-import 'package:gamming_community/utils/get_token.dart';
-import 'package:gamming_community/utils/uploadFile.dart';
 import 'package:gamming_community/view/room_manager/provider/edit_room_provider.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
@@ -112,7 +109,7 @@ class _SaveButtonState extends State<SaveButton> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    provider = Injector.get(context: context);
+    provider = Injector.get();
     return PhysicalModel(
       color: Colors.transparent,
       child: Container(

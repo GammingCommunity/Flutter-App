@@ -3,7 +3,7 @@ import 'package:gamming_community/resources/values/app_colors.dart';
 
 class AppTheme {
   static ThemeData darkTheme = ThemeData(
-      scaffoldBackgroundColor:AppColors.BACKGROUND_COLOR,
+      scaffoldBackgroundColor:Colors.black,
       
       //backgroundColor: AppColors.BACKGROUND_COLOR,
       brightness: Brightness.dark,

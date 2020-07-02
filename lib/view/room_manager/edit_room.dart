@@ -2,9 +2,7 @@ import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
-import 'package:gamming_community/view/room_manager/display_member.dart';
 import 'package:gamming_community/view/room_manager/edit_room/edit_privacy.dart';
-import 'package:gamming_community/view/room_manager/edit_room/game_info.dart';
 import 'package:gamming_community/view/room_manager/edit_room/room_background.dart';
 import 'package:gamming_community/view/room_manager/edit_room/room_game.dart';
 import 'package:gamming_community/view/room_manager/edit_room/room_logo.dart';
@@ -39,7 +37,7 @@ class _EditRoomState extends State<EditRoom> {
 
   @override
   Widget build(BuildContext context) {
-    editProvider = Injector.get(context: context);
+    editProvider = Injector.get();
     //super.build(context);
     return Scaffold(
       appBar: PreferredSize(

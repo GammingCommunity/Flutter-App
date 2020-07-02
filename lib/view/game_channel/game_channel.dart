@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gamming_community/API/config/refreshToken.dart';
 import 'package:get/get.dart';
 
 class GameChannel extends StatefulWidget {

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gamming_community/customWidget/loading.dart';
-import 'package:gamming_community/view/profile/settingProvider.dart';
+import 'package:gamming_community/view/profile/profileController.dart';
+import 'package:get/get.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 class AppConstraint {
@@ -25,9 +26,8 @@ class AppConstraint {
       SpinKitCubeGrid(color: Theme.of(context).iconTheme.color, size: 20);
 
   static Widget loadingIndicator(BuildContext context, [double size = 50]) {
-    SettingProvider settingProvider = Injector.get(context: context);
 
-    return settingProvider.darkTheme
+    return ProfileController.to.darkTheme.value
         ? CustomLoadingIndicator(darkMode: true, size: size)
         : CustomLoadingIndicator(darkMode: false, size: size);
   }

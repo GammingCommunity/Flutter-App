@@ -1,9 +1,7 @@
-import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:gamming_community/customWidget/borderIcon.dart';
 import 'package:gamming_community/utils/validators.dart';
 import 'package:gamming_community/view/forgot_password/forgotPassword.dart';
 import 'package:gamming_community/view/login/bloc/bloc/login_bloc.dart';
@@ -38,9 +36,9 @@ class _LoginInputState extends State<LoginInput> {
 
   @override
   void dispose() {
+    super.dispose();
     username.dispose();
     password.dispose();
-    super.dispose();
   }
 
   @override
@@ -65,13 +63,15 @@ class _LoginInputState extends State<LoginInput> {
           //     .pushNamedAndRemoveUntil("/homepage", (Route<dynamic> route) => false);
         }
         if (state is LoginFailed) {
-          Get.snackbar("Forgot your email or username", "Press here", onTap: (snack) {
-            Get.to(ForgotPassword());
-          },
-              duration: Duration(seconds: 5),
-              isDismissible: true,
-              
-              );
+          Get.snackbar(
+            "Forgot your email or username",
+            "Press here",
+            onTap: (snack) {
+              Get.to(ForgotPassword());
+            },
+            duration: Duration(seconds: 5),
+            isDismissible: true,
+          );
           /* Scaffold.of(context).showSnackBar(SnackBar(
             content: Text("Forgot your email or username "),
             action: SnackBarAction(
@@ -196,7 +196,7 @@ class _LoginInputState extends State<LoginInput> {
                   type: MaterialType.transparency,
                   child: InkWell(
                     onTap: () {
-                      Navigator.of(context).pushNamed('/forgot');
+                      Get.toNamed('/forgot');
                     },
                     splashColor: Colors.transparent,
                     child: Text("Forgot password ?"),
@@ -239,7 +239,7 @@ class _LoginInputState extends State<LoginInput> {
                                 type: MaterialType.transparency,
                                 child: InkWell(
                                   onTap: () {
-                                    Navigator.pushNamed(context, "/signup");
+                                    Get.toNamed('/signup');
                                   },
                                   child: Text(" Sign up now",
                                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),

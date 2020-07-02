@@ -8,7 +8,7 @@ Future<FlutterLocalNotificationsPlugin> initNotfication() async {
 // Streams are created so that app can respond to notification-related events since the plugin is initialised in the `main` function
   /*BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
       BehaviorSubject<ReceivedNotification>();*/
-  BehaviorSubject<String> selectNotificationSubject = BehaviorSubject<String>();
+  var selectNotificationSubject = BehaviorSubject<String>();
   /*NotificationAppLaunchDetails notificationAppLaunchDetails;
   notificationAppLaunchDetails =
       await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();*/
@@ -17,29 +17,29 @@ Future<FlutterLocalNotificationsPlugin> initNotfication() async {
   // of the `IOSFlutterLocalNotificationsPlugin` class
 
 // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
-var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+  var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
 
 /*var initializationSettingsIOS = IOSInitializationSettings(
     onDidReceiveLocalNotification: onDidReceiveLocalNotification);*/
 
-var initializationSettings = InitializationSettings(
-    initializationSettingsAndroid, null);
+  var initializationSettings = InitializationSettings(initializationSettingsAndroid, null);
 
-await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
       onSelectNotification: (String payload) async {
     if (payload != null) {
       debugPrint('notification payload: ' + payload);
     }
     selectNotificationSubject.add(payload);
   });
+  selectNotificationSubject.close();
   return flutterLocalNotificationsPlugin;
 }
 
-NotificationDetails platformSpecific(String channelID,String channelName,String channelDescription){
+NotificationDetails platformSpecific(
+    String channelID, String channelName, String channelDescription) {
   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-    '$channelID', '$channelName', '$channelDescription',
-    importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
+      '$channelID', '$channelName', '$channelDescription',
+      importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
   //var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-  return NotificationDetails(
-    androidPlatformChannelSpecifics, null);
+  return NotificationDetails(androidPlatformChannelSpecifics, null);
 }

@@ -32,7 +32,7 @@ class _GroupPostListState extends State<GroupPostList> {
 
   @override
   Widget build(BuildContext context) {
-    _groupPostProvider = Injector.get(context: context);
+    _groupPostProvider = Injector.get();
 
     return Container(
       child: ListView.builder(

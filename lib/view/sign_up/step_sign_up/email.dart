@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/utils/validators.dart';
+import 'package:gamming_community/view/sign_up/controller/signUpController.dart';
 import 'package:gamming_community/view/sign_up/provider/sign_up_provider.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class Email extends StatefulWidget {
@@ -13,6 +15,7 @@ class Email extends StatefulWidget {
 }
 
 class _EmailState extends State<Email> with AutomaticKeepAliveClientMixin {
+  final SignUpController s = Get.find();
   // switch between email or phone verify.
   bool _switch = false;
   //
@@ -27,12 +30,10 @@ class _EmailState extends State<Email> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final screenSize = MediaQuery.of(context).size;
-    var pageProvider = Provider.of<SignUpProvider>(context);
     return Scaffold(
       body: Container(
-        height: screenSize.height,
-        width: screenSize.width,
+        height: Get.height,
+        width: Get.width,
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: <Widget>[
@@ -52,7 +53,7 @@ class _EmailState extends State<Email> with AutomaticKeepAliveClientMixin {
                         Container(
                           height: 100,
                           child: TextField(
-                            controller: emailController,
+                            controller: s.emailController,
                             keyboardType: TextInputType.emailAddress,
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(40),
@@ -98,7 +99,7 @@ class _EmailState extends State<Email> with AutomaticKeepAliveClientMixin {
                         Container(
                           height: 100,
                           child: TextField(
-                            controller: phoneControlller,
+                            controller: s.phoneControlller,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(40),
@@ -129,20 +130,19 @@ class _EmailState extends State<Email> with AutomaticKeepAliveClientMixin {
                   ),
             Text(
                 "Note: You can skip this step, but later you must provider your email to use all feature."),
-            SizedBox(height: 20),
+            SizedBox(height: 30),
             ButtonTheme(
                 minWidth: 200,
                 height: 50,
                 child: RaisedButton(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                   onPressed: () {
                     // check user wanna verify account or not
 
                     // if not, skip and process create account
                     if (_isVerify) {
                     } else {
-                      pageProvider.setPageIndex(4);
-                      widget.controller.animateToPage(5,
-                          duration: Duration(milliseconds: 200), curve: Curves.fastOutSlowIn);
+                      s.navigate(5);
                     }
                   },
                   child: _isVerify ? Text("Verify") : Text("Skip"),
@@ -156,8 +156,3 @@ class _EmailState extends State<Email> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 }
-// do email verfiy
-
-bool emailVerfiy() {}
-
-//do phone verify

@@ -20,7 +20,7 @@ class _RoomMemberState extends State<RoomMember> {
 
   @override
   Widget build(BuildContext context) {
-    editProvider = Injector.get(context: context);
+    editProvider = Injector.get();
     return Row(
       children: <Widget>[
         ListView.builder(

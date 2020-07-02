@@ -8,12 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/customWidget/imageHover.dart';
-import 'package:gamming_community/repository/file_upload_repo.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/color_utility.dart';
-import 'package:gamming_community/utils/display_image.dart';
-import 'package:gamming_community/utils/generatePalate.dart';
 import 'package:gamming_community/view/feeds/provider/feedsProvider.dart';
 import 'package:gamming_community/view/user_post/content_widget/imageContent.dart';
 import 'package:gamming_community/view/user_post/post_provider.dart';
@@ -32,7 +29,6 @@ class _UserPostState extends State<UserPost> {
   ImagePicker imagePicker = ImagePicker();
   PostProvider postProvider;
   FeedsProvider feedsProvider;
-  PickedFile _imageFile;
   ScrollController imageGalery;
   MethodChannel _channel = const MethodChannel('image_gallery');
 
@@ -79,7 +75,7 @@ class _UserPostState extends State<UserPost> {
 
   @override
   Widget build(BuildContext context) {
-    postProvider = Injector.get(context: context);
+    postProvider = Injector.get();
     isKeyboardShowing = MediaQuery.of(context).viewInsets.vertical > 0;
     feedsProvider = Injector.get();
     return WillPopScope(

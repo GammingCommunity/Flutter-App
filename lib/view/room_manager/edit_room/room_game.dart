@@ -14,7 +14,7 @@ class _RoomGameState extends State<RoomGame> {
   EditRoomProvider editProvider;
   @override
   Widget build(BuildContext context) {
-    editProvider = Injector.get(context: context);
+    editProvider = Injector.get();
     return Row(
       children: <Widget>[
         ContainerResponsive(

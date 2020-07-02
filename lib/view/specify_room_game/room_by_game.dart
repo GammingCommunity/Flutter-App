@@ -5,7 +5,7 @@ import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
-import 'package:gamming_community/view/profile/settingProvider.dart';
+import 'package:gamming_community/view/profile/profileController.dart';
 import 'package:gamming_community/view/room/provider/room_list_provider.dart';
 import 'package:gamming_community/view/specify_room_game/roomItem.dart';
 import 'package:gamming_community/view/specify_room_game/sortButton.dart';
@@ -24,7 +24,6 @@ class RoomByGame extends StatefulWidget {
 class _RoomByGameState extends State<RoomByGame> with TickerProviderStateMixin {
   GraphQLQuery query = GraphQLQuery();
   RoomsProvider roomsProvider;
-  SettingProvider settingProvider;
   ScrollController scrollController;
   AnimationController controller;
   AnimationController _animationController;
@@ -65,8 +64,7 @@ class _RoomByGameState extends State<RoomByGame> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    roomsProvider = Injector.get(context: context);
-    settingProvider = Injector.get(context: context);
+    roomsProvider = Injector.get();
     final screenSize = MediaQuery.of(context).size;
     var rooms = roomsProvider.rooms;
     return Hero(
@@ -114,7 +112,7 @@ class _RoomByGameState extends State<RoomByGame> with TickerProviderStateMixin {
                         width: screenSize.width,
                         padding: EdgeInsetsResponsive.only(top: 10),
                         color:
-                            settingProvider.darkTheme ? AppColors.BACKGROUND_COLOR : Colors.white,
+                            ProfileController.to.darkTheme.value ? AppColors.BACKGROUND_COLOR : Colors.white,
                         child: rooms.isEmpty
                             ? AppConstraint.loadingIndicator(context)
                             : ListView.separated(

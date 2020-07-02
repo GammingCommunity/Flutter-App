@@ -21,7 +21,7 @@ class _EditPrivacyState extends State<EditPrivacy> {
 
   @override
   Widget build(BuildContext context) {
-    editProvider = Injector.get(context: context);
+    editProvider = Injector.get();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[

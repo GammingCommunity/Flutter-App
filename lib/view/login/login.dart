@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/view/login/bloc/bloc/login_bloc.dart';
 import 'package:gamming_community/view/login/login_input.dart';
-import 'package:responsive_widgets/responsive_widgets.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -12,11 +11,9 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> with TickerProviderStateMixin {
-  AnimationController _animationController;
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(duration: Duration(seconds: 2), vsync: this);
   }
 
   @override

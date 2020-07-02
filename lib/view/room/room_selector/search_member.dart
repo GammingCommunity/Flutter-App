@@ -1,4 +1,3 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
@@ -7,9 +6,7 @@ import 'package:gamming_community/class/User.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
-import 'package:gamming_community/customWidget/requestButton.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
-import 'package:gamming_community/utils/enum/relationship_enum.dart';
 import 'package:gamming_community/view/home/provider/search_friend_provider.dart';
 import 'package:gamming_community/view/room_manager/bloc/room_manager_bloc.dart';
 import 'package:get/get.dart';

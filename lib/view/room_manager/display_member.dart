@@ -100,7 +100,7 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
                             child: InkWell(
                               borderRadius: BorderRadius.circular(widget.borderRadius),
                               onTap: () {
-                                widget.clickable ? widget.onTap() : null;
+                                widget.clickable ?? widget.onTap();
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(widget.borderRadius),

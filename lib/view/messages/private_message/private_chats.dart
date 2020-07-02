@@ -93,7 +93,7 @@ class _MessagesState extends State<Messages>
 
   @override
   Widget build(BuildContext context) {
-    _privateChatProvider = Injector.get(context: context);
+    _privateChatProvider = Injector.get();
     super.build(context);
     return Scaffold(
         key: _scaffoldKey,
@@ -316,7 +316,7 @@ Widget buildProfile(List id) {
                 decoration: BoxDecoration(
                     color: Colors.grey[400], borderRadius: BorderRadius.circular(1000)),
               ),
-              imageUrl: AppConstraint.default_profile,
+              imageUrl: url ?? AppConstraint.default_profile,
             ),
           );
         }

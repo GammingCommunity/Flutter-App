@@ -31,7 +31,7 @@ class _ImageHoverState extends State<ImageHover>
 
   @override
   Widget build(BuildContext context) {
-    postProvider = Injector.get(context: context);
+    postProvider = Injector.get();
     super.build(context);
     return InkWell(
       borderRadius: BorderRadius.circular(15),

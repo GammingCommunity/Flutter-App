@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:gamming_community/API/Mutation.dart';
@@ -9,11 +10,10 @@ import 'package:gamming_community/class/GroupChat.dart';
 import 'package:gamming_community/class/User.dart';
 import 'package:gamming_community/repository/file_upload_repo.dart';
 import 'package:gamming_community/repository/main_repo.dart';
-import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/get_token.dart';
-import 'package:gamming_community/view/room_manager/edit_room/add_new_member.dart';
 import 'package:hive/hive.dart';
+
 part 'room_manager_event.dart';
 part 'room_manager_state.dart';
 

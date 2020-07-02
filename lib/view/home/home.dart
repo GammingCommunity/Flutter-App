@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gamming_community/API/Subscription.dart';
-import 'package:gamming_community/customWidget/borderIcon.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/iconWithTitle.dart';
 import 'package:gamming_community/generated/i18n.dart';
@@ -26,7 +25,6 @@ import 'package:gamming_community/view/user_post/userPost.dart';
 import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:open_iconic_flutter/open_iconic_flutter.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -145,18 +143,14 @@ class _HomeState extends State<HomePage>
                       icon: FeatherIcons.airplay,
                       iconSize: 20,
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            PageTransition(
-                                child: GameChannel(), type: PageTransitionType.rightToLeft));
+                        Get.to(GameChannel(), transition: Transition.fadeIn);
                       },
                     ),
                     CircleIcon(
                       icon: FeatherIcons.search,
                       iconSize: 20,
                       onTap: () {
-                        Navigator.push(context,
-                            PageTransition(child: SearchView(), type: PageTransitionType.fade));
+                        Get.to(SearchView(), transition: Transition.fadeIn);
                       },
                     ),
                     CircleIcon(

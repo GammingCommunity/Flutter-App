@@ -18,7 +18,7 @@ class _GInfoState extends State<GInfo>{
   EditRoomProvider editProvider;
   @override
   Widget build(BuildContext context) {
-    editProvider = Injector.get(context: context);
+    editProvider = Injector.get();
     return FutureBuilder(
       future: editProvider.gameLogo,
       builder: (context, snapshot) {

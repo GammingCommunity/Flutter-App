@@ -11,10 +11,9 @@ import 'package:gamming_community/repository/upload_image.dart';
 import 'package:gamming_community/utils/display_image.dart';
 import 'package:gamming_community/view/messages/group_messages/group_chat_service.dart';
 import 'package:gamming_community/view/messages/private_message/private_chats.dart';
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
-import 'package:optimized_cached_image/widgets.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -95,16 +94,10 @@ class _GroupChatMessageState extends State<GroupChatMessage>
             : CachedNetworkImageProvider(widget.type == "media" ? widget.text.content : ""),
         size: Size(110, 150),
         maximumColorCount: 20);
-
-    Navigator.of(context).push(PageTransition(
-        child: DisplayImage(
+    Get.to(DisplayImage(
             imageUrl: fromStorage == true ? widget.imageUri : widget.text.content,
             fromStorage: fromStorage,
-            palate: paletteGenerator),
-        type: PageTransitionType.scale,
-        curve: Curves.fastLinearToSlowEaseIn,
-        alignment: Alignment.center,
-        duration: Duration(milliseconds: 500)));
+            palate: paletteGenerator),transition: Transition.size,duration: Duration(milliseconds: 500));
   }
 
   @override
@@ -231,7 +224,7 @@ class _GroupChatMessageState extends State<GroupChatMessage>
                                     )
                                   : Align(
                                       alignment: Alignment.center,
-                                      child: OptimizedCacheImage(
+                                      child: CachedNetworkImage(
                                         imageUrl: imageUrl,
                                         height: widget.text.height.toDouble() > 1000
                                             ? widget.text.height.toDouble() / 2

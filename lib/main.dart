@@ -7,6 +7,7 @@ import 'package:gamming_community/API/config/refreshToken.dart';
 import 'package:gamming_community/generated/i18n.dart';
 import 'package:gamming_community/hive_models/connection/hive_connection.dart';
 import 'package:gamming_community/provider/changeProfile.dart';
+import 'package:gamming_community/provider/notficationModel.dart';
 import 'package:gamming_community/provider/search_bar.dart';
 import 'package:gamming_community/provider/search_game.dart';
 import 'package:gamming_community/resources/values/app_theme.dart';
@@ -23,8 +24,8 @@ import 'package:gamming_community/view/messages/models/private_chat_provider.dar
 import 'package:gamming_community/view/news/provider/newsProvider.dart';
 import 'package:gamming_community/view/notfications/notificationProvider.dart';
 import 'package:gamming_community/view/profile/profile.dart';
-import 'package:gamming_community/view/profile/settingProvider.dart';
-import 'package:gamming_community/view/room/create_room.dart';
+import 'package:gamming_community/view/profile/profileController.dart';
+import 'package:gamming_community/view/room/create_room_v2.dart';
 import 'package:gamming_community/view/room/provider/explorerProvider.dart';
 import 'package:gamming_community/view/room/provider/navigateNextPage.dart';
 import 'package:gamming_community/view/room/provider/room_list_provider.dart';
@@ -40,7 +41,6 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
-import 'package:gamming_community/provider/notficationModel.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,13 +48,14 @@ void main() async {
 
   await hiveInit();
 
-  // check login from logout
-  Widget defaultHome = Login();
   SharedPreferences ref = await SharedPreferences.getInstance();
   bool isEng = ref.getBool("isEng") ?? true;
-  bool isLogin = ref.getBool('isLogin') == null ? false : true;
-  // check token is not invaild
+  bool isLogin = ref.getBool('isLogin') == null ?? false;
+  // check login from logout
+  Widget defaultHome = Login();
 
+  // check token is not invaild
+  print(isLogin);
   if (isLogin) {
     if (await RefreshToken.isVaildSession()) {
       print("vaild session");
@@ -79,94 +80,97 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final i18n = I18n.delegate;
-    SettingProvider settingProvider;
-    return MultiProvider(
-        providers: [
-          //ChangeNotifierProvider<FetchMoreValue>(create: (context) => FetchMoreValue()),
-          ChangeNotifierProvider<ChangeProfile>(create: (context) => ChangeProfile()),
-          ChangeNotifierProvider<SearchProvider>(create: (context) => SearchProvider()),
-          ChangeNotifierProvider<NotificationModel>(create: (context) => NotificationModel()),
-          ChangeNotifierProvider<SearchGame>(
-            create: (context) => SearchGame(),
-          ),
-          ChangeNotifierProvider<NavigateNextPage>(
-            create: (context) => NavigateNextPage(),
-          ),
-          ChangeNotifierProvider(
-            create: (context) => SignUpProvider(),
-            child: SignUp(),
-          )
-        ],
-        child: bloc.MultiBlocProvider(
-          providers: [
-            bloc.BlocProvider<LoginBloc>(
-              create: (BuildContext context) => LoginBloc(),
-              child: Login(),
-            ),
-            bloc.BlocProvider<SignUpBloc>(
-              create: (BuildContext context) => SignUpBloc(),
-              child: SignUp(),
-            ),
-            bloc.BlocProvider<RoomManagerBloc>(
-              create: (BuildContext context) => RoomManagerBloc(),
-              child: RoomManager(),
-            )
-          ],
-          child: Injector(
-            inject: [
-              Inject(() => PrivateChatProvider()),
-              Inject(() => GroupChatProvider()),
-              Inject(() => SettingProvider()),
-              Inject(() => NotificationProvider()),
-              Inject(() => RoomCreateProvider()),
-              Inject(() => EditRoomProvider()),
-              Inject(() => RoomsProvider()),
-              Inject(() => NewsProvider()),
-              Inject(() => FeedsProvider()),
-              Inject(() => ExploreProvider()),
-              Inject(() => SearchFriendsProvider()),
-              Inject(() => GroupPostProvider()),
-              Inject(() => PostProvider()),
-              Inject(() => FindingRoomProvider())
-            ],
-            builder: (context) {
-              settingProvider = Injector.get(context: context);
-              return StateBuilder(
-                  models: [],
-                  builder: (context, _) => GetMaterialApp(
-                        opaqueRoute: false,
-                        localeResolutionCallback: i18n.resolution(fallback: Locale('en', 'US')),
-                        supportedLocales: i18n.supportedLocales,
-                        locale: enLanguage == true ? Locale('en', 'US') : Locale('vi', 'VI'),
-                        localizationsDelegates: {
-                          i18n,
-                          GlobalMaterialLocalizations.delegate,
-                          GlobalWidgetsLocalizations.delegate
-                        },
-                        debugShowCheckedModeBanner: false,
-                        themeMode: settingProvider.darkTheme ? ThemeMode.dark : ThemeMode.light,
-                        title: 'Gamming Community',
-                        darkTheme: AppTheme.darkTheme,
-                        theme: AppTheme.lightTheme,
-                        builder: (context, child) => BotToastInit(
-                          child: child,
-                        ), //1. call BotToastInit
-                        navigatorObservers: [BotToastNavigatorObserver()],
-                        initialRoute: '/',
-                        namedRoutes: {
-                          '/': GetRoute(page: Login(), transition: Transition.fade),
-                          '/signup': GetRoute(page: SignUp()),
-                          '/forgot': GetRoute(page: ForgotPassword()),
-                          '/homepage': GetRoute(page: HomePage(), transition: Transition.scale),
-                          '/createroom': GetRoute(page: CreateRoom()),
-                          '/profile': GetRoute(page: Profile())
-                        },
 
-                        home: home,
-                      ));
-            },
-          ),
-        ));
+    return GetBuilder<ProfileController>(
+        init: ProfileController(),
+        builder: (p) => MultiProvider(
+                providers: [
+                  //ChangeNotifierProvider<FetchMoreValue>(create: (context) => FetchMoreValue()),
+                  ChangeNotifierProvider<ChangeProfile>(create: (context) => ChangeProfile()),
+                  ChangeNotifierProvider<SearchProvider>(create: (context) => SearchProvider()),
+                  ChangeNotifierProvider<NotificationModel>(
+                      create: (context) => NotificationModel()),
+                  ChangeNotifierProvider<SearchGame>(
+                    create: (context) => SearchGame(),
+                  ),
+                  ChangeNotifierProvider<NavigateNextPage>(
+                    create: (context) => NavigateNextPage(),
+                  ),
+                  ChangeNotifierProvider(
+                    create: (context) => SignUpProvider(),
+                    child: SignUp(),
+                  )
+                ],
+                child: bloc.MultiBlocProvider(
+                  providers: [
+                    bloc.BlocProvider<LoginBloc>(
+                      create: (BuildContext context) => LoginBloc(),
+                      child: Login(),
+                    ),
+                    bloc.BlocProvider<SignUpBloc>(
+                      create: (BuildContext context) => SignUpBloc(),
+                      child: SignUp(),
+                    ),
+                    bloc.BlocProvider<RoomManagerBloc>(
+                      create: (BuildContext context) => RoomManagerBloc(),
+                      child: RoomManager(),
+                    )
+                  ],
+                  child: Injector(
+                    inject: [
+                      Inject(() => PrivateChatProvider()),
+                      Inject(() => GroupChatProvider()),
+                      Inject(() => NotificationProvider()),
+                      Inject(() => RoomCreateProvider()),
+                      Inject(() => EditRoomProvider()),
+                      Inject(() => RoomsProvider()),
+                      Inject(() => NewsProvider()),
+                      Inject(() => FeedsProvider()),
+                      Inject(() => ExploreProvider()),
+                      Inject(() => SearchFriendsProvider()),
+                      Inject(() => GroupPostProvider()),
+                      Inject(() => PostProvider()),
+                      Inject(() => FindingRoomProvider())
+                    ],
+                    builder: (context) {
+                      return GetX<ProfileController>(
+                          builder: (p) => GetMaterialApp(
+                                opaqueRoute: false,
+                                localeResolutionCallback:
+                                    i18n.resolution(fallback: Locale('en', 'US')),
+                                supportedLocales: i18n.supportedLocales,
+                                locale:
+                                    enLanguage == true ? Locale('en', 'US') : Locale('vi', 'VI'),
+                                localizationsDelegates: {
+                                  i18n,
+                                  GlobalMaterialLocalizations.delegate,
+                                  GlobalWidgetsLocalizations.delegate
+                                },
+                                debugShowCheckedModeBanner: false,
+                                themeMode: p.darkTheme.value ? ThemeMode.dark : ThemeMode.light,
+                                title: 'Gamming Community',
+                                darkTheme: AppTheme.darkTheme,
+                                theme: AppTheme.lightTheme,
+                                builder: BotToastInit(), //1. call BotToastInit
+                                navigatorObservers: [BotToastNavigatorObserver()],
+                                initialRoute: '/',
+                                getPages: [
+                                  GetPage(
+                                      name: '/', page: () => Login(), transition: Transition.fade),
+                                  GetPage(name: '/signup', page: () => SignUp(),transition: Transition.rightToLeftWithFade),
+                                  GetPage(name: '/forgot', page: () => ForgotPassword()),
+                                  GetPage(
+                                      name: '/homepage',
+                                      page: () => HomePage(),
+                                      transition: Transition.native),
+                                  GetPage(name: '/createroom', page: () => CreateRoomV2()),
+                                  GetPage(name: '/profile', page: () => Profile()),
+                                ],
+                                home: home,
+                              ));
+                    },
+                  ),
+                )));
   }
 }
 /*onGenerateRoute: (RouteSettings settings) {

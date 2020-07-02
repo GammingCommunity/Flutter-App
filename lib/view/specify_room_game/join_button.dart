@@ -172,7 +172,7 @@ class _JoinBProgressnState extends State<ProgressButtons> with TickerProviderSta
 
   @override
   Widget build(BuildContext context) {
-    roomsProvider = Injector.get(context: context);
+    roomsProvider = Injector.get();
     return Container(
       width: widget.buttonWidth,
       height: widget.buttonHeight,

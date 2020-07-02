@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Subscription.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/repository/room_repo.dart';
-import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/notfications/notificationProvider.dart';
 import 'package:gamming_community/view/notfications/notifications_service.dart';
@@ -35,7 +34,7 @@ class _NotficationsState extends State<Notfications> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    notificationProvider = Injector.get(context: context);
+    notificationProvider = Injector.get();
     var requests = notificationProvider.friendsRequest;
     var pendings = notificationProvider.pending;
     var globalNotify = notificationProvider.globalNotification;
@@ -114,7 +113,9 @@ class _NotficationsState extends State<Notfications> with TickerProviderStateMix
                         },
                         child: ListView.builder(
                           itemCount: 1,
-                          itemBuilder: (context, index) {},
+                          itemBuilder: (context, index) {
+                            return Container();
+                          },
                         )),
                   ),
                   //Pending

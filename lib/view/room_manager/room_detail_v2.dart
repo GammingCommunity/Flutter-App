@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/GroupChat.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
-import 'package:gamming_community/view/messages/group_messages/group_message.dart';
 import 'package:gamming_community/view/group_dashboard/group_page/group_message.dart';
 import 'package:gamming_community/view/messages/models/group_chat_provider.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
@@ -91,7 +90,7 @@ class _RoomDetailState extends State<RoomDetailV2> with TickerProviderStateMixin
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     var room = widget.room;
-    groupChatProvider = Injector.get(context: context);
+    groupChatProvider = Injector.get();
     return Hero(
       tag: widget.itemTag,
       child: DefaultTabController(

@@ -1,11 +1,6 @@
-import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:gamming_community/customWidget/customAppBar.dart';
-import 'package:gamming_community/view/room/provider/navigateNextPage.dart';
 import 'package:gamming_community/view/room/room_selector/selectGame.dart';
 import 'package:gamming_community/view/room/room_selector/selectPrivacy.dart';
-import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 
 class CreateRoomV2 extends StatefulWidget {
   @override

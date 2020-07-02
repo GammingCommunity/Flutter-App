@@ -31,6 +31,7 @@ class GenderRadio extends StatelessWidget {
           width: screenSize.width / 2 - 30,
           padding: EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
+            color: Colors.black26,
               borderRadius: BorderRadius.circular(15),
               border:
                   Border.all(width: 2, color: selected == true ? Colors.indigo : Colors.grey[600])),

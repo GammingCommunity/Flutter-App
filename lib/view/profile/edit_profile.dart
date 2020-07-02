@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Mutation.dart';
 import 'package:gamming_community/API/Query.dart';
@@ -253,7 +255,7 @@ class _EditProfileState extends State<EditProfile> {
                                 ],
                               ),
                               SizedBox(height: 20),
-                             /* Row(
+                              /* Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
@@ -304,7 +306,6 @@ class _EditProfileState extends State<EditProfile> {
                                       ],
                                     ),
                                   ),
-                                  
                                 ],
                               )
                             ],
@@ -320,6 +321,7 @@ class _EditProfileState extends State<EditProfile> {
 }
 
 showBotomSheetAvatar(BuildContext context, double width, ChangeProfile getImage) {
+  ImagePicker imagePicker = ImagePicker();
   return showModalBottomSheet(
       backgroundColor: Colors.white,
       useRootNavigator: true,
@@ -330,12 +332,12 @@ showBotomSheetAvatar(BuildContext context, double width, ChangeProfile getImage)
           height: 50,
           child: FlatButton(
               onPressed: () async {
-                var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+                var image = await imagePicker.getImage(source: ImageSource.gallery);
                 //close modal
                 Navigator.pop(context);
                 //print(image);
                 try {
-                  getImage.setFilePath(image);
+                  getImage.setFilePath(File(image.path));
                 } catch (e) {}
               },
               child: Text(

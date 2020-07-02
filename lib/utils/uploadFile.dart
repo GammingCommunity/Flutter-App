@@ -1,7 +1,7 @@
 import 'dart:io';
+
 import 'package:gamming_community/utils/get_token.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert' show json;
 
 Future<bool> uploadFile(String userID, File imagePath) async {
   //print("image path"+ imagePath.path);

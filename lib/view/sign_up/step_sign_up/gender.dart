@@ -1,11 +1,91 @@
-
 import 'package:flutter/material.dart';
+import 'package:gamming_community/view/profile/profileController.dart';
+import 'package:gamming_community/view/sign_up/controller/signUpController.dart';
 import 'package:gamming_community/view/sign_up/provider/sign_up_provider.dart';
 import 'package:gamming_community/view/sign_up/step_sign_up/radio.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
+class Gender extends StatelessWidget {
+  final SignUpController s = Get.find();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        height: Get.height,
+        width: Get.width,
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: GetX<SignUpController>(
+            builder: (v) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      "Select your gender ",
+                      style: TextStyle(fontSize: 30),
+                    ),
+                                        
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Column(
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            GenderRadio(
+                              groupValue: v.isMale.value,
+                              onChanged: (value) {
+                                v.genderSelected("male", value);
+                              },
+                              sexType: "Male",
+                              selected: v.isMale.value,
+                              value: true,
+                            ),
+                            GenderRadio(
+                              groupValue: v.isFemale.value,
+                              onChanged: (value) {
+                                v.genderSelected("female", value);
+                              },
+                              sexType: "Female",
+                              selected: v.isFemale.value,
+                              value: true,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        GenderRadio(
+                          groupValue: v.isOther.value,
+                          onChanged: (value) {
+                            v.genderSelected("other", value);
+                          },
+                          sexType: "Other",
+                          selected: v.isOther.value,
+                          value: true,
+                        ),
+                      ],
+                    ),
 
-class Gender extends StatefulWidget {
+                    SizedBox(
+                      height: 30,
+                    ),
+                    ButtonTheme(
+                        minWidth: 200,
+                        height: 50,
+                        child: RaisedButton(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                          onPressed: v.checkGenderSelected ? () => v.checkGender() : null,
+                          child: Text("Next"),
+                        ))
+                  ],
+                )),
+      ),
+    );
+  }
+}
+
+/*class Gender extends StatefulWidget {
   final PageController controller;
   Gender({this.controller});
   @override
@@ -114,14 +194,14 @@ class _GenderState extends State<Gender> with AutomaticKeepAliveClientMixin{
               ),
             ),*/
             SizedBox(
-              height: 20,
+              height: 30,
             ),
             ButtonTheme(
                 minWidth: 200,
                 height: 50,
                 
                 child: RaisedButton(
-                  
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                   onPressed: yourSelect == "" ? null :() async {
                     if (yourSelect == "") {
                       setState(() {
@@ -129,7 +209,8 @@ class _GenderState extends State<Gender> with AutomaticKeepAliveClientMixin{
                         hideError();
                       });
                     } else {
-                      pageProvider.setPageIndex(2);
+                      s.setPageIndex(0);
+                    s.navigate(1);
                       pageProvider.setGender(yourSelect);
                       widget.controller.animateToPage(2,
                           duration: Duration(milliseconds: 200), curve: Curves.fastOutSlowIn);
@@ -145,4 +226,4 @@ class _GenderState extends State<Gender> with AutomaticKeepAliveClientMixin{
 
   @override
   bool get wantKeepAlive => true;
-}
+}*/

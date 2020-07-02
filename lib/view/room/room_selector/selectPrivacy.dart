@@ -1,18 +1,14 @@
-import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gamming_community/class/User.dart';
-import 'package:gamming_community/customWidget/borderIcon.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
-import 'package:gamming_community/utils/brighness_query.dart';
 import 'package:gamming_community/utils/toListInt.dart';
 import 'package:gamming_community/view/room/admin_tradio.dart';
 import 'package:gamming_community/view/room/privacy_radio.dart';
@@ -87,7 +83,7 @@ class _SelectPrivacyState extends State<SelectRoomPrivacy> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    roomCreateProvider = Injector.get(context: context);
+    roomCreateProvider = Injector.get();
     roomManagerBloc = BlocProvider.of<RoomManagerBloc>(context);
 
     return ChangeNotifierProvider(

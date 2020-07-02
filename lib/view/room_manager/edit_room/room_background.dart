@@ -14,6 +14,7 @@ class RoomBackground extends StatefulWidget {
 
 class _RoomBackgroundState extends State<RoomBackground> {
   EditRoomProvider editProvider;
+  ImagePicker imagePicker = ImagePicker();
   String path = "";
   @override
   void initState() {
@@ -25,7 +26,7 @@ class _RoomBackgroundState extends State<RoomBackground> {
 
   @override
   Widget build(BuildContext context) {
-    editProvider = Injector.get(context: context);
+    editProvider = Injector.get();
     // load background image // seperate view to prevent rebuild
     return Stack(
       children: <Widget>[
@@ -52,7 +53,7 @@ class _RoomBackgroundState extends State<RoomBackground> {
               icon: FeatherIcons.image,
               iconSize: 30,
               onTap: () async {
-                var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+                var image = await imagePicker.getImage(source: ImageSource.gallery);
                 try {
                   editProvider.setBackgroundPath(image.path);
                 } catch (e) {}
@@ -61,5 +62,4 @@ class _RoomBackgroundState extends State<RoomBackground> {
       ],
     );
   }
-
 }

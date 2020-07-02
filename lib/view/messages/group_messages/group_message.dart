@@ -8,17 +8,12 @@ import 'package:gamming_community/class/Conservation.dart';
 import 'package:gamming_community/class/GroupMessage.dart';
 import 'package:gamming_community/hive_models/member.dart';
 import 'package:gamming_community/repository/upload_image.dart';
-import 'package:gamming_community/utils/display_image.dart';
 import 'package:gamming_community/utils/enum/messageEnum.dart';
 import 'package:gamming_community/utils/generatePalate.dart';
 import 'package:gamming_community/view/messages/group_messages/group_chat_service.dart';
 import 'package:gamming_community/view/messages/private_message/private_chats.dart';
-import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
-import 'package:optimized_cached_image/widgets.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:palette_generator/palette_generator.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 var currentTime = new DateTime.now();
@@ -116,7 +111,6 @@ class _GroupChatMessageState extends State<GroupChatMessage>
     super.build(context);
     bool isMe = widget.currentID == widget.sender;
     bool fromStorage = widget.fromStorage;
-    var imageUri = widget.imageUri;
     var imageUrl = widget.text.content;
     // get username for userlist
     
@@ -223,7 +217,7 @@ class _GroupChatMessageState extends State<GroupChatMessage>
                                     )
                                   : Align(
                                       alignment: Alignment.center,
-                                      child: OptimizedCacheImage(
+                                      child: CachedNetworkImage(
                                         imageUrl: imageUrl,
                                         height: widget.text.height.toDouble() > 1000
                                             ? widget.text.height.toDouble() / 2

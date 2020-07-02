@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:gamming_community/class/GroupChat.dart';
 import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
-import 'package:gamming_community/utils/brighness_query.dart';
 import 'package:gamming_community/utils/skeleton_template.dart';
 import 'package:gamming_community/view/room_manager/display_member.dart';
 import 'package:gamming_community/view/specify_room_game/join_button.dart';

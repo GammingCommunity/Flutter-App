@@ -2,11 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/CountRoom.dart';
-import 'package:gamming_community/provider/search_bar.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/room/provider/explorerProvider.dart';
 import 'package:gamming_community/view/specify_room_game/room_by_game.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
@@ -43,17 +42,16 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
-    var search = Provider.of<SearchProvider>(context);
 
     super.build(context);
     return Scaffold(
       body: ContainerResponsive(
         padding: EdgeInsetsResponsive.all(10),
-        height: screenSize.height,
-        width: screenSize.width,
+        height: Get.height,
+        width: Get.width,
         child: WhenRebuilderOr<ExploreProvider>(
-            observe: () => RM.get<ExploreProvider>()..future((s) => s.init()),
+          initState: (_,explorerProvider ) => explorerProvider.future((s, stateAsync) => s.init()),
+            observe: () => RM.get<ExploreProvider>(),
             builder: (context, explorerModel) {
               return explorerModel.whenConnectionState(
                 onIdle: null,

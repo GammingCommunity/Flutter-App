@@ -49,14 +49,14 @@ class _FeedsState extends State<Feeds> with AutomaticKeepAliveClientMixin {
           padding: EdgeInsets.all(10),
           child: WhenRebuilderOr<FeedsProvider>(
             observe: () => RM.get<FeedsProvider>(),
-            initState: (context, feedsProvider) => feedsProvider.setState((s) => s.init()),
+            initState: (context, feedsProvider) => feedsProvider.setState((s) async => await s.init()),
             builder: (context, model) {
               return model.whenConnectionState(
                   onIdle: null,
                   onWaiting: () => AppConstraint.loadingIndicator(context),
                   onError: (error) => buildException(context),
                   onData: (data) {
-                    var posts = model.value.posts;
+                    var posts = model.state.posts;
                     return posts.isEmpty
                         ? Center(
                             child: Column(

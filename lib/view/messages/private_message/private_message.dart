@@ -5,12 +5,9 @@ import 'package:gamming_community/class/Conservation.dart';
 import 'package:gamming_community/class/User.dart';
 import 'package:gamming_community/customWidget/urlPreview.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
-import 'package:gamming_community/utils/display_image.dart';
 import 'package:gamming_community/utils/enum/messageEnum.dart';
 import 'package:gamming_community/utils/generatePalate.dart';
 import 'package:gamming_community/utils/skeleton_template.dart';
-import 'package:get/get.dart';
-import 'package:metadata_fetch/metadata_fetch.dart';
 
 class PrivateMessage extends StatelessWidget {
   final User user, friend;

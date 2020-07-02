@@ -2,7 +2,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/class/News.dart';
-import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/skeleton_template.dart';
 import 'package:gamming_community/view/news/provider/newsProvider.dart';
@@ -26,7 +25,7 @@ class _NewsState extends State<NewsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    _newsProvider = Injector.get(context: context);
+    _newsProvider = Injector.get();
     return Scaffold(
       body: ContainerResponsive(
           height: ScreenUtil().uiHeightPx,

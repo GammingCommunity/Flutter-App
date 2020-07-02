@@ -2,17 +2,14 @@ import 'dart:async';
 
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:frefresh/frefresh.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/Conservation.dart' as csv;
-import 'package:gamming_community/class/ReceiveNotfication.dart';
 import 'package:gamming_community/class/User.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/iconWithTitle.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
-import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/enum/messageEnum.dart';
 import 'package:gamming_community/view/messages/models/private_chat_provider.dart';
 import 'package:gamming_community/view/messages/private_message/private_chat_service.dart';
@@ -44,8 +41,6 @@ class _MessagesState extends State<PrivateMessagesDetail>
   FRefreshController fRefreshController;
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
-      BehaviorSubject<ReceivedNotification>();
 
   BehaviorSubject<String> selectNotificationSubject = BehaviorSubject<String>();
   NotificationAppLaunchDetails notificationAppLaunchDetails;
@@ -229,7 +224,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
 
   @override
   Widget build(BuildContext context) {
-    chatProvider = Injector.get(context: context);
+    chatProvider = Injector.get();
     super.build(context);
     return Scaffold(
       key: scaffoldKey,

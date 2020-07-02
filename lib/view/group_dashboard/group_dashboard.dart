@@ -1,6 +1,5 @@
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:gamming_community/class/CountRoom.dart';
 import 'package:gamming_community/class/GroupChat.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/iconWithTitle.dart';
@@ -87,7 +86,7 @@ class _GroupDashboardState extends State<GroupDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    groupChatProvider = Injector.get(context: context);
+    groupChatProvider = Injector.get();
     return Scaffold(
         bottomNavigationBar: Container(
           height: _pageIndex == 1 ? 0 : 100,

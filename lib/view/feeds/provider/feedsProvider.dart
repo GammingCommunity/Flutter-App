@@ -52,7 +52,7 @@ class FeedsProvider {
         await getToken(), _mutation.reaction(commentTo, reactType, postID, commentID));
   }
 
-  void init() {
-    fetchPost();
+  Future init() async{
+    await fetchPost();
   }
 }

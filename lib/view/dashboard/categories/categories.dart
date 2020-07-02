@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gamming_community/view/game_genre/game_genre.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:get/get.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 
 class Category extends StatefulWidget {
@@ -26,7 +26,7 @@ class _CategoryState extends State<Category> {
     return ContainerResponsive(
       padding: EdgeInsetsResponsive.symmetric(vertical: 10),
       height: 200.h,
-        child:  ListView.separated(
+      child: ListView.separated(
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
           separatorBuilder: (context, index) => SizedBox(
@@ -40,12 +40,11 @@ class _CategoryState extends State<Category> {
               elevation: 3,
               child: InkWell(
                 onTap: () {
-                  Navigator.of(context).push(PageTransition(
-                    type: PageTransitionType.upToDown,
-                    child: GameGenre(
-                      genre: _listGenre[index].values.toList()[0],
-                    ),
-                  ));
+                  Get.to(
+                      GameGenre(
+                        genre: _listGenre[index].values.toList()[0],
+                      ),
+                      transition: Transition.upToDown);
                 },
                 child: ContainerResponsive(
                   alignment: Alignment.center,
