@@ -21,14 +21,14 @@ class SkeletonTemplate {
         ));
   }
 
-  static chatMessage(double height) {
+  static chatMessage(double height,[double borderRadius = 10000]) {
     return ContainerResponsive(
       height: height.h,
       width: Get.width,
      
       child: Row(
         children: [
-          image(60, 60, 10000),
+          image(60, 60, borderRadius),
           SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

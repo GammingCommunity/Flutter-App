@@ -46,7 +46,7 @@ dependencies:
   # data from url
   metadata_fetch: ^0.3.2
   # launch url
-  url_launcher: ^5.4.10
+  url_launcher: ^5.4.11
   google_sign_in: ^4.5.1
   # photo_manager 
   photo_manager: ^0.5.3+1

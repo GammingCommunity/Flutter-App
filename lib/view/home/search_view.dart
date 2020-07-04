@@ -44,7 +44,7 @@ class _SearchViewState extends State<SearchView> {
                   onSubmitted: (value) => inputValue == ""
                       ? null
                       : schFrProvider
-                          .setState((currentState) => currentState.searchFriend(inputValue,[])),
+                          .setState((currentState) => currentState.searchFriend(inputValue, [])),
                   /* onChanged: (String value) => schFrProvider.setState(
                       (currentState) => currentState.changeText(value == "" ? false : true)),*/
                   decoration: InputDecoration(
@@ -117,10 +117,9 @@ class _SearchViewState extends State<SearchView> {
 }
 
 Widget buildSearchFriend(BuildContext cxt, User user) {
-  var screenSize = MediaQuery.of(cxt).size;
   return Container(
     height: 100,
-    width: screenSize.width,
+    width: Get.width,
     child: Row(
       children: <Widget>[
         CachedNetworkImage(
@@ -128,18 +127,14 @@ Widget buildSearchFriend(BuildContext cxt, User user) {
           placeholder: (context, url) => Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                shape: BoxShape.circle,
-              )),
+              decoration:
+                  BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(10))),
           errorWidget: (context, url, error) {
             return Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                shape: BoxShape.circle,
-              ),
+              decoration:
+                  BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(10)),
             );
           },
           imageBuilder: (context, imageProvider) {
@@ -147,7 +142,7 @@ Widget buildSearchFriend(BuildContext cxt, User user) {
               height: 50,
               width: 50,
               decoration: BoxDecoration(
-                  shape: BoxShape.circle,
+                  borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(image: imageProvider, fit: BoxFit.cover)),
             );
           },
@@ -169,7 +164,7 @@ Widget buildSearchFriend(BuildContext cxt, User user) {
           child: Container(),
           setCircle: true,
           buttonHeight: 40,
-          buttonWidth: 40,
+          buttonWidth: 80,
           onSuccess: (data) {
             data == 1
                 ? BotToast.showText(text: "Send request success.")

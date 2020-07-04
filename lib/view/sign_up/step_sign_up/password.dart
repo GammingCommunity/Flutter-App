@@ -1,30 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:gamming_community/customWidget/customInput.dart';
-import 'package:gamming_community/utils/validators.dart';
 import 'package:gamming_community/view/sign_up/controller/signUpController.dart';
-import 'package:gamming_community/view/sign_up/provider/sign_up_provider.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 
 class Password extends StatelessWidget {
   final SignUpController s = Get.find();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            height: Get.height,
-            width: Get.width,
-            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              Text(
-                "Create password ",
-                style: TextStyle(fontSize: 30),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              GetX<SignUpController>(
-                builder: (v) => Container(
+    return GetX<SignUpController>(
+        builder: (v) => Scaffold(
+            body: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                height: Get.height,
+                width: Get.width,
+                child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                  Text(
+                    "Create password ",
+                    style: TextStyle(fontSize: 30),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
                     height: 100,
                     child: CustomInput(
                       controller: v.passwordController,
@@ -33,27 +30,26 @@ class Password extends StatelessWidget {
                       onClearText: () {
                         v.passwordController.clear();
                       },
-                      errorText: v.isPasswordVaild.value ? null : "Password is not invaild",
-                    )),
-              ),
-              Text(
-                "Note: Must have at most 11 characters, must contain a number and not contain any special characters",
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              GetX<SignUpController>(
-                builder: (v) => ButtonTheme(
-                    minWidth: 200,
-                    height: 50,
-                    child: RaisedButton(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                      onPressed: v.isPasswordVaild.value ? () => v.checkPassword() :  null ,
-                      child: Text("Next"),
-                    )),
-              )
-            ])));
+                      hintText: "Password",
+                      errorText: v.isPasswordValid ? null : "Password is not invaild",
+                    ),
+                  ),
+                  Text(
+                    "Note: Must have at most 11 characters, must contain a number and not contain any special characters",
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  ButtonTheme(
+                      minWidth: 200,
+                      height: 50,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                        onPressed: v.isPasswordValid ? () => v.checkPassword() : null,
+                        child: Text("Next"),
+                      )),
+                ]))));
   }
 }
 

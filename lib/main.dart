@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:gamming_community/API/config/refreshToken.dart';
+import 'package:gamming_community/controller/loginBinding.dart';
 import 'package:gamming_community/generated/i18n.dart';
 import 'package:gamming_community/hive_models/connection/hive_connection.dart';
 import 'package:gamming_community/provider/changeProfile.dart';
@@ -33,9 +34,9 @@ import 'package:gamming_community/view/room_manager/bloc/room_manager_bloc.dart'
 import 'package:gamming_community/view/room_manager/provider/edit_room_provider.dart';
 import 'package:gamming_community/view/room_manager/room_create_provider.dart';
 import 'package:gamming_community/view/room_manager/room_manager.dart';
-import 'package:gamming_community/view/sign_up/bloc/bloc/signup_bloc.dart';
 import 'package:gamming_community/view/sign_up/provider/sign_up_provider.dart';
 import 'package:gamming_community/view/sign_up/sign_up.dart';
+import 'package:gamming_community/view/specify_room_game/provider/roomByGameProvider.dart';
 import 'package:gamming_community/view/user_post/post_provider.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -50,7 +51,8 @@ void main() async {
 
   SharedPreferences ref = await SharedPreferences.getInstance();
   bool isEng = ref.getBool("isEng") ?? true;
-  bool isLogin = ref.getBool('isLogin') == null ?? false;
+  bool isLogin = ref.getBool('isLogin') == null ? false : true;
+
   // check login from logout
   Widget defaultHome = Login();
 
@@ -82,95 +84,89 @@ class MyApp extends StatelessWidget {
     final i18n = I18n.delegate;
 
     return GetBuilder<ProfileController>(
-        init: ProfileController(),
-        builder: (p) => MultiProvider(
-                providers: [
-                  //ChangeNotifierProvider<FetchMoreValue>(create: (context) => FetchMoreValue()),
-                  ChangeNotifierProvider<ChangeProfile>(create: (context) => ChangeProfile()),
-                  ChangeNotifierProvider<SearchProvider>(create: (context) => SearchProvider()),
-                  ChangeNotifierProvider<NotificationModel>(
-                      create: (context) => NotificationModel()),
-                  ChangeNotifierProvider<SearchGame>(
-                    create: (context) => SearchGame(),
-                  ),
-                  ChangeNotifierProvider<NavigateNextPage>(
-                    create: (context) => NavigateNextPage(),
-                  ),
-                  ChangeNotifierProvider(
-                    create: (context) => SignUpProvider(),
-                    child: SignUp(),
-                  )
+      init: ProfileController(),
+      builder: (_) => GetX<ProfileController>(builder: (p) {
+        print("theme ${p.darkTheme}");
+        return MultiProvider(
+            providers: [
+              //ChangeNotifierProvider<FetchMoreValue>(create: (context) => FetchMoreValue()),
+              ChangeNotifierProvider<ChangeProfile>(create: (context) => ChangeProfile()),
+              ChangeNotifierProvider<SearchProvider>(create: (context) => SearchProvider()),
+              ChangeNotifierProvider<NotificationModel>(create: (context) => NotificationModel()),
+              ChangeNotifierProvider<SearchGame>(
+                create: (context) => SearchGame(),
+              ),
+              ChangeNotifierProvider<NavigateNextPage>(
+                create: (context) => NavigateNextPage(),
+              ),
+              ChangeNotifierProvider(
+                create: (context) => SignUpProvider(),
+                child: SignUp(),
+              )
+            ],
+            child: bloc.MultiBlocProvider(
+              providers: [
+                bloc.BlocProvider<RoomManagerBloc>(
+                  create: (BuildContext context) => RoomManagerBloc(),
+                  child: RoomManager(),
+                )
+              ],
+              child: Injector(
+                inject: [
+                  Inject(() => RoomByGameProvider()),
+                  Inject(() => PrivateChatProvider()),
+                  Inject(() => GroupChatProvider()),
+                  Inject(() => NotificationProvider()),
+                  Inject(() => RoomCreateProvider()),
+                  Inject(() => EditRoomProvider()),
+                  Inject(() => RoomsProvider()),
+                  Inject(() => NewsProvider()),
+                  Inject(() => FeedsProvider()),
+                  Inject(() => ExploreProvider()),
+                  Inject(() => SearchFriendsProvider()),
+                  Inject(() => GroupPostProvider()),
+                  Inject(() => PostProvider()),
+                  Inject(() => FindingRoomProvider())
                 ],
-                child: bloc.MultiBlocProvider(
-                  providers: [
-                    bloc.BlocProvider<LoginBloc>(
-                      create: (BuildContext context) => LoginBloc(),
-                      child: Login(),
-                    ),
-                    bloc.BlocProvider<SignUpBloc>(
-                      create: (BuildContext context) => SignUpBloc(),
-                      child: SignUp(),
-                    ),
-                    bloc.BlocProvider<RoomManagerBloc>(
-                      create: (BuildContext context) => RoomManagerBloc(),
-                      child: RoomManager(),
-                    )
-                  ],
-                  child: Injector(
-                    inject: [
-                      Inject(() => PrivateChatProvider()),
-                      Inject(() => GroupChatProvider()),
-                      Inject(() => NotificationProvider()),
-                      Inject(() => RoomCreateProvider()),
-                      Inject(() => EditRoomProvider()),
-                      Inject(() => RoomsProvider()),
-                      Inject(() => NewsProvider()),
-                      Inject(() => FeedsProvider()),
-                      Inject(() => ExploreProvider()),
-                      Inject(() => SearchFriendsProvider()),
-                      Inject(() => GroupPostProvider()),
-                      Inject(() => PostProvider()),
-                      Inject(() => FindingRoomProvider())
-                    ],
-                    builder: (context) {
-                      return GetX<ProfileController>(
-                          builder: (p) => GetMaterialApp(
-                                opaqueRoute: false,
-                                localeResolutionCallback:
-                                    i18n.resolution(fallback: Locale('en', 'US')),
-                                supportedLocales: i18n.supportedLocales,
-                                locale:
-                                    enLanguage == true ? Locale('en', 'US') : Locale('vi', 'VI'),
-                                localizationsDelegates: {
-                                  i18n,
-                                  GlobalMaterialLocalizations.delegate,
-                                  GlobalWidgetsLocalizations.delegate
-                                },
-                                debugShowCheckedModeBanner: false,
-                                themeMode: p.darkTheme.value ? ThemeMode.dark : ThemeMode.light,
-                                title: 'Gamming Community',
-                                darkTheme: AppTheme.darkTheme,
-                                theme: AppTheme.lightTheme,
-                                builder: BotToastInit(), //1. call BotToastInit
-                                navigatorObservers: [BotToastNavigatorObserver()],
-                                initialRoute: '/',
-                                getPages: [
-                                  GetPage(
-                                      name: '/', page: () => Login(), transition: Transition.fade),
-                                  GetPage(name: '/signup', page: () => SignUp(),transition: Transition.rightToLeftWithFade),
-                                  GetPage(name: '/forgot', page: () => ForgotPassword()),
-                                  GetPage(
-                                      name: '/homepage',
-                                      page: () => HomePage(),
-                                      transition: Transition.native),
-                                  GetPage(name: '/createroom', page: () => CreateRoomV2()),
-                                  GetPage(name: '/profile', page: () => Profile()),
-                                ],
-                                home: home,
-                              ));
+                builder: (context) {
+                  return GetMaterialApp(
+                    initialBinding: LoginBinding(),
+                    opaqueRoute: false,
+                    localeResolutionCallback: i18n.resolution(fallback: Locale('en', 'US')),
+                    supportedLocales: i18n.supportedLocales,
+                    locale: enLanguage == true ? Locale('en', 'US') : Locale('vi', 'VI'),
+                    localizationsDelegates: {
+                      i18n,
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate
                     },
-                  ),
-                )));
+                    debugShowCheckedModeBanner: false,
+                    themeMode: p.darkTheme ? ThemeMode.dark : ThemeMode.light,
+                    title: 'Gamming Community',
+                    darkTheme: AppTheme.darkTheme,
+                    theme: AppTheme.lightTheme,
+                    builder: BotToastInit(), //1. call BotToastInit
+                    navigatorObservers: [BotToastNavigatorObserver()],
+                    initialRoute: '/',
+                    getPages: [
+                      GetPage(name: '/', page: () => Login(), transition: Transition.fade),
+                      GetPage(
+                          name: '/signup',
+                          page: () => SignUp(),
+                          transition: Transition.rightToLeftWithFade),
+                      GetPage(name: '/forgot', page: () => ForgotPassword()),
+                      GetPage(
+                          name: '/homepage', page: () => HomePage(), transition: Transition.native),
+                      GetPage(name: '/createroom', page: () => CreateRoomV2()),
+                      GetPage(name: '/profile', page: () => Profile()),
+                    ],
+                    home: home,
+                  );
+                },
+              ),
+            ));
+      }),
+    );
   }
 }
 /*onGenerateRoute: (RouteSettings settings) {

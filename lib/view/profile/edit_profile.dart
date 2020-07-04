@@ -39,7 +39,6 @@ class _EditProfileState extends State<EditProfile> {
   FocusNode _nickNameFocus = FocusNode();
   FocusNode _personalInfoFocus = FocusNode();
   FocusNode _birthdayFocus = FocusNode();
-  FocusNode _phoneFocus = FocusNode();
   FocusNode _emailFocus = FocusNode();
   DateTime selectedDate = DateTime.now();
   GraphQLQuery query = GraphQLQuery();

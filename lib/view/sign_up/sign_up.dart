@@ -8,9 +8,7 @@ import 'package:gamming_community/view/sign_up/step_sign_up/password.dart';
 import 'package:gamming_community/view/sign_up/step_sign_up/profile.dart';
 import 'package:gamming_community/view/sign_up/step_sign_up/username.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 
-import 'provider/sign_up_provider.dart';
 import 'step_sign_up/dateOfBirth.dart';
 
 class SignUp extends StatelessWidget {
@@ -18,50 +16,53 @@ class SignUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int pageIndex = s.currentPage.value;
-   
     int totalPage = 6;
     return GetBuilder<SignUpController>(
         init: SignUpController(),
-        builder: (s) => Scaffold(
-              appBar: CustomAppBar(
-                  child: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: Text("Sign Up"),
-                    )
-                  ],
-                  height: 50,
-                  onNavigateOut: () {
-                    s.navigate(pageIndex);
-                  },
-                  padding: EdgeInsets.all(0),
-                  backIcon: FeatherIcons.arrowLeft),
-              body: Column(
-                children: [
-                  Flexible(
-                    child: Container(
-                        height: Get.height - 100,
-                        width: Get.width,
-                        child: PageView(
-                          controller: s.pageController,
-                          physics: NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.horizontal,
-                          children: <Widget>[
-                            DateOfBirth(),
-                            Gender(),
-                            UserName(),
-                            Password(),
-                            Email(),
-                            Profile()
-                          ],
-                        )),
+        builder: (s) => WillPopScope(
+              onWillPop: () => s.onExit(),
+              child: GetX<SignUpController>(
+                builder: (v) => Scaffold(
+                  appBar: CustomAppBar(
+                      child: [
+                        Align(
+                          alignment: Alignment.center,
+                          child: Text("Sign Up"),
+                        )
+                      ],
+                      height: 50,
+                      onNavigateOut: () {
+                        v.navigate(v.getCurrentPage);
+                      },
+                      padding: EdgeInsets.all(0),
+                      backIcon: FeatherIcons.arrowLeft),
+                  body: Column(
+                    children: [
+                      Flexible(
+                        child: Container(
+                            height: Get.height - 100,
+                            width: Get.width,
+                            child: PageView(
+                              controller: s.pageController,
+                              physics: NeverScrollableScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              children: <Widget>[
+                                DateOfBirth(),
+                                Gender(),
+                                UserName(),
+                                Password(),
+                                Email(),
+                                Profile()
+                              ],
+                            )),
+                      ),
+                      GetX<SignUpController>(
+                        builder: (v) => Text("Step ${v.getCurrentPage} /$totalPage"),
+                      ),
+                      SizedBox(height: 30)
+                    ],
                   ),
-                  GetX<SignUpController>(
-                    builder: (v) => Text("Step ${v.currentPage.value} /$totalPage"),
-                  ),
-                  SizedBox(height: 30)
-                ],
+                ),
               ),
             ));
   }

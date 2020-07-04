@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
+import 'package:gamming_community/view/profile/profileController.dart';
 import 'package:get/get.dart';
 
-class CircleIcon extends StatefulWidget {
+class CircleIcon extends StatelessWidget {
   final String toolTip;
   final IconData icon;
   final double iconSize;
@@ -18,37 +19,31 @@ class CircleIcon extends StatefulWidget {
       @required this.onTap});
 
   @override
-  _CircleIconState createState() => _CircleIconState();
-}
-
-class _CircleIconState extends State<CircleIcon> {
-  @override
   Widget build(BuildContext context) {
-    return Material(
-        clipBehavior: Clip.antiAlias,
-        color: Colors.transparent,
-        type: MaterialType.circle,
-        child: Container(
-        //  height: widget.iconSize ,
-        //  width: widget.iconSize ,
-       //   alignment: Alignment.center,
-          color: widget.iconBackgroundColor,
-          child: IconButton(
-            tooltip: widget.toolTip,
-            icon: Icon(
-              widget.icon,
-              color: widget.iconColor,
-            ),
-            onPressed: () {
-              return widget.onTap();
-            },
-            color: widget.iconColor == null
-                ? Get.isDarkMode ? Colors.white : Colors.black
-                : widget.iconColor,
-            iconSize: widget.iconSize 
-          ),
-        ),
-      
-    );
+    //bool isDarkMode = ProfileController.to.darkTheme;
+    return GetX<ProfileController>(
+        builder: (v) => Material(
+              clipBehavior: Clip.antiAlias,
+              color: Colors.transparent,
+              type: MaterialType.circle,
+              child: Container(
+                //  height: widget.iconSize ,
+                //  width: widget.iconSize ,
+                //   alignment: Alignment.center,
+                color: iconBackgroundColor,
+                child: IconButton(
+                    tooltip: toolTip,
+                    icon: Icon(
+                      icon,
+                      color: iconColor,
+                    ),
+                    onPressed: () {
+                      return onTap();
+                    },
+                    color:
+                        iconColor == null ? (v.darkTheme ? Colors.white : Colors.black) : iconColor,
+                    iconSize: iconSize),
+              ),
+            ));
   }
 }

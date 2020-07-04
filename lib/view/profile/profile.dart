@@ -19,174 +19,174 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     bool isEng = Get.find<SharedPreferences>().getBool("isEng");
+    
     return GetBuilder<ProfileController>(
       init: ProfileController(),
-        builder: (p) => Scaffold(
-              appBar: CustomAppBar(
-                  child: [
-                    Spacer(),
-                    RaisedButton.icon(
-                        onPressed: () {
-                          Get.to(EditProfile(userID: userID, currentProfile: userProfile),
-                              opaque: false, transition: Transition.leftToRightWithFade);
-                        },
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        icon: Icon(Icons.wb_iridescent),
-                        label: Text("Edit")),
-                  ],
-                  height: 50,
-                  onNavigateOut: () {
-                    Get.back();
+      builder: (p) => Scaffold(
+        appBar: CustomAppBar(
+            child: [
+              Spacer(),
+              RaisedButton.icon(
+                  onPressed: () {
+                    Get.to(EditProfile(userID: userID, currentProfile: userProfile),
+                        opaque: false, transition: Transition.leftToRightWithFade);
                   },
-                  padding: EdgeInsets.only(right: 10),
-                  backIcon: FeatherIcons.arrowLeft),
-              body: ContainerResponsive(
-                  width: Get.width,
-                  child: Column(
-                    children: <Widget>[
-                      //Edit button
-                      Expanded(
-                          flex: 2,
-                          child: Stack(
-                            alignment: Alignment.bottomCenter,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  icon: Icon(Icons.wb_iridescent),
+                  label: Text("Edit")),
+            ],
+            height: 50,
+            onNavigateOut: () {
+              Get.back();
+            },
+            padding: EdgeInsets.only(right: 10),
+            backIcon: FeatherIcons.arrowLeft),
+        body: ContainerResponsive(
+            width: Get.width,
+            child: Column(
+              children: <Widget>[
+                //Edit button
+                Expanded(
+                    flex: 2,
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: <Widget>[
+                        // profile image
+                        Positioned.fill(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                              // profile image
-                              Positioned.fill(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    CachedNetworkImage(
-                                      fadeInCurve: Curves.easeIn,
-                                      fadeInDuration: Duration(seconds: 1),
-                                      imageBuilder: (context, imageProvider) => ContainerResponsive(
-                                        height: 100.h,
-                                        width: 100.w,
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(1000),
-                                            border: Border.all(
-                                                width: 0.5, color: AppColors.BACKGROUND_COLOR),
-                                            image: DecorationImage(
-                                                fit: BoxFit.cover, image: imageProvider)),
-                                      ),
-                                      imageUrl: userProfile == ""
-                                          ? AppConstraint.sample_proifle_url
-                                          : userProfile,
-                                      placeholder: (context, url) => ContainerResponsive(
-                                        height: 100.h,
-                                        width: 100.w,
-                                        decoration: BoxDecoration(
-                                            color: Colors.grey,
-                                            borderRadius: BorderRadius.circular(1000)),
-                                      ),
-                                      errorWidget: (context, url, error) => Icon(Icons.error),
-                                    ),
-                                    SizedBoxResponsive(
-                                      height: 20,
-                                    ),
-                                    TextResponsive(
-                                      userName,
-                                    ),
-                                    TextResponsive(
-                                      "@name",
-                                    ),
-                                    /*Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      CircleIcon(
-                                        icon: FeatherIcons.userPlus,
-                                        iconSize: 25,
-                                        onTap: () {},
-                                      ),
-                                      CircleIcon(
-                                        icon: FeatherIcons.messageCircle,
-                                        iconSize: 25,
-                                        onTap: () {},
-                                      ),
-                                    ],
-                                  ),*/
-                                  ],
+                              CachedNetworkImage(
+                                fadeInCurve: Curves.easeIn,
+                                fadeInDuration: Duration(seconds: 1),
+                                imageBuilder: (context, imageProvider) => ContainerResponsive(
+                                  height: 100.h,
+                                  width: 100.w,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(1000),
+                                      border:
+                                          Border.all(width: 0.5, color: AppColors.BACKGROUND_COLOR),
+                                      image:
+                                          DecorationImage(fit: BoxFit.cover, image: imageProvider)),
                                 ),
+                                imageUrl: userProfile == ""
+                                    ? AppConstraint.sample_proifle_url
+                                    : userProfile,
+                                placeholder: (context, url) => ContainerResponsive(
+                                  height: 100.h,
+                                  width: 100.w,
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      borderRadius: BorderRadius.circular(1000)),
+                                ),
+                                errorWidget: (context, url, error) => Icon(Icons.error),
                               ),
-                            ],
-                          )),
-                      // Setting blablabla....
-
-                      Expanded(
-                        flex: 3,
-                        child: Padding(
-                            padding: EdgeInsetsResponsive.symmetric(horizontal: 0, vertical: 10),
-                            child: Wrap(
-                              runSpacing: 15,
-                              spacing: 20,
-                              children: <Widget>[
-                                RowProfileSetting(
-                                  icon: OpenIconicIcons.sun,
-                                  clickable: false,
-                                  onTap: () {},
-                                  text: "Dark mode",
-                                  widget: GetX<ProfileController>(
-                                    builder: (value) => Switch(
-                                      value: value.darkTheme.value,
-                                      onChanged: (e) {
-                                        p.setTheme(e);
-                                      }),
-                                  )
-                                ),
-                                RowProfileSetting(
-                                    onTap: () {},
-                                    widget: Row(
+                              SizedBoxResponsive(
+                                height: 20,
+                              ),
+                              TextResponsive(
+                                userName,
+                              ),
+                              TextResponsive(
+                                "@name",
+                              ),
+                              /*Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: <Widget>[
-                                        //default language here
-                                        ChangeLanguage(
-                                          defaultLanguage: isEng ? "en" : "vi",
-                                        )
+                                        CircleIcon(
+                                          icon: FeatherIcons.userPlus,
+                                          iconSize: 25,
+                                          onTap: () {},
+                                        ),
+                                        CircleIcon(
+                                          icon: FeatherIcons.messageCircle,
+                                          iconSize: 25,
+                                          onTap: () {},
+                                        ),
                                       ],
-                                    ),
-                                    clickable: false,
-                                    icon: Icons.language, //  color: Colors.amber,
-                                    text: "Language"),
-                                RowProfileSetting(
-                                    onTap: () {},
-                                    widget: Container(
-                                      padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
-                                      child: Text("0"),
-                                    ),
-                                    icon: Icons.leak_add, //color: Colors.blueGrey,
-                                    text: "Follows"),
-                                RowProfileSetting(
-                                    onTap: () {},
-                                    widget: Container(
-                                      padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
-                                      child: Text("0"),
-                                    ),
-                                    icon: Icons.favorite, //  color: Colors.pink
-                                    text: "Following"),
-                                RowProfileSetting(
-                                    onTap: () {},
-                                    widget: Container(
-                                      padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
-                                      child: Text("0"),
-                                    ),
-                                    icon: Icons.feedback,
-                                    text: "Feedback"),
-                                RowProfileSetting(
-                                    onTap: () async {
-                                      print("log out");
+                                    ),*/
+                            ],
+                          ),
+                        ),
+                      ],
+                    )),
+                // Setting blablabla....
 
-                                      await p.loggout();
-                                    },
-                                    widget: Container(),
-                                    icon: Icons.power_settings_new, //color: Colors.red[300]
-                                    text: "Log out")
-                              ],
-                            )),
-                      )
-                    ],
-                  )),
-            ));
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                      padding: EdgeInsetsResponsive.symmetric(horizontal: 0, vertical: 10),
+                      child: Wrap(
+                        runSpacing: 15,
+                        spacing: 20,
+                        children: <Widget>[
+                          RowProfileSetting(
+                              icon: OpenIconicIcons.sun,
+                              clickable: false,
+                              onTap: () {},
+                              text: "Dark mode",
+                              widget: GetX<ProfileController>(
+                                builder: (value) => Switch(
+                                    value: value.darkTheme,
+                                    onChanged: (e) {
+                                      return p.changeTheme();
+                                    }),
+                              )),
+                          RowProfileSetting(
+                              onTap: () {},
+                              widget: Row(
+                                children: <Widget>[
+                                  //default language here
+                                  ChangeLanguage(
+                                    defaultLanguage: isEng ? "en" : "vi",
+                                  )
+                                ],
+                              ),
+                              clickable: false,
+                              icon: Icons.language, //  color: Colors.amber,
+                              text: "Language"),
+                          RowProfileSetting(
+                              onTap: () {},
+                              widget: Container(
+                                padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
+                                child: Text("0"),
+                              ),
+                              icon: Icons.leak_add, //color: Colors.blueGrey,
+                              text: "Follows"),
+                          RowProfileSetting(
+                              onTap: () {},
+                              widget: Container(
+                                padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
+                                child: Text("0"),
+                              ),
+                              icon: Icons.favorite, //  color: Colors.pink
+                              text: "Following"),
+                          RowProfileSetting(
+                              onTap: () {},
+                              widget: Container(
+                                padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
+                                child: Text("0"),
+                              ),
+                              icon: Icons.feedback,
+                              text: "Feedback"),
+                          RowProfileSetting(
+                              onTap: () async {
+                                print("log out");
+
+                                await p.loggout();
+                              },
+                              widget: Container(),
+                              icon: Icons.power_settings_new, //color: Colors.red[300]
+                              text: "Log out")
+                        ],
+                      )),
+                )
+              ],
+            )),
+      ),
+    );
   }
 }
 

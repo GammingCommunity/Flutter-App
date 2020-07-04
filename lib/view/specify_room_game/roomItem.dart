@@ -51,7 +51,7 @@ class _RoomItemState extends State<RoomItem> with AutomaticKeepAliveClientMixin 
                               width: 60.w,
                               //fadeInCurve: Curves.easeIn,
                               fadeInDuration: Duration(seconds: 2),
-                              imageUrl: rooms.roomLogo,
+                              imageUrl: rooms.roomLogo ,
                               placeholder: (context, url) =>
                                   SkeletonTemplate.image(60.h, 60.w, 15, Colors.grey),
                               errorWidget: (context, url, error) => Icon(Icons.error),

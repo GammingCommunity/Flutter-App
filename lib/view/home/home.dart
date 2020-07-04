@@ -58,9 +58,7 @@ class _HomeState extends State<HomePage>
             // DashBoard(),
             Feeds(),
             NewsWidget(),
-            Explorer(
-              token: token,
-            ),
+            Explorer(),
             RoomManager(),
             Messages(
               userID: userID,

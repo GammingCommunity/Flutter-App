@@ -1,15 +1,23 @@
-import 'package:flutter/material.dart';
+import 'package:frefresh/frefresh.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/CountRoom.dart';
 import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/utils/get_token.dart';
+import 'package:get/get.dart';
 
-@immutable
-class ExploreProvider {
-  static var _query = GraphQLQuery();
-  final rooms = <Room>[];
+class ExplorerController extends GetxController {
+  var _query = GraphQLQuery();
+  var fRefreshController = FRefreshController();
+  var rooms = <Room>[].obs;
 
-  int get gameChanelLength => rooms.length;
+  int get roomLength => this.rooms.length;
+  
+  @override
+  void onInit() {
+    init();
+    ever(rooms, (value) => print("change"));
+    super.onInit();
+  }
 
   Future init() async {
     var queryResult =
@@ -18,12 +26,7 @@ class ExploreProvider {
     rooms.addAll(result);
   }
 
-  Future refresh() async {
-    clear();
-    await init();
-  }
+  Future refresh() async {}
 
-  void clear() {
-    rooms.clear();
-  }
+  Future loadMore() async {}
 }

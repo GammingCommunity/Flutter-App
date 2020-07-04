@@ -1,12 +1,107 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gamming_community/customWidget/customInput.dart';
 import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
-import 'package:gamming_community/utils/validators.dart';
 import 'package:gamming_community/view/sign_up/controller/signUpController.dart';
-import 'package:gamming_community/view/sign_up/provider/sign_up_provider.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 
+class Email extends StatelessWidget {
+  final SignUpController s = Get.find();
+  @override
+  Widget build(BuildContext context) {
+    return GetX<SignUpController>(
+      builder: (v) => Scaffold(
+        body: Container(
+          height: Get.height,
+          width: Get.width,
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: <Widget>[
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Verify Your Account ",
+                  style: TextStyle(fontSize: 30),
+                ),
+              ),
+              SizedBox(height: 20),
+              !v.validateType
+                  ? FaSlideAnimation.slideLeft(
+                      delayed: 200,
+                      child: Stack(
+                        children: <Widget>[
+                          Container(
+                            height: 100,
+                            child: CustomInput(
+                                controller: s.emailController,
+                                hintText: "Email",
+                                onTap: () {},
+                                textInputType: TextInputType.emailAddress,
+                                hideClearText: true,
+                                onChange: (value) => v.checkEmailVaild(value),
+                                errorText: v.isEmailValid ? null : "Your email is not invaild",
+                                onClearText: () => s.emailController.clear()),
+                          ),
+                          Positioned(
+                            right: 10,
+                            top: 0,
+                            child: Switch(
+                                value: v.validateType,
+                                onChanged: (value) => v.clearInfo(context, value)),
+                          ),
+                        ],
+                      ),
+                    )
+                  : FaSlideAnimation.slideLeft(
+                      delayed: 400,
+                      child: Stack(
+                        children: <Widget>[
+                          Container(
+                            height: 100,
+                            child: CustomInput(
+                                controller: s.phoneControlller,
+                                hintText: "Phone",
+                                hideClearText: true,
+                                onClearText: () => s.phoneControlller.clear()),
+                          ),
+                          Positioned(
+                            right: 10,
+                            top: 0,
+                            child: Switch(
+                              value: v.validateType,
+                              onChanged: (value) => v.clearInfo(context, value),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+              Text(
+                  "Note: You can skip this step, but later you must provider your email to use all feature."),
+              SizedBox(height: 30),
+              ButtonTheme(
+                  minWidth: 200,
+                  height: 50,
+                  child: RaisedButton(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    onPressed: () {
+                      // check user wanna verify account or not
+
+                      // if not, skip and process create account
+                      if (v.isVerify) {
+                      } else {
+                        s.navigate(5);
+                      }
+                    },
+                    child: v.isEmailValid ? Text("Verify") : Text("Skip"),
+                  ))
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+/*
 class Email extends StatefulWidget {
   final PageController controller;
   Email({this.controller});
@@ -15,7 +110,6 @@ class Email extends StatefulWidget {
 }
 
 class _EmailState extends State<Email> with AutomaticKeepAliveClientMixin {
-  final SignUpController s = Get.find();
   // switch between email or phone verify.
   bool _switch = false;
   //
@@ -156,3 +250,4 @@ class _EmailState extends State<Email> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 }
+*/

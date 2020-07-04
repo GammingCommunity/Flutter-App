@@ -1,29 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:states_rebuilder/states_rebuilder.dart';
 
 class ProfileController extends GetxController {
-  var darkTheme = true.obs;
-  bool enLang = true;
+  var _darkTheme = true.obs;
+  var _enLang = true.obs;
   static ProfileController get to => Get.find();
 
-  @override
-  void onInit() {
-    Get.putAsync<SharedPreferences>(() async {
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setBool("isEng", true);
-      return prefs;
-    });
-    super.onInit();
-  }
+  bool get isEn => this._enLang.value;
+  bool get darkTheme => this._darkTheme.value;
 
-  void setTheme(bool e) {
-    darkTheme.value = e;
+
+  void changeTheme() {
+    this._darkTheme.value = !this._darkTheme.value;
   }
 
   void setLanguage() {
-    enLang = !enLang;
+    this._enLang.value = !this._enLang.value;
   }
 
   Future loggout() async {
@@ -40,7 +33,7 @@ class ProfileController extends GetxController {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             onPressed: () {
               Get.find<SharedPreferences>().setBool('isLogin', false);
-             
+
               Get.offAllNamed(
                 '/',
                 predicate: (route) => false,

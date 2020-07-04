@@ -36,7 +36,6 @@ class ListGame {
     try {
       for (var item in parsedJson) {
         //print(item['video']['trailer']);
-        var emptyValue = "";
         _games.add(Game(
             id: item['_id'],
             name: item['name'],

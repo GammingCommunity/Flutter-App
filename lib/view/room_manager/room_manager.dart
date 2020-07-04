@@ -88,7 +88,7 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    final double itemHeight = (Get.height - kToolbarHeight) / 2.6.h;
+    final double itemHeight = (Get.height - kToolbarHeight) / 2.8.h;
     final double itemWidth = ScreenUtil().uiWidthPx / 2.w;
     var rooms = roomManagerBloc.room;
     var currentID = roomManagerBloc.currentID;
@@ -227,8 +227,7 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                                       SizedBox(
                                         height: 30,
                                       ),
-                                      Column(
-                                        children: <Widget>[
+                                     
                                           Padding(
                                             padding: EdgeInsetsResponsive.symmetric(
                                                 horizontal: 10, vertical: 5),
@@ -252,8 +251,8 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                                           )
                                         ],
                                       ),
-                                    ],
-                                  ),
+                                    
+                               
                                   Positioned(
                                       top: 0,
                                       right: 0,

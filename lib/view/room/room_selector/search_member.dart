@@ -18,7 +18,7 @@ class SearchMember extends StatefulWidget {
 }
 
 class _SearchMemberState extends State<SearchMember> {
-  RoomManagerBloc roomManagerBloc;
+ 
   var searchEditText = TextEditingController();
   var users = <User>[];
   String get inputValue => searchEditText.text;
@@ -33,8 +33,7 @@ class _SearchMemberState extends State<SearchMember> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     var schFrProvider = RM.get<SearchFriendsProvider>();
-    roomManagerBloc = BlocProvider.of<RoomManagerBloc>(context);
-
+   RoomManagerBloc roomManagerBloc = BlocProvider.of<RoomManagerBloc>(context);
     return Scaffold(
       floatingActionButton: Visibility(
           visible: users.length > 0,

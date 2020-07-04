@@ -4,7 +4,6 @@ import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/User.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/utils/get_token.dart';
-import 'package:gamming_community/utils/toListInt.dart';
 
 class SearchFriendsProvider {
   var _listResult = <User>[];

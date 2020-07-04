@@ -51,9 +51,9 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
   Widget build(BuildContext context) {
     super.build(context);
     return Container(
-      height: 50,
+      height: widget.size,
       width: Get.width,
-      alignment: Alignment.centerLeft,
+      alignment: Alignment.center,
       child: FutureBuilder<List<User>>(
         future: Future(() async {
           // convert to list int
@@ -74,7 +74,9 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
             return Container(
               height: widget.size,
               width: Get.width,
-                          child: ListView.separated(
+              alignment: Alignment.center,
+              child: ListView.separated(
+                  shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) =>
@@ -88,10 +90,10 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
             return users.isEmpty
                 ? Text("Error")
                 : ListView.separated(
-                   physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
                     separatorBuilder: (context, index) => SizedBox(width: 10),
                     itemCount: users.length,
-                  
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
                       return Stack(

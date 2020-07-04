@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bot_toast/bot_toast.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -8,8 +10,10 @@ import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/Conservation.dart' as csv;
 import 'package:gamming_community/class/User.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
+import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/customWidget/iconWithTitle.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
+import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/enum/messageEnum.dart';
 import 'package:gamming_community/view/messages/models/private_chat_provider.dart';
 import 'package:gamming_community/view/messages/private_message/private_chat_service.dart';
@@ -228,24 +232,31 @@ class _MessagesState extends State<PrivateMessagesDetail>
     super.build(context);
     return Scaffold(
       key: scaffoldKey,
-      appBar: PreferredSize(
-          child: Row(
-            children: [
-              CircleIcon(
-                  icon: Icons.chevron_left,
-                  onTap: () {
-                    Get.back();
-                  }),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text(widget.friend.nickname),
-                ],
-              ),
-            ],
-          ),
-          preferredSize: Size.fromHeight(40)),
+      appBar: CustomAppBar(
+          child: [
+            ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: CachedNetworkImage(
+                    height: 40,
+                    width: 40,
+                    imageUrl: widget.friend.profileUrl ?? AppConstraint.default_profile)),
+            SizedBox(
+              width: 10,
+            ),
+            Text(widget.friend.nickname),
+            Spacer(),
+            CircleIcon(
+                icon: FeatherIcons.phoneCall,
+                onTap: () {
+                  BotToast.showText(text: "Make a phone call");
+                })
+          ],
+          height: 50,
+          onNavigateOut: () {
+            Get.back();
+          },
+          padding: EdgeInsets.all(0),
+          backIcon: FeatherIcons.arrowLeft),
       body: Container(
         height: Get.height,
         width: Get.width,

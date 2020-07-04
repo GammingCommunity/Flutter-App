@@ -1,11 +1,7 @@
-import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/customWidget/customInput.dart';
 import 'package:gamming_community/view/sign_up/controller/signUpController.dart';
-import 'package:gamming_community/view/sign_up/provider/sign_up_provider.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 
 class DateOfBirth extends StatelessWidget {
   final SignUpController s = Get.find();
@@ -24,8 +20,11 @@ class DateOfBirth extends StatelessWidget {
               "When is your birthday ?",
               style: TextStyle(fontSize: 30),
             ),
+            SizedBox(
+              height: 20,
+            ),
             Container(
-                padding: EdgeInsets.all(20),
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 height: 100,
                 child: CustomInput(
                     controller: v.dateofBirthController,

@@ -4,7 +4,6 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/customWidget/imageHover.dart';
@@ -30,7 +29,7 @@ class _UserPostState extends State<UserPost> {
   PostProvider postProvider;
   FeedsProvider feedsProvider;
   ScrollController imageGalery;
-  MethodChannel _channel = const MethodChannel('image_gallery');
+ // MethodChannel _channel = const MethodChannel('image_gallery');
 
   bool isContentEmpty = true;
   bool selected = true;

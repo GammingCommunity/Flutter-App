@@ -1,15 +1,16 @@
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:frefresh/frefresh.dart';
 import 'package:gamming_community/API/Query.dart';
+import 'package:gamming_community/controller/roomByGameController.dart';
 import 'package:gamming_community/customWidget/customAppBar.dart';
-import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
-import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/profile/profileController.dart';
-import 'package:gamming_community/view/room/provider/room_list_provider.dart';
+import 'package:gamming_community/view/specify_room_game/provider/roomByGameProvider.dart';
 import 'package:gamming_community/view/specify_room_game/roomItem.dart';
 import 'package:gamming_community/view/specify_room_game/sortButton.dart';
 import 'package:gamming_community/view/specify_room_game/sortChip.dart';
+import 'package:get/get.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
@@ -22,9 +23,10 @@ class RoomByGame extends StatefulWidget {
 }
 
 class _RoomByGameState extends State<RoomByGame> with TickerProviderStateMixin {
+  var fRefreshController = FRefreshController();
   GraphQLQuery query = GraphQLQuery();
-  RoomsProvider roomsProvider;
   ScrollController scrollController;
+  RoomByGameProvider roomByGameProvider;
   AnimationController controller;
   AnimationController _animationController;
   Animation _curve;
@@ -32,10 +34,9 @@ class _RoomByGameState extends State<RoomByGame> with TickerProviderStateMixin {
   bool isPress = false;
   @override
   void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+    /* WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await roomsProvider.initLoad(widget.gameID, "none");
-    });
+    });*/
     _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 400));
     _curve = CurvedAnimation(parent: _animationController, curve: Curves.fastOutSlowIn);
 
@@ -47,12 +48,12 @@ class _RoomByGameState extends State<RoomByGame> with TickerProviderStateMixin {
       ..addListener(() {
         loadMore();
       });
+    super.initState();
   }
 
   void loadMore() {
     if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
       print("here");
-      roomsProvider.loadMore();
     }
   }
 
@@ -64,86 +65,147 @@ class _RoomByGameState extends State<RoomByGame> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    roomsProvider = Injector.get();
-    final screenSize = MediaQuery.of(context).size;
-    var rooms = roomsProvider.rooms;
+    roomByGameProvider = Injector.get();
     return Hero(
-      tag: widget.gameID,
-      child: Scaffold(
-          appBar: CustomAppBar(
-              padding: EdgeInsetsResponsive.only(right: 10),
-              child: [
-                Text(widget.gameName, style: TextStyle(fontSize: 20)),
-                Spacer(),
-                SortButton(
-                  onSelected: (value) {
-                    value ? _animationController.forward() : _animationController.reverse();
-                  },
-                ),
-              ],
-              height: 40,
-              onNavigateOut: () {
-                Navigator.pop(context);
-                roomsProvider.clear();
-              },
-              backIcon: FeatherIcons.arrowLeft),
-          body: RefreshIndicator(
-            onRefresh: () {
-              return roomsProvider.refresh(roomsProvider.groupSize);
-            },
-            child: Container(
-              height: screenSize.height,
-              width: screenSize.width,
-              child: Stack(
-                children: <Widget>[
-                  Container(
-                      height: 50,
-                      color: Colors.black,
-                      child: SortChip(onSelected: (value) {
-                        if (value == "small")
-                          return roomsProvider.refresh("small");
-                        else if (value == "large") return roomsProvider.refresh("large");
-                        return roomsProvider.refresh("none");
-                      })),
-                  PositionedTransition(
-                    rect: _animation,
-                    child: Container(
-                        height: screenSize.height,
-                        width: screenSize.width,
-                        padding: EdgeInsetsResponsive.only(top: 10),
-                        color:
-                            ProfileController.to.darkTheme.value ? AppColors.BACKGROUND_COLOR : Colors.white,
-                        child: rooms.isEmpty
-                            ? AppConstraint.loadingIndicator(context)
-                            : ListView.separated(
-                                addAutomaticKeepAlives: true,
-                                controller: scrollController,
-                                physics: AlwaysScrollableScrollPhysics(),
-                                separatorBuilder: (context, index) => FaSlideAnimation.slideUp(
-                                    show: true, delayed: 200, child: Divider(thickness: 1)),
-                                itemCount: roomsProvider.rooms.length,
-                                itemBuilder: (context, index) {
-                                  return index >= roomsProvider.rooms.length
-                                      ? buildLoadMore()
-                                      : RoomItem(room: rooms[index]);
-                                })),
+        tag: widget.gameID,
+        child: Scaffold(
+            appBar: CustomAppBar(
+                padding: EdgeInsets.only(right: 10),
+                child: [
+                  Text(widget.gameName, style: TextStyle(fontSize: 20)),
+                  Spacer(),
+                  SortButton(
+                    onSelected: (value) {
+                      value ? _animationController.forward() : _animationController.reverse();
+                    },
                   ),
                 ],
-              ),
-            ),
-          )),
-    );
+                height: 40,
+                onNavigateOut: () {
+                  Get.back();
+                  roomByGameProvider.clear();
+                },
+                backIcon: FeatherIcons.arrowLeft),
+            body: WhenRebuilder<RoomByGameProvider>(
+                initState: (context, roomByGame) =>
+                    roomByGame.setState((s) => s.initLoad(widget.gameID, "none")),
+                onIdle: null,
+                onError: (error) => buildError(error),
+                observe: () => RM.get<RoomByGameProvider>(),
+                onWaiting: () => Center(child: AppConstraint.loadingIndicator(context)),
+                onData: (data) => Container(
+                      height: Get.height,
+                      width: Get.width,
+                      child: Stack(
+                        children: <Widget>[
+                          Container(
+                              height: 50,
+                              width: Get.width,
+                              color: Colors.black,
+                              child: SortChip(onSelected: (value) async {
+                                await data.sortBy(value);
+                              })),
+                          PositionedTransition(
+                            rect: _animation,
+                            child: Container(
+                                height: Get.height,
+                                width: Get.width,
+                                padding: EdgeInsetsResponsive.only(top: 10),
+                                color: ProfileController.to.darkTheme ? Colors.black : Colors.white,
+                                child: data.groupGame.isEmpty
+                                    ? Center(
+                                        child: Text("No room found !"),
+                                      )
+                                    : FRefresh(
+                                        controller: fRefreshController,
+                                        headerHeight: 70,
+                                        headerBuilder: (setter, constraints) {
+                                          //await _privateChatProvider.refresh();
+                                          return buildHeader();
+                                        },
+                                        footerHeight: 60.0,
+                                        footerBuilder: (setter) => buildFooter(),
+                                        onRefresh: () async {
+                                          print("on refresh");
+                                          //await privateChat.state.initPrivateConservation();
+                                          fRefreshController.finishRefresh();
+                                        },
+                                        onLoad: () async {
+                                          print("onLoad");
+                                          await roomByGameProvider.loadMore();
+                                          fRefreshController.finishLoad();
+                                          /* Timer(Duration(milliseconds: 3000), () {
+                                            e.fRefreshController.finishLoad();
+                                            print(
+                                                'controller4.position = ${e.fRefreshController.position}, controller4.scrollMetrics = ${e.fRefreshController.scrollMetrics}');
+                                          });*/
+                                        },
+                                        child: Container(
+                                          height: Get.height,
+                                          width: Get.width,
+                                          child: ListView.separated(
+                                              physics: NeverScrollableScrollPhysics(),
+                                              separatorBuilder: (context, index) =>
+                                                  Divider(thickness: 1),
+                                              itemCount: data.groupGame.length,
+                                              itemBuilder: (context, index) {
+                                                var groupChat = data.groupGame;
+                                                return RoomItem(room: groupChat[index]);
+                                              }),
+                                        ))),
+                          ),
+                        ],
+                      ),
+                    ))));
   }
 }
 
-Widget buildLoadMore() {
+Widget buildError(String errorCode) {
+  return Center(
+    child: Column(
+      children: [Text("Has error"), Text(errorCode)],
+    ),
+  );
+}
+
+Widget buildHeader() {
   return Container(
+    height: 50,
+    alignment: Alignment.bottomCenter,
+    child: SizedBox(
+      width: 15,
+      height: 15,
+      child: CircularProgressIndicator(
+        backgroundColor: Color(0xfff1f3f6),
+        valueColor: new AlwaysStoppedAnimation<Color>(Color(0xff6c909b)),
+        strokeWidth: 2.0,
+      ),
+    ),
+  );
+}
+
+Widget buildFooter() {
+  return Container(
+      height: 40,
       alignment: Alignment.center,
-      child: Center(
-        child: SizedBox(
-          width: 30,
-          height: 30,
-          child: CircularProgressIndicator(),
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 15,
+            height: 15,
+            child: CircularProgressIndicator(
+              backgroundColor: Color(0xfff1f3f6),
+              valueColor: new AlwaysStoppedAnimation<Color>(Color(0xff6c909b)),
+              strokeWidth: 2.0,
+            ),
+          ),
+          SizedBox(width: 9.0),
+          Text(
+            "Load more",
+            style: TextStyle(color: Color(0xff6c909b)),
+          ),
+        ],
       ));
 }

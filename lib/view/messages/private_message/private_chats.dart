@@ -16,6 +16,7 @@ import 'package:gamming_community/utils/enum/messageEnum.dart';
 import 'package:gamming_community/utils/get_token.dart';
 import 'package:gamming_community/utils/skeleton_template.dart';
 import 'package:gamming_community/utils/toListInt.dart';
+import 'package:gamming_community/view/home/search_view.dart';
 import 'package:gamming_community/view/messages/add_convervation.dart';
 import 'package:gamming_community/view/messages/friend_profile.dart';
 import 'package:gamming_community/view/messages/models/private_chat_provider.dart';
@@ -42,6 +43,17 @@ String formatDateTime(DateTime dateTime) {
   var formatter = DateFormat('EEE  hh:mm');
   return formatter.format(dateTime);
 }
+
+/*class Messages extends StatelessWidget {
+  final String userID, token;
+  Messages({this.userID, this.token});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      
+    );
+  }
+}*/
 
 class Messages extends StatefulWidget {
   final String userID, token;
@@ -74,9 +86,9 @@ class _MessagesState extends State<Messages>
   void initState() {
     super.initState();
     controller = FRefreshController();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+    /* WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await _privateChatProvider.initPrivateConservation();
-    });
+    });*/
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
     animationController = AnimationController(
@@ -93,86 +105,73 @@ class _MessagesState extends State<Messages>
 
   @override
   Widget build(BuildContext context) {
-    _privateChatProvider = Injector.get();
     super.build(context);
     return Scaffold(
-        key: _scaffoldKey,
+      key: _scaffoldKey,
 
-        //create new conservation with friends
-        floatingActionButton: FloatingActionButton(
-            heroTag: "addnewMessage",
-            child: Icon(Icons.add),
-            onPressed: () {
-              Get.to(AddConservation(), opaque: false, transition: Transition.upToDown);
-            }),
-        body: Container(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              children: <Widget>[
-                buildFriendsActive(widget.token),
-                // list message
-                Expanded(
-                    flex: 7,
-                    child: Container(
-                        alignment: Alignment.topLeft,
-                        margin: EdgeInsets.only(top: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Text(
-                                  "Messages",
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      //create new conservation with friends
+      floatingActionButton: FloatingActionButton(
+          heroTag: "addnewMessage",
+          child: Icon(Icons.add),
+          onPressed: () {
+            Get.to(AddConservation(), opaque: false, transition: Transition.upToDown);
+          }),
+      body: Container(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            children: <Widget>[
+              buildFriendsActive(widget.token),
+              // list message
+              Expanded(
+                  flex: 8,
+                  child: Container(
+                      alignment: Alignment.topLeft,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text(
+                                "Messages",
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(width: 10),
+                              Container(
+                                alignment: Alignment.center,
+                                height: 20,
+                                width: 20,
+                                decoration: BoxDecoration(
+                                    color: Colors.indigo, borderRadius: BorderRadius.circular(15)),
+                                child: Text(
+                                  "10",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                                 ),
-                                SizedBox(width: 10),
-                                Container(
-                                  alignment: Alignment.center,
-                                  height: 20,
-                                  width: 20,
-                                  decoration: BoxDecoration(
-                                      color: Colors.indigo,
-                                      borderRadius: BorderRadius.circular(15)),
-                                  child: Text(
-                                    "10",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Expanded(
-                                flex: 6,
-                                child: Container(
-                                  height: 250,
-                                  child: FRefresh(
-                                      controller: controller,
-                                      headerHeight: 50,
-                                      headerBuilder: (setter, constraints) {
-                                        //await _privateChatProvider.refresh();
-                                        return Container(
-                                            height: 50,
-                                            alignment: Alignment.bottomCenter,
-                                            child: SizedBox(
-                                              width: 20,
-                                              height: 20,
-                                              child: CircularProgressIndicator(),
-                                            ));
-                                      },
-                                      footerHeight: 50.0,
-                                      footerBuilder: (setter) {
-                                        /// Get refresh status, partially update the content of Footer area
-
-                                        return Container(
-                                            height: 38,
-                                            alignment: Alignment.center,
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                SizedBox(
+                              )
+                            ],
+                          ),
+                          Expanded(
+                              flex: 6,
+                              child: WhenRebuilderOr<PrivateChatProvider>(
+                                  initState: (_, privateChatProvider) => privateChatProvider
+                                      .setState((s) => s.initPrivateConservation()),
+                                  observe: () => RM.get<PrivateChatProvider>(),
+                                  onIdle: null,
+                                  onWaiting: () => Center(child: AppConstraint.loadingIndicator(context)),
+                                  builder: (context, privateChat) => Container(
+                                        height: 250,
+                                        width: Get.width,
+                                        child: FRefresh(
+                                            controller: controller,
+                                            headerHeight: 60,
+                                            headerBuilder: (setter, constraints) {
+                                              //await _privateChatProvider.refresh();
+                                              return Container(
+                                                height: 50,
+                                                alignment: Alignment.bottomCenter,
+                                                child: SizedBox(
                                                   width: 15,
                                                   height: 15,
                                                   child: CircularProgressIndicator(
@@ -182,116 +181,175 @@ class _MessagesState extends State<Messages>
                                                     strokeWidth: 2.0,
                                                   ),
                                                 ),
-                                                const SizedBox(width: 9.0),
-                                                Text(
-                                                  text,
-                                                  style: TextStyle(color: Color(0xff6c909b)),
+                                              );
+                                            },
+                                            footerHeight: 50.0,
+                                            footerBuilder: (setter) {
+                                              /// Get refresh status, partially update the content of Footer area
+
+                                              return Container(
+                                                  height: 38,
+                                                  alignment: Alignment.center,
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                    children: [
+                                                      SizedBox(
+                                                        width: 15,
+                                                        height: 15,
+                                                        child: CircularProgressIndicator(
+                                                          backgroundColor: Color(0xfff1f3f6),
+                                                          valueColor:
+                                                              new AlwaysStoppedAnimation<Color>(
+                                                                  Color(0xff6c909b)),
+                                                          strokeWidth: 2.0,
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 9.0),
+                                                      Text(
+                                                        text,
+                                                        style: TextStyle(color: Color(0xff6c909b)),
+                                                      ),
+                                                    ],
+                                                  ));
+                                            },
+                                            onRefresh: () async {
+                                              print("on refresh");
+                                              await privateChat.state
+                                                  .refresh()
+                                                  .then((value) => controller.finishRefresh());
+                                            },
+                                            onLoad: () {
+                                              print("onLoad");
+                                              Timer(Duration(milliseconds: 3000), () {
+                                                controller.finishLoad();
+                                                print(
+                                                    'controller4.position = ${controller.position}, controller4.scrollMetrics = ${controller.scrollMetrics}');
+                                              });
+                                            },
+                                            child: Container(
+                                              width: Get.width,
+                                              height: Get.height,
+                                              child: ListView.separated(
+                                                separatorBuilder: (ctx, index) => SizedBox(
+                                                  height: 10,
                                                 ),
-                                              ],
-                                            ));
-                                      },
-                                      onRefresh: () async {
-                                        print("on refresgh");
-                                        await _privateChatProvider.initPrivateConservation();
-                                        controller.finishRefresh();
-                                      },
-                                      onLoad: () {
-                                        print("onLoad");
-                                        Timer(Duration(milliseconds: 3000), () {
-                                          controller.finishLoad();
-                                          print(
-                                              'controller4.position = ${controller.position}, controller4.scrollMetrics = ${controller.scrollMetrics}');
-                                        });
-                                      },
-                                      child: ListView.separated(
-                                        separatorBuilder: (ctx, index) => SizedBox(
-                                          height: 10,
-                                        ),
-                                        physics: NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        itemCount: _privateChatProvider.countConservation,
-                                        itemBuilder: (context, index) {
-                                          var coservations = _privateChatProvider.getConservation;
-                                          return buildConvervation(
-                                              _privateChatProvider, coservations[index]);
-                                        },
-                                      )),
-                                ))
-                          ],
-                        )))
-              ],
-            )));
+                                                physics: NeverScrollableScrollPhysics(),
+                                                shrinkWrap: true,
+                                                itemCount: privateChat.state.countConservation,
+                                                itemBuilder: (context, index) {
+                                                  var coservations =
+                                                      privateChat.state.getConservation;
+
+                                                  return buildConvervation(coservations[index]);
+                                                },
+                                              ),
+                                            )),
+                                      )))
+                        ],
+                      )))
+            ],
+          )),
+    );
   }
 
   @override
   bool get wantKeepAlive => true;
 }
 
-Widget buildConvervation(PrivateChatProvider prcv, Conservation cv) {
-  return FutureBuilder(
-    future: PrivateChatService.getFriendName(cv.member),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return SkeletonTemplate.chatMessage(80);
-      } else {
-        List<User> users = snapshot.data;
-        return InkWell(
-            onTap: () {
-              Get.to(
-                  PrivateMessagesDetail(
-                    conservationID: cv.conservationID,
-                    user: users[0],
-                    friend: users[1],
-                  ),
-                  opaque: false);
-            },
-            child: Container(
-                height: 80,
-                width: Get.width,
-                child: Row(
-                  children: [
-                    buildProfile(cv.member),
-                    SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          users[1].nickname,
-                          style: TextStyle(fontSize: 15),
-                        ),
-                        SizedBox(height: 5),
-                        Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            isMedia(cv.latestMessage.messageType)
-                                ? Text("Send media",
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        color: Get.isDarkMode ? Colors.white60 : Colors.black54))
-                                : Text("${cv.latestMessage.txtMessage}",
-                                    style: TextStyle(fontSize: 15, color: Colors.white60)),
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(6.0),
-                                  child: Icon(Icons.fiber_manual_record, size: 8),
-                                ),
-                                Text(
-                                  "${formatDateMonth(DateTime.now().toLocal())}",
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ],
-                            )
-                          ],
-                        )
-                      ],
+Widget buildConvervation(Conservation cv) {
+  return Container(
+    height: 100,
+    width: Get.width,
+    child: FutureBuilder(
+      future: PrivateChatService.getFriendName(cv.member),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return ListView.builder(
+            itemCount: 1,
+            itemBuilder: (context, index) => SkeletonTemplate.chatMessage(80,15),
+          );
+        } else {
+          List<User> users = snapshot.data;
+          return InkWell(
+              customBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15)
+              ),
+              onTap: () {
+                Get.to(
+                    PrivateMessagesDetail(
+                      conservationID: cv.conservationID,
+                      user: users[0],
+                      friend: users[1],
                     ),
-                  ],
-                )));
-      }
-    },
+                    transition: Transition.fadeIn,
+                    opaque: false);
+              },
+              child:Row(
+                    children: [
+                      //buildProfile(cv.member),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: CachedNetworkImage(
+                          height: 50,
+                          width: 50,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            decoration: BoxDecoration(
+                                color: Colors.grey[400], borderRadius: BorderRadius.circular(15)),
+                          ),
+                          imageUrl: users[1].profileUrl ?? AppConstraint.default_profile,
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            users[1].nickname,
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          SizedBox(height: 5),
+                          cv.latestMessage.sender == null
+                              ? Container(
+                                height: 20,
+                                width: 20,
+                              )
+                              : Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    isMedia(cv.latestMessage.messageType)
+                                        ? Text("Send media",
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: Get.isDarkMode
+                                                    ? Colors.white60
+                                                    : Colors.black54))
+                                        : Text("${cv.latestMessage.txtMessage}",
+                                            style: TextStyle(fontSize: 15, color: Colors.white60)),
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(6.0),
+                                          child: Icon(Icons.fiber_manual_record, size: 8),
+                                        ),
+                                        Text(
+                                          "${formatDateMonth(DateTime.now().toLocal())}",
+                                          style: TextStyle(fontSize: 12),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                )
+                        ],
+                      ),
+                    ],
+                  ));
+        }
+      },
+    ),
   );
 }
 
@@ -299,13 +357,14 @@ Widget buildProfile(List id) {
   var query = GraphQLQuery();
   return FutureBuilder(
       future: (Future(() async {
-        return SubRepo.queryGraphQL(await getToken(), query.getMutliUserInfo(toListInt(id)));
+        return await PrivateChatService.getFriendName(id);
+        //SubRepo.queryGraphQL(await getToken(), query.getMutliUserInfo(toListInt(id)));
       })),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return SkeletonTemplate.image(60, 60, 10000);
         } else {
-          var url = snapshot.data.data;
+          var url = snapshot.data[1].profileUrl;
           return ClipRRect(
             borderRadius: BorderRadius.circular(1000),
             child: CachedNetworkImage(
@@ -325,120 +384,115 @@ Widget buildProfile(List id) {
 
 Widget buildFriendsActive(String token) {
   var query = GraphQLQuery();
-  return Expanded(
-      flex: 1,
-      child: ContainerResponsive(
-          height: 200.h,
-          width: ScreenUtil().uiWidthPx,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              // text header
-              Text(
-                "Active friends",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBoxResponsive(
-                height: 10,
-              ),
-              //demo , friends example
-              Flexible(
-                child: GraphQLProvider(
-                  client: customSubClient(token),
-                  child: CacheProvider(
-                    child: Container(
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Query(
-                          options: QueryOptions(documentNode: gql(query.getAllFriend())),
-                          builder: (result, {fetchMore, refetch}) {
-                            if (result.loading) {
-                              // skelon
-                              return ListView.separated(
-                                  separatorBuilder: (context, index) => SizedBoxResponsive(
-                                        width: 10,
-                                      ),
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: 10,
-                                  itemBuilder: (context, index) => ClipRRect(
-                                      borderRadius: BorderRadius.circular(10000),
-                                      child: Container(height: 50, width: 50, color: Colors.grey)));
-                            }
-                            if (result.hasException) {
-                              return Row(
-                                children: <Widget>[
-                                  CircleIcon(
-                                    icon: Icons.refresh,
-                                    iconSize: 30,
-                                    onTap: () {},
-                                  ),
-                                  Text("Refresh")
-                                ],
-                              );
-                            } else {
-                              var listFriend =
-                                  ListFriends.fromJson(result.data['getFriends']).listFriend;
-                              return listFriend.isEmpty
-                                  ? CircleIcon(
-                                      icon: FeatherIcons.plusSquare,
-                                      iconSize: 25,
-                                      onTap: () {},
-                                    )
-                                  : ListView.separated(
-                                      separatorBuilder: (context, index) => SizedBoxResponsive(
-                                            width: 20,
+  return Container(
+      height: 100,
+      width: Get.width,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          // text header
+          Text(
+            "Active friends",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          //demo , friends example
+          Flexible(
+            child: GraphQLProvider(
+              client: customSubClient(token),
+              child: CacheProvider(
+                child: Container(
+                  height: 50,
+                  width: 50,
+                  child: Query(
+                    options: QueryOptions(documentNode: gql(query.getAllFriend())),
+                    builder: (result, {fetchMore, refetch}) {
+                      if (result.loading) {
+                        // skelon
+                        return ListView.separated(
+                            separatorBuilder: (context, index) => SizedBoxResponsive(
+                                  width: 10,
+                                ),
+                            scrollDirection: Axis.horizontal,
+                            itemCount: 10,
+                            itemBuilder: (context, index) => ClipRRect(
+                                borderRadius: BorderRadius.circular(10000),
+                                child: Container(height: 50, width: 50, color: Colors.grey)));
+                      }
+                      if (result.hasException) {
+                        return Row(
+                          children: <Widget>[
+                            CircleIcon(
+                              icon: Icons.refresh,
+                              iconSize: 30,
+                              onTap: () {},
+                            ),
+                            Text("Refresh")
+                          ],
+                        );
+                      } else {
+                        var listFriend = ListFriends.fromJson(result.data['getFriends']).listFriend;
+                        return listFriend.isEmpty
+                            ? CircleIcon(
+                                icon: FeatherIcons.plusSquare,
+                                iconSize: 25,
+                                onTap: () {
+                                  Get.to(SearchView());
+                                },
+                              )
+                            : ListView.separated(
+                                separatorBuilder: (context, index) => SizedBox(
+                                      width: 20,
+                                    ),
+                                scrollDirection: Axis.horizontal,
+                                itemCount: listFriend.length,
+                                itemBuilder: (context, index) {
+                                  return InkWell(
+                                    borderRadius: BorderRadius.circular(1000),
+                                    onTap: () {
+                                      // show friends profile
+                                      showFriendProfile(context, token, listFriend[index].id);
+                                    },
+                                    child: Stack(
+                                      children: <Widget>[
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(10000),
+                                          child: CachedNetworkImage(
+                                            fadeInCurve: Curves.easeIn,
+                                            fadeInDuration: Duration(seconds: 1),
+                                            imageBuilder: (context, imageProvider) => Container(
+                                              height: 50,
+                                              width: 50,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.red,
+                                                  borderRadius: BorderRadius.circular(10000),
+                                                  image: DecorationImage(
+                                                      fit: BoxFit.cover, image: imageProvider)),
+                                            ),
+                                            imageUrl: listFriend[index].profileUrl,
+                                            placeholder: (context, url) =>
+                                                Container(color: Colors.grey),
+                                            errorWidget: (context, url, error) => Icon(Icons.error),
                                           ),
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: listFriend.length,
-                                      itemBuilder: (context, index) {
-                                        return InkWell(
-                                          borderRadius: BorderRadius.circular(1000),
-                                          onTap: () {
-                                            // show friends profile
-                                            showFriendProfile(context, token, listFriend[index].id);
-                                          },
-                                          child: Stack(
-                                            children: <Widget>[
-                                              ClipRRect(
-                                                borderRadius: BorderRadius.circular(10000),
-                                                child: CachedNetworkImage(
-                                                  fadeInCurve: Curves.easeIn,
-                                                  fadeInDuration: Duration(seconds: 1),
-                                                  imageBuilder: (context, imageProvider) =>
-                                                      Container(
-                                                    height: 50,
-                                                    width: 50,
-                                                    decoration: BoxDecoration(
-                                                        color: Colors.red,
-                                                        borderRadius: BorderRadius.circular(10000),
-                                                        image: DecorationImage(
-                                                            fit: BoxFit.cover,
-                                                            image: imageProvider)),
-                                                  ),
-                                                  imageUrl: listFriend[index].profileUrl,
-                                                  placeholder: (context, url) =>
-                                                      Container(color: Colors.grey),
-                                                  errorWidget: (context, url, error) =>
-                                                      Icon(Icons.error),
-                                                ),
-                                              ),
-                                              Positioned(
-                                                  bottom: -4,
-                                                  right: -2,
-                                                  child: Icon(Icons.fiber_manual_record,
-                                                      color: Colors.amber))
-                                            ],
-                                          ),
-                                        );
-                                      });
-                            }
-                          },
-                        ),
-                      ),
-                    ),
+                                        ),
+                                        Positioned(
+                                            bottom: -4,
+                                            right: -2,
+                                            child: Icon(Icons.fiber_manual_record,
+                                                color: Colors.amber))
+                                      ],
+                                    ),
+                                  );
+                                });
+                      }
+                    },
                   ),
                 ),
               ),
-            ],
-          )));
+            ),
+          ),
+        ],
+      ));
 }

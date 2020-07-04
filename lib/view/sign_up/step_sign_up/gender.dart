@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gamming_community/view/profile/profileController.dart';
 import 'package:gamming_community/view/sign_up/controller/signUpController.dart';
-import 'package:gamming_community/view/sign_up/provider/sign_up_provider.dart';
 import 'package:gamming_community/view/sign_up/step_sign_up/radio.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 
 class Gender extends StatelessWidget {
   final SignUpController s = Get.find();
@@ -33,21 +30,21 @@ class Gender extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
                             GenderRadio(
-                              groupValue: v.isMale.value,
+                              groupValue: v.isMale,
                               onChanged: (value) {
                                 v.genderSelected("male", value);
                               },
                               sexType: "Male",
-                              selected: v.isMale.value,
+                              selected: v.isMale,
                               value: true,
                             ),
                             GenderRadio(
-                              groupValue: v.isFemale.value,
+                              groupValue: v.isFemale,
                               onChanged: (value) {
                                 v.genderSelected("female", value);
                               },
                               sexType: "Female",
-                              selected: v.isFemale.value,
+                              selected: v.isFemale,
                               value: true,
                             ),
                           ],
@@ -56,12 +53,12 @@ class Gender extends StatelessWidget {
                           height: 20,
                         ),
                         GenderRadio(
-                          groupValue: v.isOther.value,
+                          groupValue: v.isOther,
                           onChanged: (value) {
                             v.genderSelected("other", value);
                           },
                           sexType: "Other",
-                          selected: v.isOther.value,
+                          selected: v.isOther,
                           value: true,
                         ),
                       ],

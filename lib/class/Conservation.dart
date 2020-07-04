@@ -57,8 +57,8 @@ class FileInfo {
   String publicID;
   String fileName;
   String fileSize;
-  int height ;
-  int width ;
+  int height;
+  int width;
 
   FileInfo(
       {this.publicID = "",
@@ -75,38 +75,49 @@ class PrivateConservations {
     List<Conservation> _listConservation = [];
     try {
       for (var e in json) {
-        String messageType = e['latest_message']['messageType'];
-        List<Message> _listMesasge = [];
+        if (e['latest_message'] == null) {
+          _listConservation.add(Conservation(
+            conservationID: e["_id"],
+            member: e['member'],
+            latestMessage: Message(),
+            message: [],
+          ));
+        } else {
+          String messageType = e['latest_message']['messageType'];
+          List<Message> _listMesasge = [];
 
-        _listConservation.add(messageType == MessageEnum.url
-            ? Conservation(
-                conservationID: e["_id"],
-                latestMessage: Message(
+          _listConservation.add(messageType == MessageEnum.url
+              ? Conservation(
+                  conservationID: e["_id"],
+                  latestMessage: e['latest_message'] ??
+                      Message(
+                          sender: e['latest_message']['id'],
+                          status: e['latest_message']['status'],
+                          messageType: messageType,
+                          createAt: DateTime.parse(e['latest_message']['createAt']).toLocal(),
+                          txtMessage: TextMessage(
+                              content: e['latest_message']['text']['content'],
+                              fileInfo: FileInfo())))
+              : Conservation(
+                  conservationID: e["_id"],
+                  member: e['member'],
+                  latestMessage: Message(
                     sender: e['latest_message']['id'],
                     status: e['latest_message']['status'],
-                    messageType: messageType,
-                    createAt: DateTime.parse(e['latest_message']['createAt']).toLocal(),
                     txtMessage: TextMessage(
-                        content: e['latest_message']['text']['content'], fileInfo: FileInfo())))
-            : Conservation(
-                conservationID: e["_id"],
-                member: e['member'],
-                latestMessage: Message(
-                  sender: e['latest_message']['id'],
-                  status: e['latest_message']['status'],
-                  txtMessage: TextMessage(
-                      content: e['latest_message']['text']['content'],
-                      fileInfo: FileInfo(
-                          fileName: e['latest_message']['text']['fileInfo']['fileName'],
-                          fileSize: e['latest_message']['text']['fileInfo']['fileSize'],
-                          publicID: e['latest_message']['text']['fileInfo']['publicID'],
-                          height: e['latest_message']['text']['fileInfo']['height'],
-                          width: e['latest_message']['text']['fileInfo']['width'])),
-                  messageType: e['latest_message']['messageType'],
-                  createAt: DateTime.parse(e['latest_message']['createAt']).toLocal(),
-                ),
-                message: _listMesasge,
-              ));
+                        content: e['latest_message']['text']['content'],
+                        fileInfo: FileInfo(
+                            fileName: e['latest_message']['text']['fileInfo']['fileName'],
+                            fileSize: e['latest_message']['text']['fileInfo']['fileSize'],
+                            publicID: e['latest_message']['text']['fileInfo']['publicID'],
+                            height: e['latest_message']['text']['fileInfo']['height'],
+                            width: e['latest_message']['text']['fileInfo']['width'])),
+                    messageType: e['latest_message']['messageType'],
+                    createAt: DateTime.parse(e['latest_message']['createAt']).toLocal(),
+                  ),
+                  message: _listMesasge,
+                ));
+        }
       }
     } catch (e) {
       print(e);

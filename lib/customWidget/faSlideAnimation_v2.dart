@@ -32,7 +32,7 @@ class _FaSlideAnimationState extends State<FaSlideAnimation> with TickerProvider
 
   @override
   void initState() {
-    super.initState();
+    
     controller = AnimationController(vsync: this, duration: Duration(milliseconds: 200));
     animation = Tween(begin: widget.offsetStart, end: widget.offsetEnd)
         .animate(CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn))
@@ -46,6 +46,7 @@ class _FaSlideAnimationState extends State<FaSlideAnimation> with TickerProvider
         : Timer(Duration(milliseconds: widget.delayed), () {
             controller.reverse();
           });
+    super.initState();
   }
 
   @override

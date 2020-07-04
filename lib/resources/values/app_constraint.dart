@@ -4,8 +4,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gamming_community/customWidget/loading.dart';
 import 'package:gamming_community/view/profile/profileController.dart';
-import 'package:get/get.dart';
-import 'package:states_rebuilder/states_rebuilder.dart';
 
 class AppConstraint {
   static const double categoryText = 25;
@@ -27,7 +25,7 @@ class AppConstraint {
 
   static Widget loadingIndicator(BuildContext context, [double size = 50]) {
 
-    return ProfileController.to.darkTheme.value
+    return ProfileController.to.darkTheme
         ? CustomLoadingIndicator(darkMode: true, size: size)
         : CustomLoadingIndicator(darkMode: false, size: size);
   }

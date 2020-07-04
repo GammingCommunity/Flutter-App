@@ -11,7 +11,7 @@ import 'package:hive/hive.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-class GroupChatProvider extends StatesRebuilder {
+class GroupChatProvider{
   String socketID;
   IO.Socket socket;
   var query = GraphQLQuery();
@@ -28,17 +28,14 @@ class GroupChatProvider extends StatesRebuilder {
     loadOldMessage == true
         ? messages.insert(0, groupchatMessage)
         : this.messages.add(groupchatMessage);
-    rebuildStates();
   }
 
   void onAddNewMessage2(GroupMessage message) {
     this.groupMessage.add(message);
-    rebuildStates();
   }
 
   void clearAndUpdate() {
     groupMessageBox.clear();
-    rebuildStates();
   }
 
   Future initMember(List members, String groupID) async {

@@ -7,7 +7,7 @@ import 'package:states_rebuilder/states_rebuilder.dart';
 
 import '../private_message/private_message.dart';
 
-class PrivateChatProvider extends StatesRebuilder {
+class PrivateChatProvider {
   var query = GraphQLQuery();
   IO.Socket socket;
   String socketID = "";
@@ -22,12 +22,11 @@ class PrivateChatProvider extends StatesRebuilder {
 
   void onAddNewMessage(PrivateMessage chatMessage,[bool loadOldMessage = false]) {
         loadOldMessage  ?  _messagesW.insert(0, chatMessage)  :  this._messagesW.add(chatMessage);
-    rebuildStates();
+
   }
 
   Future refresh() async{
     _conservations.clear();
-    rebuildStates();
     await initPrivateConservation();
   }
 
@@ -37,7 +36,7 @@ class PrivateChatProvider extends StatesRebuilder {
         PrivateConservations.fromJson(result.data['getAllPrivateChat']).conservations;
 
     this._conservations.addAll(conservations);
-    rebuildStates();
+
   }
 
   Future loadMessage(String chatID) async {
@@ -46,7 +45,6 @@ class PrivateChatProvider extends StatesRebuilder {
           await MainRepo.queryGraphQL(await getToken(), query.getPrivateChatMessge(chatID));
       var messages = Messages.fromJson(result.data['getPrivateChatMessage']).messages;
       _messages.addAll(messages);
-      rebuildStates();
     } catch (e) {}
     
   }

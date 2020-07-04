@@ -1,5 +1,6 @@
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 
 class CustomInput extends StatefulWidget {
@@ -13,15 +14,20 @@ class CustomInput extends StatefulWidget {
   final double borderRadius;
   final String errorText;
   final bool readOnly;
-
+  final bool hideClearText;
+  final TextAlign textAlign;
+  final TextInputType textInputType;
   const CustomInput(
       {@required this.controller,
       this.readOnly = false,
+      this.textAlign = TextAlign.left,
+      this.textInputType = TextInputType.text,
+      this.hideClearText = false,
       this.onSubmited,
       this.onChange,
-      this.errorText,
+      this.errorText = "",
       this.onTap,
-      this.hintText,
+      this.hintText = "",
       this.borderSideColor = Colors.black87,
       this.borderRadius = 15,
       @required this.onClearText});
@@ -39,8 +45,14 @@ class _CustomInputState extends State<CustomInput> {
       onSubmitted: (value) => widget.onSubmited(),
       onChanged: (value) => widget.onChange(value),
       readOnly: widget.readOnly,
+      keyboardType: widget.textInputType,
+      inputFormatters: [
+        LengthLimitingTextInputFormatter(40),
+      ],
+  
       decoration: InputDecoration(
           filled: true,
+          
           hintText: widget.hintText,
           errorText: widget.errorText,
           border: OutlineInputBorder(
@@ -56,9 +68,8 @@ class _CustomInputState extends State<CustomInput> {
             borderRadius: BorderRadius.circular(widget.borderRadius),
           ),
           suffixIcon: Visibility(
-              visible: true,
-              child:CircleIcon(icon: FeatherIcons.x, onTap: () => widget.onClearText())
-              ),
+              visible: !widget.hideClearText,
+              child: CircleIcon(icon: FeatherIcons.x, onTap: () => widget.onClearText())),
           contentPadding: EdgeInsets.symmetric(horizontal: 10)),
     );
   }

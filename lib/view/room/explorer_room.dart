@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:gamming_community/API/Query.dart';
+import 'package:frefresh/frefresh.dart';
 import 'package:gamming_community/class/CountRoom.dart';
+import 'package:gamming_community/controller/explorerController.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/view/room/provider/explorerProvider.dart';
 import 'package:gamming_community/view/specify_room_game/room_by_game.dart';
@@ -9,6 +12,164 @@ import 'package:get/get.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
+class Explorer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GetX<ExplorerController>(
+        autoRemove: false,
+        init: ExplorerController(),
+        builder: (e) => Scaffold(
+                body: Container(
+              padding: EdgeInsetsResponsive.all(10),
+              height: Get.height,
+              width: Get.width,
+              child: WhenRebuilder<ExploreProvider>(
+                observe: () => RM.get<ExploreProvider>(),
+                initState: (context, explorerProvider) =>
+                    explorerProvider.setState((s) => s.init()),
+                onIdle: null,
+                onWaiting: () => AppConstraint.loadingIndicator(context),
+                onError: (error) => Text(error),
+                onData: (data) => FRefresh(
+                    controller: e.fRefreshController,
+                    headerHeight: 70,
+                    headerBuilder: (setter, constraints) {
+                      //await _privateChatProvider.refresh();
+                      return buildHeader();
+                    },
+                    footerHeight: 60.0,
+                    footerBuilder: (setter) {
+                      return buildFooter();
+                    },
+                    onRefresh: () async {
+                      print("on refresgh");
+                      await data.refresh();
+                      e.fRefreshController.finishRefresh();
+                    },
+                    onLoad: () {
+                      print("onLoad");
+                      Timer(Duration(milliseconds: 3000), () {
+                        e.fRefreshController.finishLoad();
+                        print(
+                            'controller4.position = ${e.fRefreshController.position}, controller4.scrollMetrics = ${e.fRefreshController.scrollMetrics}');
+                      });
+                    },
+                    child: ListView.separated(
+                      physics: NeverScrollableScrollPhysics(),
+                      separatorBuilder: (ctx, index) => SizedBox(
+                        height: 20,
+                      ),
+                      shrinkWrap: true,
+                      itemCount: data.gameChanelLength,
+                      itemBuilder: (context, index) {
+                        var rooms = data.rooms;
+
+                        return Hero(tag: index, child: buildItem(context, rooms[index]));
+                      },
+                    )),
+              ),
+            )));
+  }
+}
+
+Widget buildItem(BuildContext context, Room rooms) {
+  return Material(
+    borderRadius: BorderRadius.circular(15),
+    elevation: 4,
+    clipBehavior: Clip.antiAlias,
+    child: InkWell(
+      onTap: () {
+        Get.to(
+            RoomByGame(
+              gameID: rooms.id,
+              gameName: rooms.gameName,
+            ),
+            transition: Transition.leftToRightWithFade);
+      },
+      child: ContainerResponsive(
+        width: Get.width,
+        child: Stack(
+          children: <Widget>[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: CachedNetworkImage(
+                imageUrl: rooms.background,
+                placeholder: (context, url) => Container(
+                  height: 110,
+                  color: Colors.grey[300],
+                ),
+              ),
+            ),
+            Positioned(
+                left: 30,
+                top: 35,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    TextResponsive(
+                      "${rooms.gameName}",
+                      style: TextStyle(
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(blurRadius: 6, color: Colors.black, offset: Offset(2, 3))
+                          ],
+                          fontSize: AppConstraint.roomTitleSize),
+                    ),
+                    TextResponsive(
+                      "${rooms.count} room",
+                      style: TextStyle(color: Colors.white, fontSize: AppConstraint.roomTitleSize),
+                    ),
+                  ],
+                ))
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+Widget buildHeader() {
+  return Container(
+    height: 50,
+    alignment: Alignment.bottomCenter,
+    child: SizedBox(
+      width: 15,
+      height: 15,
+      child: CircularProgressIndicator(
+        backgroundColor: Color(0xfff1f3f6),
+        valueColor: new AlwaysStoppedAnimation<Color>(Color(0xff6c909b)),
+        strokeWidth: 2.0,
+      ),
+    ),
+  );
+}
+
+Widget buildFooter() {
+  return Container(
+      height: 40,
+      alignment: Alignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 15,
+            height: 15,
+            child: CircularProgressIndicator(
+              backgroundColor: Color(0xfff1f3f6),
+              valueColor: new AlwaysStoppedAnimation<Color>(Color(0xff6c909b)),
+              strokeWidth: 2.0,
+            ),
+          ),
+          SizedBox(width: 9.0),
+          Text(
+            "Load more",
+            style: TextStyle(color: Color(0xff6c909b)),
+          ),
+        ],
+      ));
+}
+/*
 class Explorer extends StatefulWidget {
   final String token;
   Explorer({this.token});
@@ -16,7 +177,7 @@ class Explorer extends StatefulWidget {
   _SummaryRoomState createState() => _SummaryRoomState();
 }
 
-class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMixin<Explorer> {
+class _SummaryRoomState extends State<Explorer> {
   GraphQLQuery query = GraphQLQuery();
   ScrollController scrollController;
   double scrollPosition;
@@ -43,14 +204,13 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
   @override
   Widget build(BuildContext context) {
 
-    super.build(context);
     return Scaffold(
       body: ContainerResponsive(
         padding: EdgeInsetsResponsive.all(10),
         height: Get.height,
         width: Get.width,
         child: WhenRebuilderOr<ExploreProvider>(
-          initState: (_,explorerProvider ) => explorerProvider.future((s, stateAsync) => s.init()),
+            initState: (_,explorerProvider ) => explorerProvider.future((s, stateAsync) => s.init()),
             observe: () => RM.get<ExploreProvider>(),
             builder: (context, explorerModel) {
               return explorerModel.whenConnectionState(
@@ -101,8 +261,6 @@ class _SummaryRoomState extends State<Explorer> with AutomaticKeepAliveClientMix
     );
   }
 
-  @override
-  bool get wantKeepAlive => true;
 }
 
 Widget buildException(BuildContext context) {
@@ -213,3 +371,4 @@ Widget itemLoading(double width) {
         )),
   );
 }
+*/

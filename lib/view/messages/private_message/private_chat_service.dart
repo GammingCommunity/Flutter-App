@@ -9,7 +9,7 @@ class PrivateChatService {
   static var _query = GraphQLQuery();
   static Future<List<User>> getFriendName(List member) async {
     var userInfo = await getUserInfo();
-    var friendID = member.singleWhere((e) => e != userInfo['userID']);
+    var friendID = member.where((e) => e != userInfo['userID']).first;
 
     try {
       var result = await SubRepo.queryGraphQL(
