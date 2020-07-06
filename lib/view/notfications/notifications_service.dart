@@ -3,7 +3,7 @@ import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/utils/get_token.dart';
 
 class NotificationServices {
-  Future<bool> acceptRequest(int senderID, bool isAccept) async {
+  static Future<bool> acceptRequest(int senderID, bool isAccept) async {
     //var query = GraphQLQuery();
     var mutation = GraphQLMutation();
     var result = await SubRepo.mutationGraphQL(

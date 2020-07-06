@@ -14,11 +14,13 @@ import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/customWidget/iconWithTitle.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
+import 'package:gamming_community/utils/color_utility.dart';
 import 'package:gamming_community/utils/enum/messageEnum.dart';
-import 'package:gamming_community/view/messages/models/private_chat_provider.dart';
+import 'package:gamming_community/view/messages/private_message/provider/private_chat_provider.dart';
 import 'package:gamming_community/view/messages/private_message/private_chat_service.dart';
-import 'package:gamming_community/view/messages/private_message/private_chats.dart';
-import 'package:gamming_community/view/messages/private_message/private_message.dart';
+import 'package:gamming_community/view/messages/private_message/view/conservation.dart';
+import 'package:gamming_community/view/messages/private_message/model/private_message.dart';
+import 'package:gamming_community/view/messages/util/chatBottomSheet.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
@@ -35,12 +37,11 @@ class PrivateMessagesDetail extends StatefulWidget {
 class _MessagesState extends State<PrivateMessagesDetail>
     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   final scaffoldKey = new GlobalKey<ScaffoldState>();
-  String roomName = "Sample here";
-  bool isSubmited = false;
+
   TextEditingController chatController;
   PrivateChatProvider chatProvider;
   ScrollController scrollController;
-  GraphQLQuery query = GraphQLQuery();
+
   AnimationController animationController;
   FRefreshController fRefreshController;
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -65,7 +66,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
     return sampleUser;
   }
 
-  Future onLoadMessage() async {
+  /* Future onLoadMessage() async {
     await chatProvider.loadMessage(widget.conservationID);
     chatProvider.getMessage.forEach((e) async {
       chatProvider.onAddNewMessage(PrivateMessage(
@@ -80,7 +81,7 @@ class _MessagesState extends State<PrivateMessagesDetail>
 
       animateToBottom();
     });
-  }
+  }*/
 
   void onSendMesasge(String message) {
     if (chatController.text.isEmpty) return;
@@ -100,17 +101,6 @@ class _MessagesState extends State<PrivateMessagesDetail>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       message.animationController.forward();
     });
-
-    PrivateChatService.chatText(
-        chatProvider.socket,
-        widget.conservationID,
-        widget.friend.id.toString(),
-        csv.Message(
-            createAt: DateTime.now().toLocal(),
-            messageType: MessageEnum.text,
-            sender: widget.user.id.toString(),
-            status: "SEND",
-            txtMessage: csv.TextMessage(content: chatController.text)));
 
     chatController.clear();
     animateToBottom();
@@ -140,59 +130,6 @@ class _MessagesState extends State<PrivateMessagesDetail>
         payload: message);
   }
 
-  void onRecieveMessage() {
-    chatProvider.socket.on('receive-message-private', (data) async {
-      print('recive message' + data.toString());
-      await displayNotification(data[0].id, data[1].text.content);
-
-      await Future.delayed(Duration(milliseconds: 100));
-
-      animateToBottom();
-    });
-  }
-
-  showBottomSheet() {
-    return Get.bottomSheet(
-        Container(
-          height: 100,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  IconWithTitle(
-                    icon: FeatherIcons.image,
-                    color: Color(0xff3282b8),
-                    borderRadius: 20,
-                    title: "Image",
-                    onTap: () {},
-                  ),
-                  IconWithTitle(
-                    icon: FeatherIcons.video,
-                    color: Colors.indigo,
-                    borderRadius: 20,
-                    title: "Video",
-                    onTap: () {},
-                  ),
-                  IconWithTitle(
-                    icon: FeatherIcons.file,
-                    color: Color(0xff543864),
-                    borderRadius: 20,
-                    title: "File",
-                    onTap: () {},
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
-        shape: RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.horizontal(left: Radius.circular(10), right: Radius.circular(10))),
-        backgroundColor: Get.isDarkMode ? AppColors.BACKGROUND_COLOR : Colors.white);
-  }
-
   void animateToBottom() async {
     await scrollController.animateTo(
       scrollController.position.maxScrollExtent,
@@ -207,20 +144,12 @@ class _MessagesState extends State<PrivateMessagesDetail>
     scrollController = ScrollController();
     chatController = TextEditingController();
     fRefreshController = FRefreshController();
-
     animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
-    WidgetsBinding.instance.addPostFrameCallback((d) async {
-      await chatProvider.initSocket(widget.conservationID);
-      await onLoadMessage();
-
-      // onRecieveMessage();
-    });
   }
 
   @override
   void dispose() {
     chatController.dispose();
-    chatProvider.dispose();
     animationController.dispose();
     fRefreshController.dispose();
     super.dispose();
@@ -228,143 +157,163 @@ class _MessagesState extends State<PrivateMessagesDetail>
 
   @override
   Widget build(BuildContext context) {
-    chatProvider = Injector.get();
+    chatProvider = IN.get();
     super.build(context);
     return Scaffold(
-      key: scaffoldKey,
-      appBar: CustomAppBar(
-          child: [
-            ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: CachedNetworkImage(
-                    height: 40,
-                    width: 40,
-                    imageUrl: widget.friend.profileUrl ?? AppConstraint.default_profile)),
-            SizedBox(
-              width: 10,
-            ),
-            Text(widget.friend.nickname),
-            Spacer(),
-            CircleIcon(
-                icon: FeatherIcons.phoneCall,
-                onTap: () {
-                  BotToast.showText(text: "Make a phone call");
-                })
-          ],
-          height: 50,
-          onNavigateOut: () {
-            Get.back();
-          },
-          padding: EdgeInsets.all(0),
-          backIcon: FeatherIcons.arrowLeft),
-      body: Container(
-        height: Get.height,
-        width: Get.width,
-        padding: EdgeInsets.only(top: 10),
-        child: Column(
-          children: <Widget>[
-            Flexible(
-                child: FRefresh(
-                    controller: fRefreshController,
-                    footerHeight: 50,
-                    footerBuilder: (setter) {
-                      /*fRefreshController.setOnStateChangedCallback((state) {
-                        setter(() {
-                          print(fRefreshController.position);
-                        });
-                      });*/
-
-                      print(fRefreshController.loadState);
-                      return Container(
-                          height: 38,
-                          alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 15,
-                                height: 15,
-                                child: CircularProgressIndicator(
-                                  backgroundColor: Color(0xfff1f3f6),
-                                  valueColor: new AlwaysStoppedAnimation<Color>(Color(0xff6c909b)),
-                                  strokeWidth: 2.0,
-                                ),
-                              ),
-                              const SizedBox(width: 9.0),
-                              Text(
-                                "Loading",
-                                style: TextStyle(color: Color(0xff6c909b)),
-                              ),
-                            ],
-                          ));
-                    },
-                    onRefresh: () {
-                      print("refresh");
-                    },
-                    onLoad: () {
-                      print("on load");
-                      fRefreshController.finishLoad();
-                    },
-                    child: ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        padding: EdgeInsets.only(left: 8, right: 8, bottom: 12, top: 12),
-                        itemCount: chatProvider.messages.length,
-                        controller: scrollController,
-                        itemBuilder: (context, index) {
-                          return Column(
-                            children: <Widget>[
-                              if (index == 0)
-                                Text(formatDate(chatProvider.messages[index].sendDate)),
-                              SizedBox(height: 10),
-                              if (index != 0 &&
-                                  chatProvider.messages[index - 1].sendDate.minute !=
-                                      chatProvider.messages[index].sendDate.minute)
-                                Text(formatDateTime(chatProvider.messages[index].sendDate)),
-                              SizedBox(height: 10),
-                              chatProvider.messages[index],
-                            ],
-                          );
-                        }))),
-            SizedBox(height: 20),
-            Container(
-              decoration: BoxDecoration(
-                color: Color(AppColors.SEARCH_BACKGROUND),
+        key: scaffoldKey,
+        appBar: CustomAppBar(
+            child: [
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: CachedNetworkImage(
+                      height: 40,
+                      width: 40,
+                      imageUrl: widget.friend.profileUrl ?? AppConstraint.default_profile)),
+              SizedBox(
+                width: 10,
               ),
-              child: Row(
-                children: <Widget>[
-                  CircleIcon(
-                    icon: Icons.attach_file,
-                    onTap: () {
-                      showBottomSheet();
-                    },
-                  ),
-                  Flexible(
-                    fit: FlexFit.tight,
-                    child: TextField(
-                        onSubmitted: (value) {
-                          setState(() {
-                            isSubmited = true;
-                          });
-                        },
-                        controller: chatController,
-                        decoration:
-                            InputDecoration(border: InputBorder.none, hintText: 'Text here')),
-                  ),
-                  CircleIcon(
-                    icon: Icons.bubble_chart,
-                    onTap: () {
-                      onSendMesasge(chatController.text);
-                    },
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(widget.friend.nickname),
+                  Row(
+                    children: [
+                      Container(
+                        height: 10,
+                        width: 10,
+                        decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.green),
+                      ),
+                      SizedBox(width: 10),
+                      Text("Online")
+                    ],
                   )
                 ],
               ),
-            )
-          ],
-        ),
-      ),
-    );
+              Spacer(),
+              CircleIcon(
+                  icon: FeatherIcons.phoneCall,
+                  onTap: () {
+                    BotToast.showText(text: "Make a phone call");
+                  }),
+              CircleIcon(icon: FeatherIcons.info, onTap: () {})
+            ],
+            height: 50,
+            onNavigateOut: () {
+              Get.back();
+            },
+            padding: EdgeInsets.all(0),
+            backIcon: FeatherIcons.arrowLeft),
+        body: WhenRebuilderOr<PrivateChatProvider>(
+          initState: (context, privateChatProvider) => privateChatProvider.setState((s) async =>
+              await s.connect(
+                  widget.conservationID, animationController, widget.user, widget.friend)),
+          dispose: (context, privateChatProvider) => privateChatProvider.state.closeConnection(),
+          observe: () => RM.get<PrivateChatProvider>(),
+          builder: (context, model) => Container(
+            height: Get.height,
+            width: Get.width,
+            padding: EdgeInsets.only(top: 10),
+            child: Column(
+              children: <Widget>[
+                Flexible(
+                    child: FRefresh(
+                        controller: fRefreshController,
+                        footerHeight: 50,
+                        footerBuilder: (setter) {
+                          print(fRefreshController.loadState);
+                          return Container(
+                              height: 38,
+                              alignment: Alignment.center,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 15,
+                                    height: 15,
+                                    child: CircularProgressIndicator(
+                                      backgroundColor: Color(0xfff1f3f6),
+                                      valueColor:
+                                          new AlwaysStoppedAnimation<Color>(Color(0xff6c909b)),
+                                      strokeWidth: 2.0,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 9.0),
+                                  Text(
+                                    "Loading",
+                                    style: TextStyle(color: Color(0xff6c909b)),
+                                  ),
+                                ],
+                              ));
+                        },
+                        onRefresh: () {
+                          print("refresh");
+                          fRefreshController.finishRefresh();
+                        },
+                        onLoad: () {
+                          print("on load");
+                          fRefreshController.finishLoad();
+                        },
+                        child: ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            padding: EdgeInsets.only(left: 8, right: 8, bottom: 12, top: 12),
+                            itemCount: model.state.countMessage,
+                            controller: scrollController,
+                            itemBuilder: (context, index) {
+                              var messages = model.state.messagesW;
+                              return Column(
+                                children: <Widget>[
+                                  if (index == 0) Text(formatDate(messages[index].sendDate)),
+                                  SizedBox(height: 10),
+                                  if (index != 0 &&
+                                      messages[index - 1].sendDate.minute !=
+                                          messages[index].sendDate.minute)
+                                    Text(formatDateTime(messages[index].sendDate)),
+                                  SizedBox(height: 10),
+                                  messages[index],
+                                ],
+                              );
+                            }))),
+                SizedBox(height: 20),
+                Container(
+                  color: brighten(Colors.black),
+                  child: Row(
+                    children: <Widget>[
+                      CircleIcon(
+                        icon: FeatherIcons.paperclip,
+                        onTap: () {
+                          ChatBottomSheet.show();
+                        },
+                      ),
+                      Flexible(
+                        child: TextField(
+                            controller: chatController,
+                            decoration:
+                                InputDecoration(border: InputBorder.none, hintText: 'Text here')),
+                      ),
+                      CircleIcon(
+                        icon: FeatherIcons.send,
+                        onTap: () {
+                          model.setState((s) => s.sendMessage(
+                              animationController,
+                              scrollController,
+                              widget.conservationID,
+                              chatController.text,
+                              widget.user,
+                              widget.friend,
+                              "text"));
+
+                          chatController.clear();
+                        },
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ));
   }
 
   @override

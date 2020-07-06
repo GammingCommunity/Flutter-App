@@ -2,14 +2,11 @@ import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/utils/get_token.dart';
-import 'package:states_rebuilder/states_rebuilder.dart';
+import '../model/friend_request_model.dart';
+import '../model/global_notification_model.dart';
+import '../model/pending_model.dart';
 
-import 'model/friend_request_model.dart';
-import 'model/global_notification_model.dart';
-import 'model/pending_model.dart';
-
-class NotificationProvider extends StatesRebuilder {
-  bool hasValue = true;
+class NotificationProvider {
   var _query = GraphQLQuery();
 
   var globalNotification = <GlobalNotificaition>[];
@@ -19,13 +16,7 @@ class NotificationProvider extends StatesRebuilder {
   Future loadFriendRequest() async {
     var result = await SubRepo.queryGraphQL(await getToken(), _query.getFriendRequest());
     var request = FriendsRequest.fromJson(result.data['getFriendRequests']).friendsRequest;
-    if (request.isEmpty) {
-      
-      rebuildStates();
-    } else {
-      friendsRequest.addAll(request);
-      rebuildStates();
-    }
+    friendsRequest.addAll(request);
   }
 
   Future loadPendingRequest() async {
@@ -35,16 +26,7 @@ class NotificationProvider extends StatesRebuilder {
 
     var pendings = PendingRequests.fromJson(result.data['getPendingJoinRoom_User']).listPending;
     pending.addAll(pendings);
-    rebuildStates();
   }
 
 
-  bool get checkFriendsRequest {
-    if (friendsRequest.isEmpty) return true;
-    return false;
-  }
-
-  Future refresh(int type) async {
-    return null;
-  }
 }

@@ -7,7 +7,7 @@ import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/utils/color_utility.dart';
 import 'package:gamming_community/view/group_dashboard/group_page/group_message.dart';
 import 'package:gamming_community/view/group_dashboard/group_page/group_post.dart';
-import 'package:gamming_community/view/messages/models/group_chat_provider.dart';
+import 'package:gamming_community/view/messages/group_messages/provider/group_chat_provider.dart';
 import 'package:get/get.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 

@@ -3,7 +3,7 @@ import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/GroupChat.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
 import 'package:gamming_community/view/group_dashboard/group_page/group_message.dart';
-import 'package:gamming_community/view/messages/models/group_chat_provider.dart';
+import 'package:gamming_community/view/messages/group_messages/provider/group_chat_provider.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';

@@ -15,15 +15,17 @@ import 'package:gamming_community/resources/values/app_theme.dart';
 import 'package:gamming_community/view/feeds/provider/feedsProvider.dart';
 import 'package:gamming_community/view/finding_room/finding_room_provider.dart';
 import 'package:gamming_community/view/forgot_password/forgotPassword.dart';
+import 'package:gamming_community/view/friend_profile/provider/friend_profile_provider.dart';
 import 'package:gamming_community/view/group_dashboard/provider/group_post_provider.dart';
 import 'package:gamming_community/view/home/home.dart';
 import 'package:gamming_community/view/home/provider/search_friend_provider.dart';
 import 'package:gamming_community/view/login/bloc/bloc/login_bloc.dart';
 import 'package:gamming_community/view/login/login.dart';
-import 'package:gamming_community/view/messages/models/group_chat_provider.dart';
-import 'package:gamming_community/view/messages/models/private_chat_provider.dart';
+import 'package:gamming_community/view/messages/group_messages/provider/group_chat_provider.dart';
+import 'package:gamming_community/view/messages/private_message/provider/conservation_provider.dart';
+import 'package:gamming_community/view/messages/private_message/provider/private_chat_provider.dart';
 import 'package:gamming_community/view/news/provider/newsProvider.dart';
-import 'package:gamming_community/view/notfications/notificationProvider.dart';
+import 'package:gamming_community/view/notfications/provider/notification_provider.dart';
 import 'package:gamming_community/view/profile/profile.dart';
 import 'package:gamming_community/view/profile/profileController.dart';
 import 'package:gamming_community/view/room/create_room_v2.dart';
@@ -113,6 +115,8 @@ class MyApp extends StatelessWidget {
               ],
               child: Injector(
                 inject: [
+                  Inject(() => FriendProfileProvider()),
+                  Inject(() => ConservationProvider()),
                   Inject(() => RoomByGameProvider()),
                   Inject(() => PrivateChatProvider()),
                   Inject(() => GroupChatProvider()),

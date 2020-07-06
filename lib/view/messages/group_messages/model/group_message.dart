@@ -2,21 +2,19 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:gamming_community/class/Conservation.dart';
 import 'package:gamming_community/class/GroupMessage.dart';
 import 'package:gamming_community/hive_models/member.dart';
 import 'package:gamming_community/repository/upload_image.dart';
-import 'package:gamming_community/utils/display_image.dart';
+import 'package:gamming_community/utils/enum/messageEnum.dart';
+import 'package:gamming_community/utils/generatePalate.dart';
 import 'package:gamming_community/view/messages/group_messages/group_chat_service.dart';
-import 'package:gamming_community/view/messages/private_message/private_chats.dart';
-import 'package:get/get.dart';
+import 'package:gamming_community/view/messages/private_message/view/conservation.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
-import 'package:palette_generator/palette_generator.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-
 
 var currentTime = new DateTime.now();
 
@@ -60,7 +58,8 @@ class _GroupChatMessageState extends State<GroupChatMessage>
   //for upload image from local
   Future showProgress() async {
     print("roomID ${widget.roomID}");
-    http.StreamedResponse upload = await ImageService.chatMedia("group",widget.roomID, widget.imageUri);
+    http.StreamedResponse upload =
+        await ImageService.chatMedia("group", widget.roomID, widget.imageUri);
     // upload complete and send to other client
     _total = upload.contentLength;
 
@@ -77,41 +76,33 @@ class _GroupChatMessageState extends State<GroupChatMessage>
 
       var convertByte = utf8.decode(_bytes);
       var result = json.decode(convertByte);
-      print(result[0]['url']);
+      String messageType = result;
+      //TODO: fix data group message
       widget.socket.emit('chat-group', [
-        GroupChatService.mediaMessage(widget.roomID, widget.currentID, result[0]['url'],
-            result[0]['height'], result[0]['width'])
+        GroupChatService.mediaMessage(
+            widget.roomID,
+            widget.currentID,
+            result[0]['url'],
+            messageType == MessageEnum.image ? MessageEnum.image : MessageEnum.file,
+            FileInfo(fileName: "", fileSize: "", height: 0, width: 0, publicID: ""))
       ]);
     });
-  }
-
-  Future _generatePalete(BuildContext context, String imagePath, bool fromStorage) async {
-    //check imagePath is uri or url
-
-    PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(
-        fromStorage == true
-            ? AssetImage(imagePath)
-            : CachedNetworkImageProvider(widget.type == "media" ? widget.text.content : ""),
-        size: Size(110, 150),
-        maximumColorCount: 20);
-    Get.to(DisplayImage(
-            imageUrl: fromStorage == true ? widget.imageUri : widget.text.content,
-            fromStorage: fromStorage,
-            palate: paletteGenerator),transition: Transition.size,duration: Duration(milliseconds: 500));
   }
 
   @override
   void initState() {
     super.initState();
     widget.fromStorage ?? showProgress();
-    controller = AnimationController(vsync: this, duration: Duration(milliseconds: 200));
-    animation = Tween(begin: 0, end: 1).animate(controller);
+    /* controller = AnimationController(vsync: this, duration: Duration(milliseconds: 200));
+    animation = Tween(begin: 0, end: 1).animate(controller)
+      ..addListener(() {
+        controller.forward();
+      });*/
     print("U add new mess ");
   }
 
   @override
   void dispose() {
-    controller.dispose();
     super.dispose();
   }
 
@@ -120,11 +111,13 @@ class _GroupChatMessageState extends State<GroupChatMessage>
     super.build(context);
     bool isMe = widget.currentID == widget.sender;
     bool fromStorage = widget.fromStorage;
-    var imageUri = widget.imageUri;
     var imageUrl = widget.text.content;
     // get username for userlist
-    var userProfile = members.get(widget.roomID).members.singleWhere((e) => e.userID == widget.sender);
-   // var userProfile = Member(image: AppConstraint.default_profile, name: "asdsad", userID: "0000");
+    
+    var membersByGroupID = members.get(widget.roomID).members;
+    var userProfile = membersByGroupID.singleWhere((e) => e.userID == widget.sender);
+    print(userProfile);
+    // var userProfile = Member(image: AppConstraint.default_profile, name: "asdsad", userID: "0000");
 
     return SizeTransition(
         sizeFactor: CurvedAnimation(parent: widget.animationController, curve: Curves.easeOut),
@@ -203,7 +196,7 @@ class _GroupChatMessageState extends State<GroupChatMessage>
                       GestureDetector(
                         behavior: HitTestBehavior.deferToChild,
                         onTap: () {
-                          _generatePalete(context, imageUrl, fromStorage);
+                          generatePalete(context, imageUrl, fromStorage, widget.type);
                         },
                         child: Container(
                           color: Colors.grey,

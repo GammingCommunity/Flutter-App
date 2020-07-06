@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frefresh/frefresh.dart';
-import 'package:gamming_community/view/messages/models/private_chat_provider.dart';
+import 'package:gamming_community/view/messages/private_message/provider/private_chat_provider.dart';
 import 'package:get/get.dart';
 
 class PrivateChatController extends GetxController{

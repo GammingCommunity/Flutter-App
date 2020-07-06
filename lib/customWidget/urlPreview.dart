@@ -4,10 +4,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
+import 'package:gamming_community/utils/color_utility.dart';
 import 'package:gamming_community/utils/skeleton_template.dart';
 import 'package:get/get.dart';
-import 'package:metadata_fetch/metadata_fetch.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart' as metaFetch;
 
 class UrlPreview extends StatefulWidget {
   final String url;
@@ -20,10 +21,15 @@ class _UrlPreviewState extends State<UrlPreview> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      borderRadius: BorderRadius.circular(15),
       onTap: () async {
-        var url = "youtube:${widget.url}";
+        var url = widget.url;
         if (await canLaunch(url)) {
-          await launch(url);
+          await launch(url,
+              forceWebView: false, 
+              forceSafariVC: false,
+              universalLinksOnly: true, 
+              headers: <String, String>{"header_key":"header_value"});
         } else {
           print("can't load");
         }
@@ -33,11 +39,13 @@ class _UrlPreviewState extends State<UrlPreview> {
         width: Get.width - 60,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          color: Color(AppColors.SEARCH_BACKGROUND),
+          color: brighten(Colors.black,10),
         ),
         child: FutureBuilder(
-          future: Future<Metadata>(() async {
-            return extract(widget.url);
+          future: Future<metaFetch.Video>(() async {
+            var yt = metaFetch.YoutubeExplode();
+            var video = await yt.videos.get(widget.url);
+            return video;
           }),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -64,7 +72,7 @@ class _UrlPreviewState extends State<UrlPreview> {
                 ),
               );
             } else {
-              Metadata info = snapshot.data;
+              metaFetch.Video info = snapshot.data;
               return Container(
                 height: 100,
                 width: 200,
@@ -90,7 +98,7 @@ class _UrlPreviewState extends State<UrlPreview> {
                             Container(height: Get.height, width: 100, color: Colors.grey),
                         placeholder: (context, url) =>
                             Container(height: Get.height, width: 100, color: Colors.grey),
-                        imageUrl: info.image ?? AppConstraint.default_logo),
+                        imageUrl: info.thumbnails.highResUrl ?? AppConstraint.default_logo),
                     SizedBox(width: 10),
                     Expanded(
                       child: Column(

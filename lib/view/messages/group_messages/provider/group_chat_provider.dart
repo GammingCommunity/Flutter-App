@@ -6,7 +6,7 @@ import 'package:gamming_community/repository/main_repo.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/utils/get_token.dart';
 import 'package:gamming_community/utils/toListInt.dart';
-import 'package:gamming_community/view/messages/group_messages/group_message.dart';
+import 'package:gamming_community/view/messages/group_messages/model/group_message.dart';
 import 'package:hive/hive.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;

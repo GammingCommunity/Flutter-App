@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Mutation.dart';
+import 'package:gamming_community/API/PostQuery.dart';
 import 'package:gamming_community/API/Query.dart';
 import 'package:gamming_community/class/Friend.dart';
 import 'package:gamming_community/class/Post.dart';
@@ -13,6 +14,7 @@ import 'package:gamming_community/utils/toListInt.dart';
 @immutable
 class FeedsProvider {
   static var _query = GraphQLQuery();
+  static var _postQuery = PostQueryGraphQL();
   static var _mutation = GraphQLMutation();
 
   final posts = <Post>[];
@@ -29,7 +31,7 @@ class FeedsProvider {
     var mapped = toListString(friends);
 
     var datas =
-        await PostRepo.queryGraphQL(await getToken(), _query.fetchPost(json.encode(mapped)));
+        await PostRepo.queryGraphQL(await getToken(), _postQuery.fetchUserPost(json.encode(mapped)));
     var result = Posts.fromJson(datas.data['fetchPost']).posts;
     posts.addAll(result);
   }
@@ -52,7 +54,7 @@ class FeedsProvider {
         await getToken(), _mutation.reaction(commentTo, reactType, postID, commentID));
   }
 
-  Future init() async{
+  Future init() async {
     await fetchPost();
   }
 }

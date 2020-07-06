@@ -11,15 +11,15 @@ import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/utils/checkHasConnection.dart';
 import 'package:gamming_community/view/messages/group_messages/group_chat_service.dart';
-import 'package:gamming_community/view/messages/models/group_chat_provider.dart';
-import 'package:gamming_community/view/messages/private_message/private_chats.dart';
+import 'package:gamming_community/view/messages/group_messages/provider/group_chat_provider.dart';
+import 'package:gamming_community/view/messages/private_message/view/conservation.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
-import '../../messages/group_messages/group_message.dart';
+import '../../messages/group_messages/model/group_message.dart';
 
 class GroupMessageWidget extends StatefulWidget {
   final String roomID;

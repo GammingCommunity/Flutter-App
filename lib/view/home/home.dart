@@ -16,9 +16,9 @@ import 'package:gamming_community/view/feeds/feeds.dart';
 import 'package:gamming_community/view/finding_room/finding_room.dart';
 import 'package:gamming_community/view/game_channel/game_channel.dart';
 import 'package:gamming_community/view/home/search_view.dart';
-import 'package:gamming_community/view/messages/private_message/private_chats.dart';
+import 'package:gamming_community/view/messages/private_message/view/conservation.dart';
 import 'package:gamming_community/view/news/news.dart';
-import 'package:gamming_community/view/notfications/notfications.dart';
+import 'package:gamming_community/view/notfications/view/notfications.dart';
 import 'package:gamming_community/view/profile/profile.dart';
 import 'package:gamming_community/view/room_manager/room_manager.dart';
 import 'package:gamming_community/view/user_post/userPost.dart';
@@ -220,8 +220,7 @@ class _HomeState extends State<HomePage>
                           icon: FeatherIcons.bell,
                           iconSize: 20,
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                maintainState: true, builder: (context) => Notfications()));
+                            Get.to(Notfications(),opaque: false);
                             notification.seen(true);
                           },
                         ),

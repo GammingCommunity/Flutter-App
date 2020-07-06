@@ -13,10 +13,10 @@ class AppConstraint {
   static const double button_radius = 15;
   static const String sample_proifle_url = "https://via.placeholder.com/150";
   static const String default_profile =
-      "https://cdn.image4.io/mattstacey/f_auto/57882dae-888d-4c43-9dc5-924ae05b332c.png?fbclid=IwAR2H1LEHlXceQAFJR-BH6RR3R74KuAQRP6y7JYnIosZbxcKJshLZaaLDwQc";
+      "https://cdn.image4.io/mattstacey/f_auto/57882dae-888d-4c43-9dc5-924ae05b332c.png";
   static const String default_cover =
-      "https://cdn.image4.io/mattstacey/f_auto/cover/9df0a69a-209d-468f-8171-51c8417eabe0.png?fbclid=IwAR2AgwDy1WnneW8iZqlP6POxdMkDQaRzqrpau4ihn1p_QsBT5uNgfT-6bn4";
-  static const String default_logo = "https://droncoma.sirv.com/Logo/logo.png";
+      "https://res.cloudinary.com/mattstacey/image/upload/v1594053062/background/ylf1fv0w5zyr0jfqv8dx.png";
+  static const String default_logo = "https://cdn.image4.io/mattstacey/f_auto/avatar/c3dfa8d0-bb49-4da7-a3fa-c26d7c3f9123.png";
   static const String default_background =
       "https://droncoma.sirv.com/default_background/no_image.png";
   static Image noImage = Image.asset('assets/images/no_image.png');

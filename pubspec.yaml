@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
 
   flutter_svg: ^0.18.0
-  cached_network_image: ^2.2.0+1
+  cached_network_image: ^2.3.0-rc
   flutter_launcher_icons: ^0.7.5
   bot_toast: ^3.0.0
   graphql_flutter: ^3.1.0-beta.3
@@ -44,7 +44,7 @@ dependencies:
   #pull-down refresh and pull-up loading
   frefresh: ^1.1.0
   # data from url
-  metadata_fetch: ^0.3.2
+  youtube_explode_dart: ^1.4.0
   # launch url
   url_launcher: ^5.4.11
   google_sign_in: ^4.5.1

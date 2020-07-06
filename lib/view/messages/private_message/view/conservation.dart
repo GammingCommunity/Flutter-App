@@ -18,10 +18,11 @@ import 'package:gamming_community/utils/skeleton_template.dart';
 import 'package:gamming_community/utils/toListInt.dart';
 import 'package:gamming_community/view/home/search_view.dart';
 import 'package:gamming_community/view/messages/add_convervation.dart';
-import 'package:gamming_community/view/messages/friend_profile.dart';
-import 'package:gamming_community/view/messages/models/private_chat_provider.dart';
+import 'package:gamming_community/view/friend_profile/view/friend_profile.dart';
+import 'package:gamming_community/view/messages/private_message/provider/private_chat_provider.dart';
 import 'package:gamming_community/view/messages/private_message/private_chat_service.dart';
-import 'package:gamming_community/view/messages/private_message/private_message_detail.dart';
+import 'package:gamming_community/view/messages/private_message/view/private_message_detail.dart';
+import 'package:gamming_community/view/messages/private_message/provider/conservation_provider.dart';
 
 import 'package:get/get.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -44,17 +45,6 @@ String formatDateTime(DateTime dateTime) {
   return formatter.format(dateTime);
 }
 
-/*class Messages extends StatelessWidget {
-  final String userID, token;
-  Messages({this.userID, this.token});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      
-    );
-  }
-}*/
-
 class Messages extends StatefulWidget {
   final String userID, token;
   Messages({this.userID, this.token});
@@ -65,35 +55,18 @@ class Messages extends StatefulWidget {
 class _MessagesState extends State<Messages>
     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  String roomName = "Sample here";
-  bool isSubmited = false;
-  ScrollController _scrollController;
   AnimationController animationController;
-  PrivateChatProvider _privateChatProvider;
   FRefreshController controller;
 
   String text = "Drop-down to loading";
-
-  void _scrollListener() {
-    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
-        !_scrollController.position.outOfRange) {
-      setState(() {});
-      print("to bottom");
-    }
-  }
 
   @override
   void initState() {
     super.initState();
     controller = FRefreshController();
-    /* WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await _privateChatProvider.initPrivateConservation();
-    });*/
-    _scrollController = ScrollController();
-    _scrollController.addListener(_scrollListener);
     animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 500),
     )..forward();
   }
 
@@ -154,14 +127,15 @@ class _MessagesState extends State<Messages>
                           ),
                           Expanded(
                               flex: 6,
-                              child: WhenRebuilderOr<PrivateChatProvider>(
+                              child: WhenRebuilderOr<ConservationProvider>(
                                   initState: (_, privateChatProvider) => privateChatProvider
                                       .setState((s) => s.initPrivateConservation()),
-                                  observe: () => RM.get<PrivateChatProvider>(),
+                                  observe: () => RM.get<ConservationProvider>(),
                                   onIdle: null,
-                                  onWaiting: () => Center(child: AppConstraint.loadingIndicator(context)),
+                                  onWaiting: () =>
+                                      Center(child: AppConstraint.loadingIndicator(context)),
                                   builder: (context, privateChat) => Container(
-                                        height: 250,
+                                        height: Get.height,
                                         width: Get.width,
                                         child: FRefresh(
                                             controller: controller,
@@ -267,14 +241,12 @@ Widget buildConvervation(Conservation cv) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return ListView.builder(
             itemCount: 1,
-            itemBuilder: (context, index) => SkeletonTemplate.chatMessage(80,15),
+            itemBuilder: (context, index) => SkeletonTemplate.chatMessage(80, 15),
           );
         } else {
           List<User> users = snapshot.data;
           return InkWell(
-              customBorder: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15)
-              ),
+              customBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
               onTap: () {
                 Get.to(
                     PrivateMessagesDetail(
@@ -285,68 +257,67 @@ Widget buildConvervation(Conservation cv) {
                     transition: Transition.fadeIn,
                     opaque: false);
               },
-              child:Row(
-                    children: [
-                      //buildProfile(cv.member),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        child: CachedNetworkImage(
-                          height: 50,
-                          width: 50,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            decoration: BoxDecoration(
-                                color: Colors.grey[400], borderRadius: BorderRadius.circular(15)),
-                          ),
-                          imageUrl: users[1].profileUrl ?? AppConstraint.default_profile,
-                        ),
+              child: Row(
+                children: [
+                  //buildProfile(cv.member),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: CachedNetworkImage(
+                      height: 50,
+                      width: 50,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        decoration: BoxDecoration(
+                            color: Colors.grey[400], borderRadius: BorderRadius.circular(15)),
                       ),
-                      SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            users[1].nickname,
-                            style: TextStyle(fontSize: 15),
-                          ),
-                          SizedBox(height: 5),
-                          cv.latestMessage.sender == null
-                              ? Container(
-                                height: 20,
-                                width: 20,
-                              )
-                              : Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    isMedia(cv.latestMessage.messageType)
-                                        ? Text("Send media",
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                color: Get.isDarkMode
-                                                    ? Colors.white60
-                                                    : Colors.black54))
-                                        : Text("${cv.latestMessage.txtMessage}",
-                                            style: TextStyle(fontSize: 15, color: Colors.white60)),
-                                    Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Icon(Icons.fiber_manual_record, size: 8),
-                                        ),
-                                        Text(
-                                          "${formatDateMonth(DateTime.now().toLocal())}",
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                      ],
-                                    )
+                      imageUrl: users[1].profileUrl ?? AppConstraint.default_profile,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        users[1].nickname,
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      SizedBox(height: 5),
+                      cv.latestMessage.sender == null
+                          ? Container(
+                              height: 20,
+                              width: 20,
+                            )
+                          : Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                isMedia(cv.latestMessage.messageType)
+                                    ? Text("Send media",
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            color:
+                                                Get.isDarkMode ? Colors.white60 : Colors.black54))
+                                    : Text("${cv.latestMessage.txtMessage}",
+                                        style: TextStyle(fontSize: 15, color: Colors.white60)),
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(6.0),
+                                      child: Icon(Icons.fiber_manual_record, size: 8),
+                                    ),
+                                    Text(
+                                      "${formatDateMonth(DateTime.now().toLocal())}",
+                                      style: TextStyle(fontSize: 12),
+                                    ),
                                   ],
                                 )
-                        ],
-                      ),
+                              ],
+                            )
                     ],
-                  ));
+                  ),
+                ],
+              ));
         }
       },
     ),
@@ -418,7 +389,7 @@ Widget buildFriendsActive(String token) {
                             scrollDirection: Axis.horizontal,
                             itemCount: 10,
                             itemBuilder: (context, index) => ClipRRect(
-                                borderRadius: BorderRadius.circular(10000),
+                                borderRadius: BorderRadius.circular(15),
                                 child: Container(height: 50, width: 50, color: Colors.grey)));
                       }
                       if (result.hasException) {
@@ -439,7 +410,7 @@ Widget buildFriendsActive(String token) {
                                 icon: FeatherIcons.plusSquare,
                                 iconSize: 25,
                                 onTap: () {
-                                  Get.to(SearchView());
+                                  Get.to(SearchView(), opaque: false);
                                 },
                               )
                             : ListView.separated(
@@ -450,15 +421,16 @@ Widget buildFriendsActive(String token) {
                                 itemCount: listFriend.length,
                                 itemBuilder: (context, index) {
                                   return InkWell(
-                                    borderRadius: BorderRadius.circular(1000),
+                                    borderRadius: BorderRadius.circular(15),
                                     onTap: () {
                                       // show friends profile
-                                      showFriendProfile(context, token, listFriend[index].id);
+                                      Get.to(FriendProfile(userID: listFriend[index].id),
+                                          transition: Transition.leftToRightWithFade,opaque: false);
                                     },
                                     child: Stack(
                                       children: <Widget>[
                                         ClipRRect(
-                                          borderRadius: BorderRadius.circular(10000),
+                                          borderRadius: BorderRadius.circular(15),
                                           child: CachedNetworkImage(
                                             fadeInCurve: Curves.easeIn,
                                             fadeInDuration: Duration(seconds: 1),
@@ -467,21 +439,26 @@ Widget buildFriendsActive(String token) {
                                               width: 50,
                                               decoration: BoxDecoration(
                                                   color: Colors.red,
-                                                  borderRadius: BorderRadius.circular(10000),
+                                                  borderRadius: BorderRadius.circular(15),
+                                                  border: Border.all(
+                                                    color: Colors.green,
+                                                    width: 3
+                                                  ),
                                                   image: DecorationImage(
                                                       fit: BoxFit.cover, image: imageProvider)),
                                             ),
-                                            imageUrl: listFriend[index].profileUrl,
+                                            imageUrl: listFriend[index].profileUrl ??
+                                                AppConstraint.default_profile,
                                             placeholder: (context, url) =>
                                                 Container(color: Colors.grey),
                                             errorWidget: (context, url, error) => Icon(Icons.error),
                                           ),
                                         ),
-                                        Positioned(
+                                        /*Positioned(
                                             bottom: -4,
-                                            right: -2,
+                                            right: -4,
                                             child: Icon(Icons.fiber_manual_record,
-                                                color: Colors.amber))
+                                                color: Colors.green))*/
                                       ],
                                     ),
                                   );

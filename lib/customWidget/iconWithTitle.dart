@@ -5,6 +5,8 @@ enum Position { right, bottom }
 class IconWithTitle extends StatelessWidget {
   final IconData icon;
   final double iconSize;
+  final double buttonWidth;
+  final double buttonHeight;
   final String title;
   final Function onTap;
   final double borderRadius;
@@ -15,6 +17,8 @@ class IconWithTitle extends StatelessWidget {
       {@required this.icon,
       this.borderRadius = 10,
       this.iconSize = 20,
+      this.buttonHeight = 50,
+      this.buttonWidth = 50,
       this.iconColor = Colors.white,
       this.titlePosition = Position.right,
       @required this.color,
@@ -36,8 +40,8 @@ class IconWithTitle extends StatelessWidget {
               ? Row(
                   children: [
                     Container(
-                        height: 50,
-                        width: 50,
+                        height: buttonHeight,
+                        width: buttonWidth,
                         decoration:
                             BoxDecoration(color: color, borderRadius: BorderRadius.circular(10)),
                         child: Icon(icon, size: iconSize)),
@@ -49,8 +53,8 @@ class IconWithTitle extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                        height: 50,
-                        width: 50,
+                        height: buttonHeight,
+                        width: buttonWidth,
                         decoration:
                             BoxDecoration(color: color, borderRadius: BorderRadius.circular(10)),
                         child: Icon(

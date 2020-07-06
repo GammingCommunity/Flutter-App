@@ -193,9 +193,10 @@ class GraphQLQuery {
 
   String getAllPrivateConservation([int page = 1 ,int limit = 10]) => """
    query{
-      getAllPrivateChat(page:$page,limit:$limit){
+      getAllConservation(page:$page,limit:$limit){
         _id
         member
+        isHost
         latest_message{
           id
           messageType
@@ -390,22 +391,7 @@ class GraphQLQuery {
       }
     }
   """;
-  String fetchPost(String users) => """
-    query{
-      fetchPost(users:$users){
-        post_id
-        title
-        content
-        media
-        tag
-        permission
-        created_time
-        countComment
-        countReaction
-        
-      }
-    }
-  """;
+ 
   String searchFriend(String str,String ids) => """
     query{
       searchAccounts(key:"$str",exclude_ids:$ids){

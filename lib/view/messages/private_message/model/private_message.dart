@@ -5,6 +5,7 @@ import 'package:gamming_community/class/Conservation.dart';
 import 'package:gamming_community/class/User.dart';
 import 'package:gamming_community/customWidget/urlPreview.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
+import 'package:gamming_community/utils/color_utility.dart';
 import 'package:gamming_community/utils/enum/messageEnum.dart';
 import 'package:gamming_community/utils/generatePalate.dart';
 import 'package:gamming_community/utils/skeleton_template.dart';
@@ -42,11 +43,16 @@ class PrivateMessage extends StatelessWidget {
             children: <Widget>[
               if (!isMe)
                 InkWell(
-                  borderRadius: BorderRadius.circular(1000),
-                  child: CircleAvatar(
-                    backgroundImage: NetworkImage(friend.profileUrl),
-                  ),
-                ),
+                    onTap: () {},
+                    borderRadius: BorderRadius.circular(15),
+                    child: CachedNetworkImage(
+                        fit: BoxFit.cover,
+                        imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover)),
+                            ),
+                        imageUrl: friend.profileUrl)),
               Flexible(
                   child: messageType == MessageEnum.image
                       ? InkWell(
@@ -79,7 +85,7 @@ class PrivateMessage extends StatelessWidget {
                               margin: EdgeInsets.symmetric(horizontal: 6),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
-                                color: Theme.of(context).primaryColor,
+                                color: brighten(Colors.black, 10),
                               ),
                               child:
                                   Text(text.content, style: Theme.of(context).textTheme.bodyText2),
@@ -117,8 +123,8 @@ Widget buildFileMessage(FileInfo file) {
     height: messageHeight,
     width: 200,
     alignment: Alignment.center,
-    decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15), color: Color(AppColors.SEARCH_BACKGROUND)),
+    decoration:
+        BoxDecoration(borderRadius: BorderRadius.circular(15), color: brighten(Colors.black, 10)),
     child: Row(
       children: [
         Container(
