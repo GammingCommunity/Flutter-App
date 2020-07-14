@@ -40,16 +40,16 @@ class _RoomItemState extends State<RoomItem> with AutomaticKeepAliveClientMixin 
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppConstraint.container_border_radius)),
-            width: ScreenUtil().uiWidthPx,
+            width: Get.width,
             height: 100.h,
             child: Stack(
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsetsResponsive.symmetric(horizontal: 5),
+                  padding: EdgeInsets.symmetric(horizontal: 5),
                   child: Stack(
                     children: <Widget>[
                       //logo room
-                      Positioned(
+                      Positioned.fill(
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: ClipRRect(

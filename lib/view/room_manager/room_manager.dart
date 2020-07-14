@@ -94,9 +94,9 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
     var currentID = roomManagerBloc.currentID;
     super.build(context);
     return BlocListener<RoomManagerBloc, RoomManagerState>(
-      listenWhen:  (previous, current) {
+      listenWhen: (previous, current) {
         if (previous is AddRoomLoading) {
-          Navigator.pop(context);
+          Get.back();
         }
         return true;
       },
@@ -178,10 +178,6 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                           child: InkWell(
                             onTap: () {
                               gets.Get.to(
-                                  /*RoomDetailV2(
-                                    room: rooms[index],
-                                    itemTag: rooms[index].id,
-                                  ),*/
                                   GroupDashboard(
                                       room: rooms[index],
                                       currenID: roomManagerBloc.currentID,
@@ -202,6 +198,7 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                               child: Stack(
                                 children: <Widget>[
                                   Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
                                       //background room (default, if spectify, display here)
                                       rooms[index].roomBackground == ""
@@ -227,32 +224,30 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
                                       SizedBox(
                                         height: 30,
                                       ),
-                                     
-                                          Padding(
-                                            padding: EdgeInsetsResponsive.symmetric(
-                                                horizontal: 10, vertical: 5),
-                                            child: Text(
-                                              rooms[index].roomName,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: ScreenUtil().setSp(15)),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                          TextResponsive("${rooms[index].memberID.length} member"),
-                                          // display some member in room
-                                          Padding(
-                                            padding: EdgeInsetsResponsive.all(5),
-                                            child: DisplayMember(
-                                                showBadged: true,
-                                                borderRadius: 1000,
-                                                size: 30,
-                                                ids: rooms[index].memberID),
-                                          )
-                                        ],
+
+                                      Padding(
+                                        padding: EdgeInsetsResponsive.symmetric(
+                                            horizontal: 10, vertical: 5),
+                                        child: Text(
+                                          rooms[index].roomName,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: ScreenUtil().setSp(15)),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
-                                    
-                               
+                                      TextResponsive("${rooms[index].memberID.length} member"),
+                                      // display some member in room
+                                      Padding(
+                                        padding: EdgeInsetsResponsive.all(5),
+                                        child: DisplayMember(
+                                            showBadged: true,
+                                            borderRadius: 1000,
+                                            size: 30,
+                                            ids: rooms[index].memberID),
+                                      ),
+                                    ],
+                                  ),
                                   Positioned(
                                       top: 0,
                                       right: 0,

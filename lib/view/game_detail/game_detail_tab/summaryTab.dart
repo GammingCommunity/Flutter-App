@@ -12,7 +12,6 @@ class SummaryTab extends StatefulWidget {
 }
 
 class _SummaryTabState extends State<SummaryTab> {
-
   @override
   Widget build(BuildContext context) {
     return StateBuilder<GameDetailProvider>(
@@ -33,7 +32,7 @@ class _SummaryTabState extends State<SummaryTab> {
                     SizedBox(
                       width: 10,
                     ),
-                    Flexible(
+                    Expanded(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,8 +55,7 @@ class _SummaryTabState extends State<SummaryTab> {
                                       "No tag",
                                       "No tag"
                                     ];
-                                    return index > 3  ? Chip(label: Text(rawData[index])) : 
-                                    Chip(label: Text("+3 more"));
+                                    return Chip(label: Text(rawData[index]));
                                   }))
                         ],
                       ),
@@ -70,45 +68,47 @@ class _SummaryTabState extends State<SummaryTab> {
                 height: 10,
               ),
               // game summary
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: brighten(Colors.black, 10),
-                ),
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      game.summary,
-                      textAlign: TextAlign.justify,
-                      overflow: TextOverflow.fade,
-                      maxLines: model.state.descTextShowFlag ? 20 : 8,
-                    ),
-                    SizedBox(height: 5),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Flexible(
-                        child: InkWell(
-                          onTap: () => model.setState((s) => s.showTextMore()),
-                          child: model.state.descTextShowFlag
-                              ? Container(
-                                  height: 30,
-                                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      color: Colors.indigo),
-                                  child: Text("Show less"))
-                              : Container(
-                                  height: 30,
-                                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      color: Colors.indigo),
-                                  child: Text("Show more")),
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: brighten(Colors.black, 10),
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        game.summary,
+                        textAlign: TextAlign.justify,
+                        overflow: TextOverflow.fade,
+                        maxLines: model.state.descTextShowFlag ? 20 : 8,
+                      ),
+                      SizedBox(height: 5),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Flexible(
+                          child: InkWell(
+                            onTap: () => model.setState((s) => s.showTextMore()),
+                            child: model.state.descTextShowFlag
+                                ? Container(
+                                    height: 30,
+                                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        color: Colors.indigo),
+                                    child: Text("Show less"))
+                                : Container(
+                                    height: 30,
+                                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        color: Colors.indigo),
+                                    child: Text("Show more")),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
@@ -123,6 +123,7 @@ class _SummaryTabState extends State<SummaryTab> {
                 itemBuilder: (context, index) {
                   return Container(
                       width: Get.width,
+                      height: 200,
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
                       child: CustomImage(

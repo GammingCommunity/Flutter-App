@@ -10,7 +10,7 @@ class RoomByGameProvider {
   String userID = "";
   String sortType = "none";
 
-  Future initLoad(String gameID, String groupSize) async {
+  Future init(String gameID, String groupSize) async {
     this.gameID = gameID;
 
     var info = await getUserInfo();
@@ -22,7 +22,7 @@ class RoomByGameProvider {
 
   Future refresh() async {
     groupGame.clear();
-    await initLoad(gameID, 'none');
+    await init(gameID, 'none');
   }
 
   Future sortBy(String type) async {

@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:gamming_community/class/News.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/skeleton_template.dart';
+import 'package:gamming_community/utils/timeAgo.dart';
 import 'package:gamming_community/view/news/provider/newsProvider.dart';
+import 'package:get/get.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
@@ -14,46 +16,40 @@ class NewsWidget extends StatefulWidget {
 }
 
 class _NewsState extends State<NewsWidget> {
-  NewsProvider _newsProvider;
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _newsProvider.init();
-    });
-  }
+
+
 
   @override
   Widget build(BuildContext context) {
-    _newsProvider = Injector.get();
     return Scaffold(
-      body: ContainerResponsive(
-          height: ScreenUtil().uiHeightPx,
-          width: ScreenUtil().uiWidthPx,
-          child: _newsProvider.isLoading
-              ? AppConstraint.loadingIndicator(context)
-              : ListView.separated(
-                  separatorBuilder: (context, index) => SizedBox(height: 10),
-                  padding: EdgeInsetsResponsive.symmetric(horizontal: 10, vertical: 10),
-                  itemCount: _newsProvider.news.length,
-                  itemBuilder: (context, index) {
-                    var news = _newsProvider.news;
-                    return buildItem(news[index]);
-                  })),
-    );
+        body: Container(
+            height: Get.height,
+            width: Get.width,
+            child: WhenRebuilderOr<NewsProvider>(
+              initState: (context,model ) => model.setState((s) => s.init()),
+                observe: () => RM.get<NewsProvider>(),
+                onWaiting: () => AppConstraint.loadingIndicator(context),
+                builder: (context, model) => ListView.separated(
+                    separatorBuilder: (context, index) => SizedBox(height: 10),
+                    padding: EdgeInsetsResponsive.symmetric(horizontal: 10, vertical: 10),
+                    itemCount: model.state.news.length,
+                    itemBuilder: (context, index) {
+                      var news = model.state.news;
+                      return buildItem(news[index]);
+                    }))));
   }
 }
 
 Widget buildItem(News news) {
   return Container(
     height: 100,
-    width: ScreenUtil().uiWidthPx,
+    width: Get.width,
     decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
     child: Row(
       children: <Widget>[
         Expanded(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
+          padding: EdgeInsets.symmetric(horizontal: 10),
           height: 100,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -65,10 +61,16 @@ Widget buildItem(News news) {
               Row(
                 children: <Widget>[
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Image.asset(getImageSource(news.source),height: 30,width: 30,)),
-                  SizedBox(width: 10,),
-                  Text("${news.time} hours ago.")
+                      borderRadius: BorderRadius.circular(5),
+                      child: Image.asset(
+                        getImageSource(news.source),
+                        height: 30,
+                        width: 30,
+                      )),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text("${getTime(time: news.time)}")
                 ],
               )
             ],

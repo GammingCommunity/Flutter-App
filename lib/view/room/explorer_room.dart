@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:frefresh/frefresh.dart';
@@ -12,7 +13,6 @@ import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 class Explorer extends StatelessWidget {
-  final FRefreshController fRefreshController = FRefreshController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,17 +20,16 @@ class Explorer extends StatelessWidget {
       padding: EdgeInsets.all(10),
       height: Get.height,
       width: Get.width,
-      child: WhenRebuilder<ExploreProvider>(
+      child: WhenRebuilderOr<ExploreProvider>(
         observe: () => RM.get<ExploreProvider>(),
-        initState: (context, explorerProvider) => explorerProvider.setState((s) => s.init()),
+        //initState: (context, explorerProvider) => explorerProvider.setState((s) => s.init()),
         onIdle: null,
         onWaiting: () => AppConstraint.loadingIndicator(context),
-        onError: (error) => Text(error),
-        onData: (data) => FRefresh(
-            controller: fRefreshController,
+        //onError: (error) => 
+        builder: (context, model) => FRefresh(
+            controller: model.state.frefreshController,
             headerHeight: 70,
             headerBuilder: (setter, constraints) {
-              //await _privateChatProvider.refresh();
               return CustomHeaderFRefresh();
             },
             footerHeight: 60.0,
@@ -39,11 +38,11 @@ class Explorer extends StatelessWidget {
             },
             onRefresh: () async {
               print("on refresh");
-              await data.refresh().then((_) => fRefreshController.finishRefresh());
+              model.setState((s) => s.refresh());
             },
-            onLoad: () {
+            onLoad: () async {
               print("onLoad");
-              fRefreshController.finishLoad();
+              model.setState((s) => s.loadMore());
             },
             child: ListView.separated(
               physics: NeverScrollableScrollPhysics(),
@@ -51,9 +50,9 @@ class Explorer extends StatelessWidget {
                 height: 20,
               ),
               shrinkWrap: true,
-              itemCount: data.gameChanelLength,
+              itemCount: model.state.gameChanelLength,
               itemBuilder: (context, index) {
-                var rooms = data.rooms;
+                var rooms = model.state.rooms;
 
                 return Hero(tag: index, child: buildItem(context, rooms[index]));
               },
@@ -119,7 +118,6 @@ Widget buildItem(BuildContext context, GameChannelM channel) {
     ),
   );
 }
-
 
 /*
 class Explorer extends StatefulWidget {

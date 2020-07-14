@@ -19,7 +19,7 @@ class ListNews {
             shortText: e['article_short'],
             imageUrl: e['article_image'],
             url: e['article_url'],
-            time: DateTime.now().difference(DateTime.parse(e['article_time'])).inDays.toString()));
+            time: e['article_time']));
       });
     } catch (e) {
       return ListNews(listNews: []);

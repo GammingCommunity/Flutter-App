@@ -74,7 +74,7 @@ class _RoomByGameState extends State<RoomByGame> with TickerProviderStateMixin {
                 padding: EdgeInsets.only(right: 10),
                 child: [
                   InkWell(
-                      onTap: () => Get.to(GameDetail(gameID: widget.gameID),opaque: false),
+                      onTap: () => Get.to(GameDetail(gameID: widget.gameID), opaque: false),
                       child: Text(widget.gameName, style: TextStyle(fontSize: 20))),
                   Spacer(),
                   SortButton(
@@ -90,8 +90,6 @@ class _RoomByGameState extends State<RoomByGame> with TickerProviderStateMixin {
                 },
                 backIcon: FeatherIcons.arrowLeft),
             body: WhenRebuilder<RoomByGameProvider>(
-                initState: (context, roomByGame) =>
-                    roomByGame.setState((s) => s.initLoad(widget.gameID, "none")),
                 onIdle: null,
                 onError: (error) => buildError(error),
                 observe: () => RM.get<RoomByGameProvider>(),
