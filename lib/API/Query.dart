@@ -123,7 +123,7 @@ class GraphQLQuery {
     """;
   }
 
-  String getListGame(int limit) {
+  /*String getListGame(int limit) {
     return """
       query{
         getListGame(limit:$limit){
@@ -139,7 +139,7 @@ class GraphQLQuery {
       }
     }
     """;
-  }
+  }*/
 
   String getGameByGenres(String genre) => """
     query{
@@ -191,7 +191,7 @@ class GraphQLQuery {
    """;
   }
 
-  String getAllPrivateConservation([int page = 1 ,int limit = 10]) => """
+  String getAllPrivateConservation([int page = 1, int limit = 10]) => """
    query{
       getAllConservation(page:$page,limit:$limit){
         _id
@@ -237,18 +237,18 @@ class GraphQLQuery {
  """;
 
   ///sort: ASC, DESC
-  String countRoomOnEachGame(String sort) => """
+  String getListGame(String sort, [int page = 1, int limit = 10]) => """
   query{
-    countRoomOnEachGame(sort:$sort){
+    getListGame(page:$page,limit:$limit,sort:$sort){
       _id
       name
-      background
+      banner
       count
     }
   }
  """;
   String getListRoomByID(String gameId, int limit, int page,
-          [String groupSize = "none",bool hideJoined = false]) =>
+          [String groupSize = "none", bool hideJoined = false]) =>
       """
   query{
     getRoomByGame(gameID:"$gameId",limit:$limit,page:$page,groupSize:$groupSize,,hideJoined:$hideJoined){
@@ -271,7 +271,7 @@ class GraphQLQuery {
   }
   }
  """;
-  String getPrivateChatMessge(String chatID,[int page = 1,int limit = 10]) => """
+  String getPrivateChatMessge(String chatID, [int page = 1, int limit = 10]) => """
   query{
     getPrivateChatMessage(chatID:"$chatID",page:$page,limit:$limit){
       id
@@ -381,18 +381,18 @@ class GraphQLQuery {
       } 
     }
   """;
-  String getPendingJoinRoom(String userID) => """
+  String getPendingJoinRoom() => """
     query{
-      getPendingJoinRoom_User{
-        userID
+      manageRequestJoin_Host{
+        requestID
         roomID
         isApprove
         joinTime
       }
     }
   """;
- 
-  String searchFriend(String str,String ids) => """
+
+  String searchFriend(String str, String ids) => """
     query{
       searchAccounts(key:"$str",exclude_ids:$ids){
           account{
@@ -403,6 +403,27 @@ class GraphQLQuery {
           }
           relationship
         }
+    }
+  """;
+  String getGameInfo(String gameID) => """
+    query{
+      getGameInfo(gameID:"$gameID"){
+         _id
+          name
+          genres
+          platforms
+          images
+          logo{
+            imageUrl
+          }
+          coverImage{
+            imageUrl
+          }
+          video{
+            trailer
+          }
+          summary
+      }
     }
   """;
 }

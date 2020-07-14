@@ -2,7 +2,6 @@ import 'package:gamming_community/API/config/mainAuth.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 class MainRepo{
-  
   static Future<QueryResult> queryGraphQL(String token ,String query){
     GraphQLClient client = mainAPI(token);
     var result = client.query(QueryOptions(
@@ -33,7 +32,4 @@ class MainRepo{
     ));
     return result;
   }
-
-  
-
 }

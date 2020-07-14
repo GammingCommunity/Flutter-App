@@ -1,7 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/class/LoginData.dart';
+import 'package:gamming_community/class/LoginInfo.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/get_token.dart';
@@ -57,7 +57,7 @@ class LoginController extends GetxController {
     )));
     var result = await SubRepo.queryGraphQL(
         await getToken(), _query.login(usernameCtrl.text.trim(), passwordCtrl.text.trim()));
-    LoginData loginData = LoginData.fromJson(result.data);
+    LoginInfo loginData = LoginInfo.fromJson(result.data);
 
     if (loginData.status == "SUCCESS") {
       SharedPreferences refs = await SharedPreferences.getInstance();

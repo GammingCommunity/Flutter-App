@@ -94,7 +94,7 @@ class _RoomManagerState extends State<RoomManager> with AutomaticKeepAliveClient
     var currentID = roomManagerBloc.currentID;
     super.build(context);
     return BlocListener<RoomManagerBloc, RoomManagerState>(
-      condition: (previous, current) {
+      listenWhen:  (previous, current) {
         if (previous is AddRoomLoading) {
           Navigator.pop(context);
         }

@@ -53,7 +53,7 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
     return Container(
       height: widget.size,
       width: Get.width,
-      alignment: Alignment.center,
+      alignment: Alignment.topLeft,
       child: FutureBuilder<List<User>>(
         future: Future(() async {
           // convert to list int
@@ -74,7 +74,7 @@ class _DisplayMemberState extends State<DisplayMember> with AutomaticKeepAliveCl
             return Container(
               height: widget.size,
               width: Get.width,
-              alignment: Alignment.center,
+              alignment: Alignment.bottomLeft,
               child: ListView.separated(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),

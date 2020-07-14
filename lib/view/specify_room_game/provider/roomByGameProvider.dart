@@ -20,6 +20,11 @@ class RoomByGameProvider {
     groupGame.addAll(room);
   }
 
+  Future refresh() async {
+    groupGame.clear();
+    await initLoad(gameID, 'none');
+  }
+
   Future sortBy(String type) async {
     clear();
     switch (type) {

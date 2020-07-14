@@ -2,12 +2,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:gamming_community/class/GroupChat.dart';
+import 'package:gamming_community/customWidget/customImage.dart';
 import 'package:gamming_community/customWidget/faSlideAnimation_v2.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/skeleton_template.dart';
+import 'package:gamming_community/view/game_detail/game_detail.dart';
 import 'package:gamming_community/view/room_manager/display_member.dart';
 import 'package:gamming_community/view/specify_room_game/join_button.dart';
+import 'package:get/get.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class RoomItem extends StatefulWidget {
   final GroupChat room;
@@ -17,10 +21,15 @@ class RoomItem extends StatefulWidget {
 }
 
 class _RoomItemState extends State<RoomItem> with AutomaticKeepAliveClientMixin {
+  timeForNow(DateTime loadedTime) {
+    final now = DateTime.now();
+    final difference = now.difference(loadedTime);
+    return timeago.format(now.subtract(difference), locale: 'en');
+  }
+
   @override
   Widget build(BuildContext context) {
     var rooms = widget.room;
-    var v = DateTime.now().difference(DateTime.tryParse(rooms.createAt).toLocal());
     super.build(context);
     return FaSlideAnimation.slideUp(
         show: true,
@@ -40,22 +49,16 @@ class _RoomItemState extends State<RoomItem> with AutomaticKeepAliveClientMixin 
                   child: Stack(
                     children: <Widget>[
                       //logo room
-                      Positioned.fill(
+                      Positioned(
                         child: Align(
-                          alignment: Alignment.topLeft,
+                          alignment: Alignment.centerLeft,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(15),
-                            child: CachedNetworkImage(
-                              fit: BoxFit.cover,
-                              height: 60.h,
-                              width: 60.w,
-                              //fadeInCurve: Curves.easeIn,
-                              fadeInDuration: Duration(seconds: 2),
-                              imageUrl: rooms.roomLogo ,
-                              placeholder: (context, url) =>
-                                  SkeletonTemplate.image(60.h, 60.w, 15, Colors.grey),
-                              errorWidget: (context, url, error) => Icon(Icons.error),
-                            ),
+                            child: CustomImage(
+                              url: rooms.roomLogo ?? AppConstraint.default_logo, 
+                              imageBorderRadius: 15, 
+                              imageHeight: 60, 
+                              imageWidth: 60)
                           ),
                         ),
                       ),
@@ -67,26 +70,29 @@ class _RoomItemState extends State<RoomItem> with AutomaticKeepAliveClientMixin 
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Column(
-                             mainAxisAlignment: MainAxisAlignment.start,
-                             crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  rooms.roomName ?? "Room name",
-                                  style: TextStyle(fontSize: ScreenUtil().setSp(18)),
-                                ),
-                                SizedBox(height:5),
-                                Text("${v.inHours} hours ago"),
-                                SizedBox(height:5),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    DisplayMember(
-                                      borderRadius: 1000,
-                                      size: 30,
-                                      ids: rooms.memberID,
-                                    )
-                                  ],
+                                    rooms.roomName ?? "Room name",
+                                    style: TextStyle(fontSize: ScreenUtil().setSp(18)),
+                                  ),
+                                SizedBox(height: 5),
+                                Text(timeForNow(DateTime.parse(rooms.createAt))),
+                                SizedBox(height: 5),
+                                Container(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      DisplayMember(
+                                        borderRadius: 1000,
+                                        size: 30,
+                                        ids: rooms.memberID,
+                                      )
+                                    ],
+                                  ),
                                 )
                               ],
                             ),
@@ -94,16 +100,16 @@ class _RoomItemState extends State<RoomItem> with AutomaticKeepAliveClientMixin 
                         ),
                       ),
                       Align(
-                        alignment: Alignment.topRight,
-                        child: ContainerResponsive(
+                          alignment: Alignment.topRight,
+                          child: ContainerResponsive(
                             height: 30.h,
                             alignment: Alignment.center,
                             width: 50.w,
                             decoration: BoxDecoration(
                                 color: Colors.indigo, borderRadius: BorderRadius.circular(15)),
-                            child: Text(
-                                "${rooms.memberID.length}/ ${rooms.maxOfMember}",style: TextStyle(color:  Colors.white )),)
-                      )
+                            child: Text("${rooms.memberID.length}/ ${rooms.maxOfMember}",
+                                style: TextStyle(color: Colors.white)),
+                          ))
                     ],
                   ),
                 ),
@@ -124,7 +130,7 @@ class _RoomItemState extends State<RoomItem> with AutomaticKeepAliveClientMixin 
                           FeatherIcons.plus,
                           size: 15,
                         ),
-                         Text("Join")
+                        Text("Join")
                       ],
                     ),
                     info: {"hostID": rooms.hostID, "roomID": rooms.id},
@@ -149,6 +155,7 @@ class _RoomItemState extends State<RoomItem> with AutomaticKeepAliveClientMixin 
   @override
   bool get wantKeepAlive => true;
 }
+
 showResultDialog(BuildContext context, String content) {
   return showDialog(
     context: context,

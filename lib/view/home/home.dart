@@ -2,52 +2,43 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gamming_community/API/Subscription.dart';
 import 'package:gamming_community/customWidget/circleIcon.dart';
+import 'package:gamming_community/customWidget/customAppBar.dart';
 import 'package:gamming_community/customWidget/iconWithTitle.dart';
 import 'package:gamming_community/generated/i18n.dart';
-import 'package:gamming_community/provider/notficationModel.dart';
-import 'package:gamming_community/provider/search_bar.dart';
 import 'package:gamming_community/resources/values/app_colors.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
-import 'package:gamming_community/utils/notfication_initailization.dart';
 import 'package:gamming_community/view/feeds/feeds.dart';
 import 'package:gamming_community/view/finding_room/finding_room.dart';
-import 'package:gamming_community/view/game_channel/game_channel.dart';
 import 'package:gamming_community/view/home/search_view.dart';
 import 'package:gamming_community/view/messages/private_message/view/conservation.dart';
 import 'package:gamming_community/view/news/news.dart';
+import 'package:gamming_community/view/notfications/provider/notification_provider.dart';
 import 'package:gamming_community/view/notfications/view/notfications.dart';
 import 'package:gamming_community/view/profile/profile.dart';
+import 'package:gamming_community/view/room/explorer_room.dart';
 import 'package:gamming_community/view/room_manager/room_manager.dart';
 import 'package:gamming_community/view/user_post/userPost.dart';
 import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:open_iconic_flutter/open_iconic_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:responsive_widgets/responsive_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:gamming_community/view/room/explorer_room.dart';
-import 'package:tuple/tuple.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
 
 class HomePage extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<HomePage>
-    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+class _HomeState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   int _currentIndex = 0;
   String userID;
   String userProfile, userName, token;
-  var searchController = TextEditingController();
-  AnimationController controller;
-  Animation<Offset> animation;
   PageController _pageController;
   List<Widget> _listWidget = [];
   var subscription = GqlSubscription();
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   @override
   void initState() {
@@ -71,7 +62,6 @@ class _HomeState extends State<HomePage>
   }
 
   Future getUserInfo() async {
-    flutterLocalNotificationsPlugin = await initNotfication();
     SharedPreferences ref = await SharedPreferences.getInstance();
     setState(() {
       token = ref.getString("userToken");
@@ -84,6 +74,62 @@ class _HomeState extends State<HomePage>
     return [userID, userProfile, userName, token];
   }
 
+  Future showBottomSheet() async {
+    return Get.bottomSheet(
+        Container(
+            height: 150,
+            width: Get.width,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(FeatherIcons.minus),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                  IconWithTitle(
+                    icon: FeatherIcons.package,
+                    iconColor: Colors.black,
+                    iconSize: 20,
+                    color: Color(0xff3282b8),
+                    borderRadius: 20,
+                    titlePosition: Position.bottom,
+                    title: "Create post",
+                    onTap: () {
+                      Get.to(UserPost());
+                    },
+                  ),
+                  IconWithTitle(
+                    icon: FeatherIcons.search,
+                    iconColor: Colors.black,
+                    iconSize: 20,
+                    color: Colors.purple[200],
+                    borderRadius: 20,
+                    title: "Search room",
+                    titlePosition: Position.bottom,
+                    onTap: () {
+                      Get.to(FindingRoom());
+                    },
+                  ),
+                  IconWithTitle(
+                    icon: FeatherIcons.user,
+                    iconSize: 20,
+                    iconColor: Colors.black,
+                    color: Colors.blue[200],
+                    borderRadius: 20,
+                    title: "Search friend",
+                    titlePosition: Position.bottom,
+                    onTap: () {
+                      Get.to(SearchView());
+                    },
+                  ),
+                ]),
+              ],
+            )),
+        useRootNavigator: true,
+        backgroundColor: Get.isDarkMode ? AppColors.BACKGROUND_COLOR : Colors.white,
+        shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))));
+  }
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -92,29 +138,19 @@ class _HomeState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    var notification = Provider.of<NotificationModel>(context);
-    super.build(context);
-
     ResponsiveWidgets.init(context, allowFontScaling: true, height: Get.height, width: Get.width);
-
+    super.build(context);
     return ResponsiveWidgets.builder(
       allowFontScaling: true,
       height: Get.height,
       width: Get.width,
-      child: Selector2<SearchProvider, NotificationModel, Tuple2<String, bool>>(
-        selector: (context, search, notify) =>
-            Tuple2(search.changeContent(_currentIndex), notify.isSeen),
-        builder: (context, value, child) => Scaffold(
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(40),
-            child: ContainerResponsive(
-                width: Get.width,
-                padding: EdgeInsetsResponsive.symmetric(horizontal: 10),
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    /*Expanded(
+      child: StateBuilder<NotificationProvider>(
+        initState: (context, model) => model.setState((s) => s.initNotification()),
+        observe: () => RM.get<NotificationProvider>(),
+        builder: (context, model) => Scaffold(
+          appBar: CustomAppBar(
+              child: [
+                /*Expanded(
                       child: FaSlideAnimation.slideDown(
                         show: true,
                         delayed: 200,
@@ -127,188 +163,68 @@ class _HomeState extends State<HomePage>
                         ),
                       ),
                     ),*/
-                    Spacer(),
-                    /* CircleIcon(
-                      icon: FeatherIcons.airplay,
-                      iconSize: 20,
-                      onTap: () {
-                        Navigator.push(context,
-                            PageTransition(child: GameChannel(), type: PageTransitionType.rightToLeft));
-                      },
-                    ),*/
-
+                Spacer(),
+             
+                CircleIcon(
+                  icon: FeatherIcons.search,
+                  iconSize: 20,
+                  onTap: () {
+                    Get.to(SearchView(), transition: Transition.fadeIn);
+                  },
+                ),
+                CircleIcon(
+                  icon: FeatherIcons.plus,
+                  iconSize: 20,
+                  onTap: () {
+                    //show model bottom sheet
+                    showBottomSheet();
+                  },
+                ),
+                Stack(
+                  children: <Widget>[
                     CircleIcon(
-                      icon: FeatherIcons.airplay,
+                      icon: FeatherIcons.bell,
                       iconSize: 20,
                       onTap: () {
-                        Get.to(GameChannel(), transition: Transition.fadeIn);
+                        Get.to(Notfications(), opaque: false, transition: Transition.fadeIn);
                       },
                     ),
-                    CircleIcon(
-                      icon: FeatherIcons.search,
-                      iconSize: 20,
-                      onTap: () {
-                        Get.to(SearchView(), transition: Transition.fadeIn);
-                      },
-                    ),
-                    CircleIcon(
-                      icon: FeatherIcons.plus,
-                      iconSize: 20,
-                      onTap: () {
-                        //show model bottom sheet
-                        Get.bottomSheet(
-                            Container(
-                                height: 150,
-                                width: Get.width,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(FeatherIcons.minus),
-                                    Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          IconWithTitle(
-                                            icon: FeatherIcons.package,
-                                            iconColor: Colors.black,
-                                            iconSize: 20,
-                                            color: Color(0xff3282b8),
-                                            borderRadius: 20,
-                                            titlePosition: Position.bottom,
-                                            title: "Create post",
-                                            onTap: () {
-                                              Get.to(UserPost());
-                                            },
-                                          ),
-                                          IconWithTitle(
-                                            icon: FeatherIcons.search,
-                                            iconColor: Colors.black,
-                                            iconSize: 20,
-                                            color: Colors.purple[200],
-                                            borderRadius: 20,
-                                            title: "Search room",
-                                            titlePosition: Position.bottom,
-                                            onTap: () {
-                                              Get.to(FindingRoom());
-                                            },
-                                          ),
-                                          IconWithTitle(
-                                            icon: FeatherIcons.user,
-                                            iconSize: 20,
-                                            iconColor: Colors.black,
-                                            color: Colors.blue[200],
-                                            borderRadius: 20,
-                                            title: "Search friend",
-                                            titlePosition: Position.bottom,
-                                            onTap: () {
-                                              Get.to(SearchView());
-                                            },
-                                          ),
-                                        ]),
-                                  ],
-                                )),
-                            useRootNavigator: true,
-                            backgroundColor:
-                                Get.isDarkMode ? AppColors.BACKGROUND_COLOR : Colors.white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(10), topRight: Radius.circular(10))));
-                      },
-                    ),
-                    Stack(
-                      children: <Widget>[
-                        CircleIcon(
-                          icon: FeatherIcons.bell,
-                          iconSize: 20,
-                          onTap: () {
-                            Get.to(Notfications(),opaque: false);
-                            notification.seen(true);
-                          },
-                        ),
-                        //TODO: fetch notification
+                    //TODO: fetch notification
 
-                        /* Positioned(
-                                  top: 5,
-                                  right: 5,
-                                  child: GraphQLProvider(
-                                      client: subscriptionClient(token),
-                                      child: CacheProvider(
-                                        child: Subscription(
-                                          "onJoinRoom",
-                                          subscription.onJoinRoom(userID),
-                                          builder: ({error, loading, payload}) {
-                                            if (loading == true) {
-                                              return Container();
-                                            }
-                                            if (error != null) {
-                                              print(error);
-                                              return Container();
-                                            } else {
-                                              // print(payload.toString());
-                                              var result = JoinRoom.fromJson(payload['onJoinRoom']);
-                                              // print(result);
-                                              WidgetsBinding.instance
-                                                  .addPostFrameCallback((timeStamp) async {
-                                                await flutterLocalNotificationsPlugin.show(
-                                                    1,
-                                                    "Join room",
-                                                    "${result.userID} want to join ${result.roomName}",
-                                                    platformSpecific("channelID", "channelName",
-                                                        "channelDescription"));
-                                              });
-
-                                              return ContainerResponsive(
-                                                  height: 20.h,
-                                                  width: 20.w,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Colors.indigo,
-                                                  ),
-                                                  alignment: Alignment.center,
-                                                  child: TextResponsive(
-                                                    "99",
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.bold,
-                                                        color: Theme.of(context)
-                                                            .primaryTextTheme
-                                                            .bodyText1
-                                                            .color),
-                                                  ));
-                                            }
-                                          },
-                                        ),
-                                      )))*/
-                      ],
-                    ),
-                    // profile image
-                    InkWell(
-                      borderRadius: BorderRadius.circular(1000),
-                      onTap: () {
-                        Get.to(
-                            Profile(userID: userID, userName: userName, userProfile: userProfile),
-                            transition: Transition.fade,
-                            opaque: false);
-                      },
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10000),
-                        clipBehavior: Clip.antiAlias,
-                        child: CachedNetworkImage(
-                          height: 30,
-                          width: 30,
-                          imageUrl:
-                              userProfile != null ? userProfile : AppConstraint.default_profile,
-                          placeholder: (context, url) => Container(
-                            height: 30,
-                            width: 30,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10000),
-                                color: Colors.grey[400]),
-                          ),
-                        ),
-                      ),
-                    )
+                    Positioned(
+                        top: 5,
+                        right: 10,
+                        child: Icon(Icons.fiber_manual_record,color: Colors.amber,size: 15,))
                   ],
-                )),
-          ),
+                ),
+                // profile image
+                InkWell(
+                  borderRadius: BorderRadius.circular(1000),
+                  onTap: () {
+                    Get.to(Profile(userID: userID, userName: userName, userProfile: userProfile),
+                        transition: Transition.fade, opaque: false);
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10000),
+                    clipBehavior: Clip.antiAlias,
+                    child: CachedNetworkImage(
+                      height: 30,
+                      width: 30,
+                      imageUrl: userProfile ?? AppConstraint.default_profile,
+                      placeholder: (context, url) => Container(
+                        height: 30,
+                        width: 30,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10000), color: Colors.grey[400]),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+              height: 50,
+              onNavigateOut: () {},
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              backIcon: null),
           bottomNavigationBar: ContainerResponsive(
               height: 50,
               child: Stack(
@@ -354,7 +270,7 @@ class _HomeState extends State<HomePage>
                   )
                 ],
               )),
-          body: ContainerResponsive(
+          body: Container(
             height: Get.height,
             child: PageView(
               //physics: NeverScrollableScrollPhysics(),

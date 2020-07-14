@@ -26,7 +26,11 @@ class RoomManagerBloc extends Bloc<RoomManagerEvent, RoomManagerState> {
   String avatarPath = "";
   String coverPath = "";
   Box<GroupChatAdapter> groupChatBox;
-  @override
+
+  RoomManagerBloc(RoomManagerState initialState) : super(initialState);
+
+  //RoomManagerBloc(RoomManagerState initialState) : super(initialState);
+  
   RoomManagerState get initialState => RoomManagerInitial();
 
   @override

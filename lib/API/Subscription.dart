@@ -1,14 +1,20 @@
-class GqlSubscription{
-  String onJoinRoom(String hostID) =>"""
-    subscription onJoinRoom{
-onJoinRoom(hostID:"$hostID"){
-        roomName
-        userID
-        joinTime
-        isApprove
+class GqlSubscription {
+  String joinRoomNotification() => """
+    subscription joinRoomNotification{
+          type
+          roomID
+          roomName
+          hostID
+          requestID
+          message
+          isApprove
+        }
+            
+    """;
+  String acceptRequestNotification() => """
+    subscription acceptRequest{
+        message
+        time
       }
-    }
-      
-    
   """;
 }

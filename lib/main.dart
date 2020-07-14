@@ -16,6 +16,7 @@ import 'package:gamming_community/view/feeds/provider/feedsProvider.dart';
 import 'package:gamming_community/view/finding_room/finding_room_provider.dart';
 import 'package:gamming_community/view/forgot_password/forgotPassword.dart';
 import 'package:gamming_community/view/friend_profile/provider/friend_profile_provider.dart';
+import 'package:gamming_community/view/game_detail/provider/game_detail_provider.dart';
 import 'package:gamming_community/view/group_dashboard/provider/group_post_provider.dart';
 import 'package:gamming_community/view/home/home.dart';
 import 'package:gamming_community/view/home/provider/search_friend_provider.dart';
@@ -44,11 +45,14 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
+var locale = 'en';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // init hiveDB
-
+  timeago.setLocaleMessages('vi', timeago.ViMessages());
+  timeago.setLocaleMessages('vi_short', timeago.ViShortMessages());
   await hiveInit();
 
   SharedPreferences ref = await SharedPreferences.getInstance();
@@ -84,7 +88,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final i18n = I18n.delegate;
-
+    RoomManagerState state ;
     return GetBuilder<ProfileController>(
       init: ProfileController(),
       builder: (_) => GetX<ProfileController>(builder: (p) {
@@ -109,7 +113,7 @@ class MyApp extends StatelessWidget {
             child: bloc.MultiBlocProvider(
               providers: [
                 bloc.BlocProvider<RoomManagerBloc>(
-                  create: (BuildContext context) => RoomManagerBloc(),
+                  create: (BuildContext context) => RoomManagerBloc(state),
                   child: RoomManager(),
                 )
               ],
@@ -130,7 +134,8 @@ class MyApp extends StatelessWidget {
                   Inject(() => SearchFriendsProvider()),
                   Inject(() => GroupPostProvider()),
                   Inject(() => PostProvider()),
-                  Inject(() => FindingRoomProvider())
+                  Inject(() => FindingRoomProvider()),
+                  Inject(() => GameDetailProvider()),
                 ],
                 builder: (context) {
                   return GetMaterialApp(

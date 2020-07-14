@@ -15,12 +15,17 @@ class Game {
       this.trailerUrl,
       this.summary,
       this.images});
-  factory Game.fromJson(Map json) {
+  factory Game.fromJson(Map item) {
     try {
       return Game(
-          logo: json.values.last['logo']['imageUrl'],
-          id: json.values.last['_id'],
-          name: json.values.last["name"]);
+            id: item['_id'],
+            name: item['name'],
+            platforms: item['platforms'] ??= [],
+            coverImage: item['coverImage'] == null ? "" : item['coverImage']['imageUrl'],
+            trailerUrl: item['video'] == null ? "" : item['video']['trailer'],
+            logo: item['logo'] == null ? "" : item['logo']['imageUrl'],
+            summary: item['summary'] ??= "",
+            images: item['images'] ??= []);
     } catch (err) {
       print(err);
       return null;

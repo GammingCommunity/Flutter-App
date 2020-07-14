@@ -3,7 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:gamming_community/API/Mutation.dart';
 import 'package:gamming_community/API/Query.dart';
-import 'package:gamming_community/class/LoginData.dart';
+import 'package:gamming_community/class/LoginInfo.dart';
 import 'package:gamming_community/repository/sub_repo.dart';
 import 'package:gamming_community/resources/values/app_constraint.dart';
 import 'package:gamming_community/utils/get_token.dart';
@@ -13,6 +13,8 @@ part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
+  LoginBloc(LoginState initialState) : super(initialState);
+
   @override
   LoginState get initialState => LoginInitial();
 
@@ -32,7 +34,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         var result =
           await SubRepo.queryGraphQL(await getToken(), query.login(email.trim(), password.trim()));
         //print(result.data.values.first["status"]);
-        LoginData loginData = LoginData.fromJson(result.data);
+        LoginInfo loginData = LoginInfo.fromJson(result.data);
         /*{
           SharedPreferences refs = await SharedPreferences.getInstance();
 

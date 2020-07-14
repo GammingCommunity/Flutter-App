@@ -31,7 +31,7 @@ class _CarouselState extends State<Carousel> {
       client: customClient(widget.token),
       child: CacheProvider(
           child: Query(
-        options: QueryOptions(documentNode: gql(_query.getListGame(1))),
+        options: QueryOptions(documentNode: gql(_query.getListGame('DESC'))),
         builder: (result, {fetchMore, refetch}) {
           if (result.hasException) {
             return ClipRRect(

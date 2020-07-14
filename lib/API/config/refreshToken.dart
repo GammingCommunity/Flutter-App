@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:gamming_community/class/LoginData.dart';
+import 'package:gamming_community/class/LoginInfo.dart';
 import 'package:gamming_community/utils/get_token.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -27,7 +27,7 @@ class RefreshToken {
     SharedPreferences refs = await SharedPreferences.getInstance();
     var loginInfo = refs.getStringList("loginInfo");
     var request = await SubRepo.queryGraphQL("", query.login(loginInfo[0], loginInfo[1]));
-    var loginResult = LoginData.fromJson(request.data);
+    var loginResult = LoginInfo.fromJson(request.data);
     refs.setString("userToken", loginResult.token);
   }
 }

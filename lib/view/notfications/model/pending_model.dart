@@ -10,7 +10,7 @@ class PendingRequest {
         userID: json['userID'],
         roomID: json['roomID'],
         isApprove: json['isApprove'],
-        joinTime: DateTime.parse(json['joinTime']));
+        joinTime: DateTime.parse(json['joinTime']).toLocal());
   }
 }
 
@@ -22,7 +22,7 @@ class PendingRequests {
     try {
       for (var item in data) {
         pendings.add(PendingRequest(
-            userID: item['userID'],
+            userID: item['requestID'],
             roomID: item['roomID'],
             isApprove: item['isApprove'],
             joinTime: DateTime.parse(item['joinTime'])));
